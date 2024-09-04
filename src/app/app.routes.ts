@@ -8,6 +8,7 @@ export const routes: Routes = [
     { path: '', redirectTo: '/homepage', pathMatch: 'full' }, // Pagina por defecto
     { path: 'homepage', component: HomePageComponent }, // Pagina por defecto
     { path: 'login', component: LoginComponent }, // Login (Tanto para administradores como para estudiantes)
+    // Demas rutas
 
 
     // Siempre debe ir al final, para evitar errores en la redireccion de rutas si existentes
