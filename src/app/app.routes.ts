@@ -1,3 +1,4 @@
+import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginComponent } from './pages/login/login.component';
@@ -13,3 +14,4 @@ export const routes: Routes = [
     { path: 'PageNotFound', component: PageNotFoundComponent }, // Ruta comodín para manejar rutas no existentes
     { path: '**', redirectTo: '/PageNotFound' }, // Pagina no encontrada (Rutas no existentes)
 ];
+
