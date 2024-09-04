@@ -1,1 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
+/* Asegura que el html y el body ocupen toda la altura */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Contenedor principal que se extiende a toda la altura de la ventana */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ocupa al menos el 100% de la altura de la ventana */
+}
+
+/* El contenido principal se expande para llenar el espacio disponible */
+.content {
+    flex: 1;
+}
