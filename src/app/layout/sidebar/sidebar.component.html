@@ -1,6 +1,6 @@
-<!-- sidebar.component.html -->
 <div class="d-flex" id="sidebarContainer">
   <nav id="sidebar" class="bg-light" [class.collapsed]="isCollapsed">
+    <!-- Sidebar Header -->
     <div class="sidebar-header text-center">
       <img src="img/AlieLogo_RoundedCorners.png" alt="Logo" class="logo" (click)="toggleSidebar()">
       <small *ngIf="!isCollapsed" class="text-muted">
@@ -8,8 +8,13 @@
       </small>
     </div>
 
-    <!-- Buttons -->
+    <!-- User Info (Profile Picture and Name) -->
+    <div class="user-info text-center">
+      <i class="bi bi-person-circle profile-icon"></i>
+      <span *ngIf="!isCollapsed" class="user-name">{{ userName }}</span>
+    </div>
 
+    <!-- Buttons -->
     <div class="sidebar-buttons">
       
       <!-- Chat button, visible to all roles -->

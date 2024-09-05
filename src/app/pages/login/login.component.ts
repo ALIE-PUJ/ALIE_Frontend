@@ -21,6 +21,9 @@ export class LoginComponent {
     } else if (roleSelect === 'Admin') {
       this.loginAsAdmin();
     }
+
+    // Store user ID, independently of role. Must be fetch from the DB
+    localStorage.setItem('ActiveUserId', '12345');
   }
 
   loginAsStudent() {

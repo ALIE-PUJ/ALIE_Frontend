@@ -16,11 +16,14 @@ export class SidebarComponent {
   // Sidebar Variables
   // Get user role from input. Can be Student or Admin
   @Input() userRole: string = 'Admin';
+  @Input() userId: string = '12345';
+  @Input() userName: string = 'XXX';
   isCollapsed = false;
 
   // Inicializacion
   ngOnInit() {
-    this.verificarAcceso()
+    this.verifyAccess()
+    this.getUserData()
   }
 
 
@@ -32,11 +35,23 @@ export class SidebarComponent {
   }
 
   // Control de acceso
-  verificarAcceso(): void {
+  verifyAccess(): void {
     // Recuperar el rol activo del usuario que inicio sesion, desde localStorage
     const storedActiveRole = localStorage.getItem('ActiveRole');
     this.userRole = storedActiveRole ? storedActiveRole : 'Student'; // Estudiante por defecto
     console.log("[SIDEBAR]: Active Role = ", this.userRole);
+  }
+
+  // Id y nombre de usuario
+  getUserData(): void {
+    // Recuperar el id activo del usuario que inicio sesion, desde localStorage
+    const storedActiveUserId = localStorage.getItem('ActiveUserId');
+    this.userId = storedActiveUserId ? storedActiveUserId : '12345'; // Estudiante por defecto
+    console.log("[SIDEBAR]: Active User Id = ", this.userId);
+
+    // Get user name from DB
+    this.userName = 'Luis Bravo'; // Estudiante por defecto, hasta configurar la BD
+    console.log("[SIDEBAR]: Active User Name = ", this.userName);
   }
 
 }
