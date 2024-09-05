@@ -1,0 +1,100 @@
+/* sidebar.component.css */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#sidebarContainer {
+  height: 100vh;
+}
+
+.buttonText {
+  margin-left: 20%;
+}
+
+#sidebar {
+  width: 250px;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+#sidebar h2 {
+  margin: 0;
+  transition: opacity 0.3s ease;
+}
+
+#sidebar.collapsed h2 {
+  opacity: 0;
+}
+
+.sidebar-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px; /* Reduce the margin to bring buttons closer to the logo */
+}
+
+.sidebar-buttons .btn-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 10px; /* Space between buttons */
+  transition: transform 0.3s ease;
+}
+
+.sidebar-buttons .btn-icon i {
+  margin: 0;
+}
+
+.sidebar-buttons .btn-icon:hover {
+  background-color: #f0f0f0;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 10px;
+  text-align: center;
+}
+
+.sidebar-footer .btn-icon {
+  background-color: #f8f9fa;
+  border: none;
+}
+
+.sidebar-footer .btn-icon:hover {
+  background-color: #e9ecef;
+}
+
+#content {
+  padding: 16px;
+}
+
+.content-area {
+  padding: 16px;
+}

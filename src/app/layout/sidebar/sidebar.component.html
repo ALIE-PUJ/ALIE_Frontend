@@ -1,0 +1,39 @@
+<!-- sidebar.component.html -->
+<div class="d-flex" id="sidebarContainer">
+    <nav id="sidebar" class="bg-light" [class.collapsed]="isCollapsed">
+      <div class="sidebar-header text-center">
+        <img src="img/AlieLogo_RoundedCorners.png" alt="Logo" class="logo" (click)="toggleSidebar()">
+        <h2 *ngIf="!isCollapsed">ALIE</h2>
+      </div>
+      <div class="sidebar-buttons">
+        <button class="btn btn-light btn-icon">
+          <i class="bi bi-house"></i>
+          <span class="buttonText" *ngIf="!isCollapsed">Home</span>
+        </button>
+        <button class="btn btn-light btn-icon">
+          <i class="bi bi-file-earmark"></i>
+          <span class="buttonText" *ngIf="!isCollapsed">Documents</span>
+        </button>
+        <button class="btn btn-light btn-icon">
+          <i class="bi bi-gear"></i>
+          <span class="buttonText" *ngIf="!isCollapsed">Settings</span>
+        </button>
+      </div>
+
+
+
+      <div class="sidebar-footer">
+        <button class="btn btn-light btn-icon">
+          <i class="bi bi-box-arrow-right"></i>
+          <span *ngIf="!isCollapsed">Logout</span>
+        </button>
+      </div>
+    </nav>
+  
+    <div id="content" class="flex-fill">
+      <div class="content-area">
+        <p>Content goes here with more detailed information.</p>
+      </div>
+    </div>
+  </div>
+  
