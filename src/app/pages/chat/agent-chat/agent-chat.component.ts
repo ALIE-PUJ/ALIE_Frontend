@@ -6,8 +6,6 @@ import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
   standalone: true,
   imports: [SidebarComponent],
   templateUrl: './agent-chat.component.html',
-  styleUrl: './agent-chat.component.scss'
+  styleUrls: ['./agent-chat.component.scss']
 })
-export class AgentChatComponent {
-
-}
+export class AgentChatComponent {}
