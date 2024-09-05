@@ -12,17 +12,19 @@
 
     <div class="sidebar-buttons">
       
+      <!-- Chat button, visible to all roles -->
       <button class="btn btn-light btn-icon" routerLink="/chat" routerLinkActive="active">
         <i class="bi bi-chat-dots-fill"></i>
         <span class="buttonText" *ngIf="!isCollapsed">Chat</span>
       </button>
 
-      <button class="btn btn-light btn-icon" routerLink="/supervision" routerLinkActive="active">
+      <!-- Supervision and Files buttons, visible only to Admin -->
+      <button *ngIf="userRole === 'Admin'" class="btn btn-light btn-icon" routerLink="/supervision" routerLinkActive="active">
         <i class="bi bi-eye-fill"></i>
         <span class="buttonText" *ngIf="!isCollapsed">Supervision</span>
       </button>
       
-      <button class="btn btn-light btn-icon" routerLink="/fileManagement" routerLinkActive="active">
+      <button *ngIf="userRole === 'Admin'" class="btn btn-light btn-icon" routerLink="/fileManagement" routerLinkActive="active">
         <i class="bi bi-file-earmark-break-fill"></i>
         <span class="buttonText" *ngIf="!isCollapsed">Files</span>
       </button>

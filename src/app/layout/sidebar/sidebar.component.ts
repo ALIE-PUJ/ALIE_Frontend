@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // Import RouterModule
 
@@ -12,6 +12,9 @@ import { RouterModule } from '@angular/router'; // Import RouterModule
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
+
+  // Get user role from input. Can be Student or Admin
+  @Input() userRole: string = 'Admin';
 
   isCollapsed = false;
 
