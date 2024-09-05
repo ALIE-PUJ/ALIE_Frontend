@@ -26,13 +26,13 @@ export class LoginComponent {
   loginAsStudent() {
     localStorage.setItem('ActiveRole', 'Student');
     // Add your login logic for student here
-    alert('Logged in as Student');
+    // alert('Logged in as Student');
   }
 
   loginAsAdmin() {
     localStorage.setItem('ActiveRole', 'Admin');
     // Add your login logic for admin here
-    alert('Logged in as Admin');
+    // alert('Logged in as Admin');
   }
 
 }
