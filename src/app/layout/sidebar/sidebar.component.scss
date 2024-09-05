@@ -37,8 +37,8 @@ html, body {
 }
 
 .logo {
-  width: 60px;
-  height: 60px;
+  width: 65px;
+  height: 65px;
   margin-bottom: 10px;
 }
 
@@ -79,6 +79,11 @@ html, body {
 
 .sidebar-buttons .btn-icon:hover {
   background-color: #f0f0f0;
+}
+
+.btn-icon.active {
+  background-color: #e0e0e0; /* Change background color when active */
+  border-left: 4px solid darkblue; /* Add a blue border to indicate active */
 }
 
 #sidebar:not(.collapsed) .sidebar-buttons .btn-icon {
