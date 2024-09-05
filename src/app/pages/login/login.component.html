@@ -1,41 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="/styles/style_sign_in_student.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <div class="main-container">
+
         <div class="content">
-            <div class="container mt-5">
-                <h1 class="text-center">Login</h1>
-                <p class="text-center text-success">Welcome to ALIE</p>
-    
-                <div class="text-center mb-3">
-                    <label for="roleToggle" class="form-label">User Role:</label>
-                    <select id="roleToggle" class="form-select w-auto mx-auto">
-                        <option value="Student" selected>Student</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                </div>
-    
-                <!-- Button for Login -->
-                <div class="text-center mt-3">
-                    <a [routerLink]="['/chat']" class="btn btn-primary" (click)="handleLogin()">
-                        <i class="bi bi-star-fill"></i> Continue
+
+            <div class="container">
+                <div class="logo-container">
+                    <a href="/html/sign_in_profile.html">
+                        <svg width="81" height="30" viewBox="0 0 81 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M17.616 21.552H6.528L3.936 30H0.432L9.696 0.575998H16.848L26.064 30H20.256L17.616 21.552ZM16.752 18.672L12.048 3.504L7.392 18.672H16.752ZM45.5415 27.552V30H30.3735V0.575998H35.2695V27.552H45.5415ZM55.6335 30H49.5855V0.575998H55.6335V30ZM80.3689 27.552V30H63.2329V0.575998H79.5049V3.024H68.1289V13.728H78.4969V16.272H68.1289V27.552H80.3689Z"
+                                fill="#16226D" />
+                            <path
+                                d="M17.616 21.552L18.0932 21.4029L17.9836 21.052H17.616V21.552ZM6.528 21.552V21.052H6.1584L6.04999 21.4053L6.528 21.552ZM3.936 30V30.5H4.3056L4.41401 30.1467L3.936 30ZM0.432 30L-0.0449205 29.8498L-0.249619 30.5H0.432V30ZM9.696 0.575998V0.0759983H9.32923L9.21908 0.425842L9.696 0.575998ZM16.848 0.575998L17.3251 0.42655L17.2153 0.0759983H16.848V0.575998ZM26.064 30V30.5H26.7446L26.5411 29.8506L26.064 30ZM20.256 30L19.7788 30.1491L19.8884 30.5H20.256V30ZM16.752 18.672V19.172H17.4306L17.2296 18.5239L16.752 18.672ZM12.048 3.504L12.5256 3.35589L12.0456 1.8081L11.57 3.35727L12.048 3.504ZM7.392 18.672L6.91401 18.5253L6.71549 19.172H7.392V18.672ZM17.616 21.052H6.528V22.052H17.616V21.052ZM6.04999 21.4053L3.45799 29.8533L4.41401 30.1467L7.00601 21.6987L6.04999 21.4053ZM3.936 29.5H0.432V30.5H3.936V29.5ZM0.908921 30.1502L10.1729 0.726154L9.21908 0.425842L-0.0449205 29.8498L0.908921 30.1502ZM9.696 1.076H16.848V0.0759983H9.696V1.076ZM16.3709 0.725447L25.5869 30.1494L26.5411 29.8506L17.3251 0.42655L16.3709 0.725447ZM26.064 29.5H20.256V30.5H26.064V29.5ZM20.7332 29.8509L18.0932 21.4029L17.1388 21.7011L19.7788 30.1491L20.7332 29.8509ZM17.2296 18.5239L12.5256 3.35589L11.5704 3.6521L16.2744 18.8201L17.2296 18.5239ZM11.57 3.35727L6.91401 18.5253L7.86999 18.8187L12.526 3.65072L11.57 3.35727ZM7.392 19.172H16.752V18.172H7.392V19.172ZM45.5415 27.552H46.0415V27.052H45.5415V27.552ZM45.5415 30V30.5H46.0415V30H45.5415ZM30.3735 30H29.8735V30.5H30.3735V30ZM30.3735 0.575998V0.0759983H29.8735V0.575998H30.3735ZM35.2695 0.575998H35.7695V0.0759983H35.2695V0.575998ZM35.2695 27.552H34.7695V28.052H35.2695V27.552ZM45.0415 27.552V30H46.0415V27.552H45.0415ZM45.5415 29.5H30.3735V30.5H45.5415V29.5ZM30.8735 30V0.575998H29.8735V30H30.8735ZM30.3735 1.076H35.2695V0.0759983H30.3735V1.076ZM34.7695 0.575998V27.552H35.7695V0.575998H34.7695ZM35.2695 28.052H45.5415V27.052H35.2695V28.052ZM55.6335 30V30.5H56.1335V30H55.6335ZM49.5855 30H49.0855V30.5H49.5855V30ZM49.5855 0.575998V0.0759983H49.0855V0.575998H49.5855ZM55.6335 0.575998H56.1335V0.0759983H55.6335V0.575998ZM55.6335 29.5H49.5855V30.5H55.6335V29.5ZM50.0855 30V0.575998H49.0855V30H50.0855ZM49.5855 1.076H55.6335V0.0759983H49.5855V1.076ZM55.1335 0.575998V30H56.1335V0.575998H55.1335ZM80.3689 27.552H80.8689V27.052H80.3689V27.552ZM80.3689 30V30.5H80.8689V30H80.3689ZM63.2329 30H62.7329V30.5H63.2329V30ZM63.2329 0.575998V0.0759983H62.7329V0.575998H63.2329ZM79.5049 0.575998H80.0049V0.0759983H79.5049V0.575998ZM79.5049 3.024V3.524H80.0049V3.024H79.5049ZM68.1289 3.024V2.524H67.6289V3.024H68.1289ZM68.1289 13.728H67.6289V14.228H68.1289V13.728ZM78.4969 13.728H78.9969V13.228H78.4969V13.728ZM78.4969 16.272V16.772H78.9969V16.272H78.4969ZM68.1289 16.272V15.772H67.6289V16.272H68.1289ZM68.1289 27.552H67.6289V28.052H68.1289V27.552ZM79.8689 27.552V30H80.8689V27.552H79.8689ZM80.3689 29.5H63.2329V30.5H80.3689V29.5ZM63.7329 30V0.575998H62.7329V30H63.7329ZM63.2329 1.076H79.5049V0.0759983H63.2329V1.076ZM79.0049 0.575998V3.024H80.0049V0.575998H79.0049ZM79.5049 2.524H68.1289V3.524H79.5049V2.524ZM67.6289 3.024V13.728H68.6289V3.024H67.6289ZM68.1289 14.228H78.4969V13.228H68.1289V14.228ZM77.9969 13.728V16.272H78.9969V13.728H77.9969ZM78.4969 15.772H68.1289V16.772H78.4969V15.772ZM67.6289 16.272V27.552H68.6289V16.272H67.6289ZM68.1289 28.052H80.3689V27.052H68.1289V28.052Z"
+                                fill="#16226D" />
+                        </svg>
                     </a>
                 </div>
-                
+                <div class="overlay-container">
+                    <div class="overlay-panel">
+                        <h1>Bienvenido de vuelta</h1>
+                        <p>Por favor, completa tus datos para continuar con tu experiencia</p>
+                    </div>
+                </div>
+                <div class="form-container">
+                    <form action="#">
+                        <h1>Inicio de sesión Estudiante</h1>
+                        <div class="infield">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" placeholder="Correo Electrónico" name="email" required />
+                            <label></label>
+                        </div>
+                        <div class="infield">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="Contraseña" required />
+                            <i class="fas fa-eye-slash"></i>
+                            <label></label>
+                        </div>
+                        <a href="#" class="forgot">Olvidé mi contraseña</a>
+
+                        <div class="text-center mb-3">
+                            <label for="roleToggle" class="form-label">User Role:</label>
+                            <select id="roleToggle" class="form-select w-auto mx-auto">
+                                <option value="Student" selected>Student</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+
+                        <!-- Button for Login -->
+                        <button [routerLink]="['/chat']" class="btn btn-primary"
+                            (click)="handleLogin()">Continuar</button>
+                    </form>
+
+
+                </div>
+
             </div>
+
         </div>
-    
+
         <!-- App footer -->
         <app-default-footer></app-default-footer>
-    </div>    
+    </div>
 
     <!-- Bootstrap JS (optional, for components that require JavaScript) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>
