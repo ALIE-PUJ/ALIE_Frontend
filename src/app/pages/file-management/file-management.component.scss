@@ -1,0 +1,13 @@
+/* Configuracion global del contenedor aparte de la sidebar */
+.main {
+    height: 100%; /* Ocupa todo el espacio disponible */
+    padding: 16px;
+    padding-right: 0;
+    overflow: auto; /* Permite el desplazamiento si el contenido es demasiado grande */
+    flex: 1; /* Hace que el contenido ocupe el espacio restante */
+  }
+
+/* Contenido general. Siemrpe debe estar dentro de .main */
+.content {
+    padding: 16px; /* Ajusta el padding según sea necesario */
+}

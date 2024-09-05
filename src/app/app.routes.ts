@@ -13,7 +13,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent }, // Login (Tanto para administradores como para estudiantes)
     { path: 'chat', component: AgentChatComponent }, // Login (Tanto para administradores como para estudiantes)
     { path: 'supervision', component: SupervisionComponent }, // Login (Tanto para administradores como para estudiantes)
-    { path: 'filemanagement', component: FileManagementComponent }, // Login (Tanto para administradores como para estudiantes)
+    { path: 'fileManagement', component: FileManagementComponent }, // Login (Tanto para administradores como para estudiantes)
     // Demas rutas
 
 
