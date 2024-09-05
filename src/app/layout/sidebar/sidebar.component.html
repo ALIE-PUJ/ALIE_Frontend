@@ -1,45 +1,44 @@
 <!-- sidebar.component.html -->
 <div class="d-flex" id="sidebarContainer">
-    <nav id="sidebar" class="bg-light" [class.collapsed]="isCollapsed">
-      <div class="sidebar-header text-center">
-        <img src="img/AlieLogo_RoundedCorners.png" alt="Logo" class="logo" (click)="toggleSidebar()">
-        <h2 *ngIf="!isCollapsed">ALIE</h2>
-      </div>
-
-      <!-- Buttons -->
-
-      <div class="sidebar-buttons">
-        <button class="btn btn-light btn-icon">
-          <i class="bi bi-house"></i>
-          <span class="buttonText" *ngIf="!isCollapsed">Home</span>
-        </button>
-        
-        <button class="btn btn-light btn-icon">
-          <i class="bi bi-file-earmark"></i>
-          <span class="buttonText" *ngIf="!isCollapsed">Documents</span>
-        </button>
-
-        <button class="btn btn-light btn-icon">
-          <i class="bi bi-gear"></i>
-          <span class="buttonText" *ngIf="!isCollapsed">Settings</span>
-        </button>
-      </div>
-
-
-        <!-- Sidebar Footer -->
-      <div class="sidebar-footer sidebar-buttons">
-        <button class="btn btn-light btn-icon">
-          <i class="bi bi-box-arrow-right"></i>
-          <span class="buttonText" *ngIf="!isCollapsed">Logout</span>
-        </button>
-      </div>
-    </nav>
-  
-    <!-- Contenido proveniente de otro componente --> 
-    <div id="content" class="flex-fill">
-        <!-- Dynamic content goes here -->
-        <ng-content></ng-content>
+  <nav id="sidebar" class="bg-light" [class.collapsed]="isCollapsed">
+    <div class="sidebar-header text-center">
+      <img src="img/AlieLogo_RoundedCorners.png" alt="Logo" class="logo" (click)="toggleSidebar()">
+      <h2 *ngIf="!isCollapsed">ALIE</h2>
     </div>
 
+    <!-- Buttons -->
+
+    <div class="sidebar-buttons">
+      
+      <button class="btn btn-light btn-icon">
+        <i class="bi bi-house"></i>
+        <span class="buttonText" *ngIf="!isCollapsed">Home</span>
+      </button>
+      
+      <button class="btn btn-light btn-icon">
+        <i class="bi bi-file-earmark"></i>
+        <span class="buttonText" *ngIf="!isCollapsed">Documents</span>
+      </button>
+
+      <button class="btn btn-light btn-icon">
+        <i class="bi bi-gear"></i>
+        <span class="buttonText" *ngIf="!isCollapsed">Settings</span>
+      </button>
+    </div>
+
+      <!-- Sidebar Footer -->
+    <div class="sidebar-footer sidebar-buttons">
+      <a class="btn btn-light btn-icon" routerLink="/homepage">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="buttonText" *ngIf="!isCollapsed">Logout</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Contenido proveniente de otro componente --> 
+  <div id="content" class="flex-fill">
+      <!-- Dynamic content goes here -->
+      <ng-content></ng-content>
   </div>
-  
+
+</div>
