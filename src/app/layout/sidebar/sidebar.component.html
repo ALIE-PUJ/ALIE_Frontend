@@ -3,7 +3,9 @@
   <nav id="sidebar" class="bg-light" [class.collapsed]="isCollapsed">
     <div class="sidebar-header text-center">
       <img src="img/AlieLogo_RoundedCorners.png" alt="Logo" class="logo" (click)="toggleSidebar()">
-      <h2 *ngIf="!isCollapsed">ALIE</h2>
+      <small *ngIf="!isCollapsed" class="text-muted">
+        <strong>A</strong>sistente de <strong>L</strong>enguaje <strong>I</strong>nteligente para la <strong>E</strong>ducación
+      </small>
     </div>
 
     <!-- Buttons -->
