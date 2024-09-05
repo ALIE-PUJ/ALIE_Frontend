@@ -9,13 +9,13 @@ html, body {
 }
 
 .buttonText {
-  margin-left: 0; /* Ajustar según sea necesario */
-  margin-right: 0; /* Ajustar según sea necesario */
-  display: inline; /* Asegura que el texto se muestre en línea con el ícono */
+  margin-left: 0;
+  margin-right: 0;
+  display: inline;
 }
 
 #sidebar {
-  width: 200px; /* Tamaño cuando está expandido */
+  width: 200px;
   transition: width 0.3s ease;
   overflow: hidden;
   display: flex;
@@ -24,7 +24,7 @@ html, body {
 }
 
 #sidebar.collapsed {
-  width: 80px; /* Tamaño cuando está colapsado */
+  width: 80px;
 }
 
 .sidebar-header {
@@ -41,55 +41,55 @@ html, body {
   margin-bottom: 10px;
 }
 
-#sidebar h2 {
-  margin: 0;
-  transition: opacity 0.3s ease;
-}
-
-#sidebar.collapsed h2 {
-  opacity: 0;
-}
-
-.user-info {
-  margin: 15px 0;
+/* Estilos para el perfil de usuario */
+.user-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 20px;
 }
 
-.user-info .profile-icon {
-  font-size: 2rem; /* Tamaño del icono de perfil */
-  margin-bottom: 8px;
+.profile-icon {
+  font-size: 40px;
+  color: #6c757d;
 }
 
-.user-info .user-name {
-  font-size: 1.1rem;
+.logged-in-text {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 5px;
 }
 
 .sidebar-buttons {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px; /* Reduce el margen para acercar los botones al logo */
+  margin-top: 10px;
 }
 
 .sidebar-buttons .btn-icon {
-  width: 90%; /* Aumenta el ancho cuando está expandido */
-  height: 50px; /* Aumenta la altura cuando está expandido */
-  border-radius: 5px; /* Bordes redondeados si se desea */
-  padding: 0 16px; /* Relleno horizontal */
+  width: 90%;
+  height: 50px;
+  border-radius: 5px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem; /* Tamaño de ícono aumentado cuando está expandido */
-  margin-bottom: 10px; /* Espacio entre los botones */
+  font-size: 1.25rem;
+  margin-bottom: 10px;
   transition: background-color 0.3s ease, transform 0.3s ease;
-  text-align: left; /* Alinea el texto a la izquierda cuando está expandido */
+  text-align: left;
 }
 
 .sidebar-buttons .btn-icon i {
-  margin-right: 10px; /* Espacio entre el ícono y el texto */
-  font-weight: bold; /* Hacer el ícono bold */
+  margin-right: 10px;
+  font-weight: bold;
 }
 
 .sidebar-buttons .btn-icon:hover {
@@ -97,22 +97,22 @@ html, body {
 }
 
 .btn-icon.active {
-  background-color: #e0e0e0; /* Change background color when active */
-  border-left: 4px solid darkblue; /* Add a blue border to indicate active */
+  background-color: #e0e0e0;
+  border-left: 4px solid darkblue;
 }
 
 #sidebar:not(.collapsed) .sidebar-buttons .btn-icon {
-  width: calc(100% - 20px); /* Ajusta para que quepan en el sidebar */
+  width: calc(100% - 20px);
 }
 
 #sidebar:not(.collapsed) .sidebar-buttons .btn-icon:hover {
-  background-color: #e0e0e0; /* Color más claro para el estado expandido */
-  transform: scale(1.05); /* Aumenta ligeramente el tamaño del botón al pasar el ratón */
+  background-color: #e0e0e0;
+  transform: scale(1.05);
 }
 
 #sidebar.collapsed .sidebar-buttons .btn-icon {
-  width: 60px; /* Aumenta el ancho para el estado colapsado */
-  height: 60px; /* Aumenta la altura para el estado colapsado */
+  width: 60px;
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -120,15 +120,14 @@ html, body {
 
 #sidebar.collapsed .sidebar-buttons .btn-icon i {
   margin: 0;
-  font-size: 1.25rem; /* Tamaño de ícono aumentado cuando está colapsado */
-  font-weight: bold; /* Hacer el ícono bold en el estado colapsado */
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
 #sidebar.collapsed .sidebar-buttons .btn-icon:hover {
-  background-color: #e0e0e0; /* Color para el estado colapsado */
+  background-color: #e0e0e0;
 }
 
-/* Sidebar Footer */
 .sidebar-footer {
   margin-top: auto;
   padding: 10px;
