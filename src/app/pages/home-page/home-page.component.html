@@ -10,7 +10,7 @@
         <div class="content">
             <div class="container mt-5">
                 <h1 class="text-center">Homepage</h1>
-                <p class="text-center text-success">This is a simple Bootstrap test page! To test if Bootstrap and Bootstrap Icons were correctly imported</p>
+                <p class="text-center text-success">Here goes the homepage content</p>
 
                 <!-- Image -->
                 <div class="text-center mt-4">
@@ -18,40 +18,13 @@
                     <p class="text-center text-success">Assets test</p>
                 </div>
 
-                <!-- Button with Bootstrap Icon -->
+                <!-- Button for Login -->
                 <div class="text-center mt-3">
-                    <button type="button" class="btn btn-primary">
-                        <i class="bi bi-star-fill"></i> Star Button
-                    </button>
-                </div>
+                    <a [routerLink]="['/login']" class="btn btn-primary">
+                        <i class="bi bi-star-fill"></i> Login
+                    </a>
+                </div>                
 
-                <!-- Bootstrap Cards -->
-                <div class="row mt-4">
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Card 1 <i class="bi bi-alarm"></i></h5>
-                                <p class="card-text">This is a card with an alarm icon.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Card 2 <i class="bi bi-lightning"></i></h5>
-                                <p class="card-text">This is a card with a lightning icon.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Card 3 <i class="bi bi-heart-fill text-danger"></i></h5>
-                                <p class="card-text">This is a card with a heart icon.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
