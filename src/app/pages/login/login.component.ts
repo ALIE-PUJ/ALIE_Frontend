@@ -10,19 +10,21 @@ import { RouterModule } from '@angular/router';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  private selectedRole: string = 'Student';
 
   constructor() { }
 
+  ngOnInit() {
+    this.setInitialRole();
+  }
+
   handleLogin() {
-    const roleSelect = (document.getElementById('roleToggle') as HTMLSelectElement).value;
-    
-    if (roleSelect === 'Student') {
+    if (this.selectedRole === 'Student') {
       this.loginAsStudent();
-    } else if (roleSelect === 'Admin') {
+    } else if (this.selectedRole === 'Admin') {
       this.loginAsAdmin();
     }
 
-    // Store user ID, independently of role. Must be fetch from the DB
     localStorage.setItem('ActiveUserId', '12345');
   }
 
@@ -38,4 +40,14 @@ export class LoginComponent {
     // alert('Logged in as Admin');
   }
 
+  setInitialRole() {
+    const roleButtons = document.querySelectorAll('.role-btn');
+    roleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        roleButtons.forEach(button => button.classList.remove('active'));
+        (btn as HTMLElement).classList.add('active');
+        this.selectedRole = (btn as HTMLElement).id === 'studentBtn' ? 'Student' : 'Admin';
+      });
+    });
+  }
 }

@@ -30,12 +30,12 @@ body {
 
 .logo-container {
     position: absolute;
-    top: 5%; 
-    right: 5%; 
+    top: 5%;
+    right: 5%;
 }
 
 .logo-container svg {
-    width: 70px; 
+    width: 70px;
     height: auto;
     transition: width 0.3s ease;
 }
@@ -46,10 +46,10 @@ body {
     background: #5a618e;
     display: flex;
     align-items: center;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     color: #fff;
-    padding: 20px; 
-    box-sizing: border-box; 
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .overlay-panel {
@@ -60,8 +60,8 @@ body {
 
 .overlay-panel h1 {
     color: #ffffff;
-    margin: 0; 
-    padding: 0; 
+    margin: 0;
+    padding: 0;
     font-size: 3.5em;
     text-align: left;
     margin-left: 20px;
@@ -73,8 +73,8 @@ p {
     line-height: 1.5;
     letter-spacing: 0.5px;
     color: #ffffff;
-    margin: 20px; 
-    padding: 0; 
+    margin: 20px;
+    padding: 0;
 }
 
 .form-container {
@@ -225,18 +225,18 @@ button:hover {
     }
 
     .infield {
-        margin: 15px 0; 
+        margin: 15px 0;
     }
 
     input {
-        width: 100%; 
+        width: 100%;
         height: 50px;
-        padding: 15px 50px; 
+        padding: 15px 50px;
         background-color: #dbe8fc;
         border: none;
         border-radius: 10px;
         outline: none;
-        font-size: 1.1em; 
+        font-size: 1.1em;
     }
 
     a.forgot {
@@ -244,7 +244,7 @@ button:hover {
         border-bottom: 2px solid #EEE;
         font-size: 1.1em;
     }
-    
+
     button {
         font-size: 1.1em;
         width: 50%;
@@ -254,13 +254,13 @@ button:hover {
 
 @media (max-width: 768px) {
     .overlay-container {
-        display: none; 
+        display: none;
     }
 
     .form-container {
         width: 100%;
         height: 100%;
-        padding: 20px; 
+        padding: 20px;
     }
 
     .form-container form {
@@ -268,12 +268,12 @@ button:hover {
     }
 
     .overlay-panel {
-        display: none; 
+        display: none;
     }
 
-   
+
     .form-container {
-        display: flex; 
+        display: flex;
     }
 }
 
@@ -297,13 +297,47 @@ button:hover {
 
 @media (min-width: 1200px) {
     .logo-container svg {
-        width: 90px; 
+        width: 90px;
     }
 }
 
 @media (max-width: 768px) {
     .logo-container svg {
-        width: 90px; 
+        width: 90px;
         margin-right: 30px;
     }
+}
+
+.role-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.role-btn {
+  border: none;
+  background: #f0f0f0;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.role-btn.active {
+  background: #202966;
+  color: #fff;
+}
+
+.role-btn i {
+  margin-right: 5px;
+}
+
+.role-btn:hover {
+  background: #d0d0d0;
+  color: #202966;
 }

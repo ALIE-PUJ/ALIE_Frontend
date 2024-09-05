@@ -11,12 +11,10 @@
 
 <body>
     <div class="main-container">
-
         <div class="content">
-
             <div class="containerp">
                 <div class="logo-container">
-                    <a href="/html/sign_in_profile.html">
+                    <a routerLink="/homepage">
                         <svg width="81" height="30" viewBox="0 0 81 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M17.616 21.552H6.528L3.936 30H0.432L9.696 0.575998H16.848L26.064 30H20.256L17.616 21.552ZM16.752 18.672L12.048 3.504L7.392 18.672H16.752ZM45.5415 27.552V30H30.3735V0.575998H35.2695V27.552H45.5415ZM55.6335 30H49.5855V0.575998H55.6335V30ZM80.3689 27.552V30H63.2329V0.575998H79.5049V3.024H68.1289V13.728H78.4969V16.272H68.1289V27.552H80.3689Z"
@@ -35,7 +33,17 @@
                 </div>
                 <div class="form-container">
                     <form action="#">
-                        <h1>Inicio de sesión Estudiante</h1>
+                        <h1>Inicio de sesión </h1>
+                        <div class="text-center mb-3">
+                          <div id="roleButtons" class="role-buttons">
+                            <button type="button" id="studentBtn" class="role-btn active">
+                              <i class="fas fa-user-graduate"></i> Estudiante
+                            </button>
+                            <button type="button" id="adminBtn" class="role-btn">
+                              <i class="fas fa-briefcase"></i> Administrador
+                            </button>
+                          </div>
+                        </div>
                         <div class="infield">
                             <i class="fas fa-envelope"></i>
                             <input type="email" placeholder="Correo Electrónico" name="email" required />
@@ -48,34 +56,17 @@
                             <label></label>
                         </div>
                         <a href="#" class="forgot">Olvidé mi contraseña</a>
-
-                        <div class="text-center mb-3">
-                            <label for="roleToggle" class="form-label">User Role:</label>
-                            <select id="roleToggle" class="form-select w-auto mx-auto">
-                                <option value="Student" selected>Student</option>
-                                <option value="Admin">Admin</option>
-                            </select>
-                        </div>
-
                         <!-- Button for Login -->
                         <button [routerLink]="['/chat']" class="btn btn-primary"
                             (click)="handleLogin()">Continuar</button>
                     </form>
-
-
                 </div>
-
             </div>
-
         </div>
-
         <!-- App footer -->
         <app-default-footer></app-default-footer>
     </div>
-
     <!-- Bootstrap JS (optional, for components that require JavaScript) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
-
 </html>
