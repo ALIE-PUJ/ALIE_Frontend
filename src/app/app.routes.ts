@@ -5,6 +5,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { AgentChatComponent } from './pages/chat/agent-chat/agent-chat.component';
 import { SupervisionComponent } from './pages/chat/supervision/supervision.component';
+import { FileManagementComponent } from './pages/file-management/file-management.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/homepage', pathMatch: 'full' }, // Pagina por defecto
@@ -12,6 +13,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent }, // Login (Tanto para administradores como para estudiantes)
     { path: 'chat', component: AgentChatComponent }, // Login (Tanto para administradores como para estudiantes)
     { path: 'supervision', component: SupervisionComponent }, // Login (Tanto para administradores como para estudiantes)
+    { path: 'filemanagement', component: FileManagementComponent }, // Login (Tanto para administradores como para estudiantes)
     // Demas rutas
 
 
