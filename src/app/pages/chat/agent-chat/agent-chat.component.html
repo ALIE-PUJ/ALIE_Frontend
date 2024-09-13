@@ -1,15 +1,98 @@
 <app-sidebar>
-    
-    <!-- Content of the agent-chat must be wrapped with the sidebar so its responsive to the toggle -->
-
-    <!-- Main contiene la configuracion para estar fuera de la sidebar. No quitar -->
-    <div class="main">
-
-        <!-- Demas contenido general -->
-        <div class="content">
-            <p>Agent chat works!</p>
+  <div class="main">
+    <div class="containerp">
+      <div class="left">
+        <div class="nuevo_chat" (click)="addNewChat()">
+          <p>Nuevo Chat</p>
         </div>
+        <div class="historial_chat">
+          <div
+            *ngFor="let chat of chats"
+            class="historial"
+            (click)="switchChat(chat.id)"
+            [class.active]="chat.id === activeChatId"
+          >
+            <div class="botones">
+              <i class="bi bi-chat-left"></i>
+            </div>
+            <p class="titulo">{{ getLeftChatTitle(chat.id) }}</p>
+            <div class="menu">
+              <i
+                class="bi bi-three-dots-vertical menu-icon"
+                (click)="toggleOptions(chat.id)"
+              ></i>
+              <div
+                *ngIf="chat.showOptions"
+                class="menu-options"
+                (click)="$event.stopPropagation()"
+              >
+                <div class="option" (click)="renameChat(chat.id)">
+                  <i class="bi bi-pencil"></i>
+                  <span>Renombrar</span>
+                </div>
+                <div class="option" (click)="deleteChat(chat.id)">
+                  <i class="bi bi-trash"></i>
+                  <span>Eliminar</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <h1 *ngIf="getMessagesByChatId(activeChatId)?.length === 0">
+          {{ getActiveChatTitle() }}
+        </h1>
+        <div class="subtitulo" *ngIf="getMessagesByChatId(activeChatId)?.length === 0">
+          <p>¿Qué pregunta académica tienes el día de hoy?</p>
+        </div>
+        <div class="messages">
+          <div *ngFor="let message of getMessagesByChatId(activeChatId)" class="message-container">
+            <p
+              [ngClass]="{
+                'agent-message': message.sender === 'agent',
+                'user-message': message.sender === 'user'
+              }"
+            >
+              {{ message.content }}
+            </p>
 
+            <!-- Iconos debajo de los mensajes del bot -->
+            <div *ngIf="message.sender === 'agent'" class="message-icons">
+              <i class="bi bi-hand-thumbs-up" (click)="handleThumbUp(message)"></i>
+              <i class="bi bi-hand-thumbs-down" (click)="handleThumbDown(message)"></i>
+              <i class="bi bi-arrow-repeat" (click)="handleRetry(message)"></i>
+            </div>
+          </div>
+        </div>
+        <div class="navegacion">
+          <input
+            type="text"
+            class="texto"
+            placeholder="Envía un mensaje..."
+            [(ngModel)]="message"
+            (keydown.enter)="sendMessage()"
+          />
+          <i class="bi bi-send" (click)="sendMessage()"></i>
+          <p>ALIE - Trabajo de grado - Pontificia Universidad Javeriana</p>
+        </div>
+      </div>
     </div>
-
+  </div>
 </app-sidebar>
+
+<!-- Modal de Opciones -->
+<div class="options-modal" *ngIf="showOptionsModal">
+  <div class="modal-content">
+    <h3>Selecciona una opción:</h3>
+    <div class="option-grid">
+      <button (click)="selectOption('Opción 1')">Opción 1</button>
+      <button (click)="selectOption('Opción 2')">Opción 2</button>
+      <button (click)="selectOption('Opción 3')">Opción 3</button>
+      <button (click)="selectOption('Opción 4')">Opción 4</button>
+      <button (click)="selectOption('Opción 5')">Opción 5</button>
+      <button (click)="selectOption('Opción 6')">Opción 6</button>
+    </div>
+    <button class="close-button" (click)="closeOptionsModal()">Cerrar</button>
+  </div>
+</div>
