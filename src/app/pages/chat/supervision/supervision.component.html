@@ -1,72 +1,101 @@
 <app-sidebar>
-    <div class="main">
-  
-      <!-- Panel de la izquierda con los chats -->
-      <div class="sidebar">
-        <h2>Intervención</h2>
-        <div class="chat-list">
-          <div *ngFor="let chat of interventionChats" class="chat-item" (click)="selectInterventionChat(chat)">
-            <span>{{ chat.name }}</span>
-            <!-- Los tres puntos para mostrar el menú de edición/eliminación -->
-            <span class="chat-options" (click)="toggleOptions(chat)">...</span>
-  
-            <!-- Menú de opciones (editar/eliminar) -->
-            <div *ngIf="chat.showOptions" class="chat-menu">
-              <button (click)="editChat(chat)">Editar</button>
-              <button (click)="deleteChat(chat)">Eliminar</button>
+  <div class="main">
+
+    <!-- Panel de la izquierda con los chats -->
+    <div class="sidebar">
+      <!-- Sección de intervención -->
+      <h2>Intervención</h2>
+      <div class="chat-list">
+        <div *ngFor="let chat of interventionChats" class="chat-item">
+          <div class="historial" (click)="selectInterventionChat(chat)">
+            <div class="botones">
+              <i class="bi bi-chat-left"></i>
             </div>
-          </div>
-        </div>
-  
-        <h2>Chats Activos</h2>
-        <div class="chat-list">
-          <div *ngFor="let chat of activeChats" class="active-chat-item" (click)="selectInterventionChat(chat)">
-            {{ chat.name }}
+            <p class="titulo">{{ chat.name }}</p>
+            <div class="menu">
+              <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat)"></i>
+              <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
+                <div class="option" (click)="editChat(chat)">
+                  <i class="bi bi-pencil"></i>
+                  <span>Editar</span>
+                </div>
+                <div class="option" (click)="deleteChat(chat)">
+                  <i class="bi bi-trash"></i>
+                  <span>Eliminar</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-  
-      <!-- Panel de conversación -->
-      <div class="chat-window" *ngIf="selectedChat">
-        <div class="chat-header">
-          <span>{{ selectedChat.name }}</span>
-        </div>
-  
-        <!-- Logo ALIE en la esquina superior derecha -->
-        <div class="alie-logo">
-          ALIE
-        </div>
-  
-        <!-- Mostrar los mensajes del usuario -->
-        <div class="chat-messages">
-          <!-- Mensajes del usuario -->
-          <div *ngFor="let message of selectedChat.userMessages">
-            <div class="message user">
-              {{ message.text }}
+
+      <!-- Sección de Chats Activos -->
+      <h2>Chats Activos</h2>
+      <div class="chat-list">
+        <div *ngFor="let chat of activeChats" class="historial" (click)="selectInterventionChat(chat)">
+          <div class="botones">
+            <i class="bi bi-chat-left"></i>
+          </div>
+          <p class="titulo">{{ chat.name }}</p>
+          <div class="menu">
+            <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat)"></i>
+            <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
+              <div class="option" (click)="editChat(chat)">
+                <i class="bi bi-pencil"></i>
+                <span>Editar</span>
+              </div>
+              <div class="option" (click)="deleteChat(chat)">
+                <i class="bi bi-trash"></i>
+                <span>Eliminar</span>
+              </div>
             </div>
           </div>
-  
-          <!-- Mensajes del agente -->
-          <div *ngFor="let message of selectedChat.agentMessages">
-            <div class="message agent">
-              {{ message.text }}
-            </div>
-          </div>
-  
-          <!-- Mensajes de intervención -->
-          <div *ngFor="let message of selectedChat.interventionMessages">
-            <div class="message intervention">
-              {{ message.text }}
-            </div>
-          </div>
-        </div>
-  
-        <!-- Campo de entrada para enviar un mensaje de intervención -->
-        <div class="chat-input-container" *ngIf="selectedChat.canInteract">
-          <input type="text" [(ngModel)]="newMessage" placeholder="Escribe un mensaje para intervenir en la conversación..." />
-          <button (keydown.enter)="sendMessage()">✈️</button>
         </div>
       </div>
     </div>
-  </app-sidebar>
+
+    <!-- Panel de conversación -->
+    <div class="chat-window" *ngIf="selectedChat">
+      <div class="chat-header">
+        <span>{{ selectedChat.name }}</span>
+      </div>
+
+      <!-- Logo ALIE en la esquina superior derecha -->
+      <div class="alie-logo">
+        ALIE
+      </div>
+
+      <!-- Mostrar los mensajes del usuario -->
+      <div class="chat-messages">
+        <!-- Mensajes del usuario -->
+        <div *ngFor="let message of selectedChat.userMessages">
+          <div class="message user">
+            {{ message.text }}
+          </div>
+        </div>
+
+        <!-- Mensajes del agente -->
+        <div *ngFor="let message of selectedChat.agentMessages">
+          <div class="message agent">
+            {{ message.text }}
+          </div>
+        </div>
+
+        <!-- Mensajes de intervención -->
+        <div *ngFor="let message of selectedChat.interventionMessages">
+          <div class="message intervention">
+            {{ message.text }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo de entrada para enviar un mensaje de intervención -->
+      <div class="chat-input-container" *ngIf="selectedChat.canInteract">
+        <input type="text" [(ngModel)]="newMessage" placeholder="Escribe un mensaje para intervenir en la conversación..." />
+        <button (keydown.enter)="sendMessage()">✈️</button>
+      </div>
+    </div>
+  </div>
+</app-sidebar>
+
   

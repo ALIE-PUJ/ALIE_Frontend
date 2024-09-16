@@ -79,12 +79,10 @@ export class SupervisionComponent {
   selectedChat: Chat | null = null;  // Chat seleccionado
   newMessage: string = '';  // Nuevo mensaje
 
-  // Función para mostrar/ocultar el menú de opciones en los chats de intervención
-  toggleOptions(chat: Chat) {
-    this.interventionChats.forEach(c => c.showOptions = false);  // Ocultar menús de otros chats
+  toggleOptions(chat: any): void {
     chat.showOptions = !chat.showOptions;
   }
-
+  
   // Función para editar el nombre del chat
   editChat(chat: Chat) {
     const newName = prompt('Editar nombre del chat:', chat.name);
