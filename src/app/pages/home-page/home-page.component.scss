@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Raleway', sans-serif;
+}
+
+:root {
+    --linear-grad: linear-gradient(to right, #141E30, #243B55);
+    --grad-clr1: #2029669d;
+    --grad-clr2: #243B55;
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+    background: var(--linear-grad);
+    display: flex;
+    overflow: hidden;
+}
+
+.containerp {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
+
+.logo-container {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+}
+
+.logo-container svg {
+    width: 70px;
+    height: auto;
+    transition: width 0.3s ease;
+}
+
+.overlay-container {
+    width: 50%;
+    height: 100%;
+    background: #5a618e;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.overlay-panel {
+    width: 100%;
+    max-width: 500px;
+    text-align: left;
+}
+
+.overlay-panel h1 {
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    font-size: 3.5em;
+    text-align: left;
+    margin-left: 20px;
+}
+
+p {
+    font-size: 1.2em;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    margin: 20px;
+    padding: 0;
+}
+
+.form-container {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 40px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
+}
+
+h1 {
+    color: #000000;
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+
+.infield {
+    position: relative;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.infield i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #333;
+    pointer-events: none;
+}
+
+.infield .fa-envelope {
+    left: 20px;
+    color: #656366;
+}
+
+.infield .fa-lock {
+    left: 20px;
+    color: #656366;
+}
+
+.infield .fa-eye, .infield .fa-eye-slash {
+    right: 20px;
+    cursor: pointer;
+    color: #656366;
+    pointer-events: auto;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    padding-left: 40px; /* Adjusted for icon */
+    background-color: #dbe8fc;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1em;
+}
+
+input[type="password"] {
+    padding-right: 40px; /* Adjusted for icon */
+}
+
+label {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 0;
+    height: 2px;
+    background: #202966;
+    transition: width 0.3s;
+}
+
+input:focus ~ label {
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9em;
+    margin: 10px 0;
+}
+
+a.forgot {
+    padding-bottom: 3px;
+    border-bottom: 2px solid #EEE;
+}
+
+button {
+    border-radius: 10px;
+    border: none;
+    background: #5a618e;
+    color: #fff;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 15px 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 20px;
+    transition: background 0.3s ease-in;
+}
+
+button:hover {
+    background: #202966;
+    border: none;
+}
+
+@media (min-width: 1200px) {
+    h1 {
+        font-size: 2.7em;
+        margin-bottom: 0.3em;
+    }
+
+    .overlay-container {
+        padding-left: 5em;
+    }
+
+    .overlay-panel h1 {
+        font-size: 6em;
+    }
+
+    p {
+        font-size: 1.5em;
+        max-width: 100%;
+    }
+
+    .form-container {
+        padding: 0 60px;
+    }
+
+    form {
+        max-width: 600px;
+    }
+
+    .infield {
+        margin: 15px 0;
+    }
+
+    input {
+        width: 100%;
+        height: 50px;
+        padding: 15px 50px;
+        background-color: #dbe8fc;
+        border: none;
+        border-radius: 10px;
+        outline: none;
+        font-size: 1.1em;
+    }
+
+    a.forgot {
+        padding-bottom: 3px;
+        border-bottom: 2px solid #EEE;
+        font-size: 1.1em;
+    }
+
+    button {
+        font-size: 1.1em;
+        width: 50%;
+        border-radius: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .overlay-container {
+        display: none;
+    }
+
+    .form-container {
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+    }
+
+    .form-container form {
+        max-width: 100%;
+    }
+
+    .overlay-panel {
+        display: none;
+    }
+
+
+    .form-container {
+        display: flex;
+    }
+}
+
+@media (max-width: 576px) {
+    .overlay-panel h1 {
+        font-size: 1.6em;
+    }
+
+    p {
+        font-size: 0.75em;
+    }
+
+    .form-container {
+        padding: 10px;
+    }
+
+    form {
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .logo-container svg {
+        width: 90px;
+    }
+}
+
+@media (max-width: 768px) {
+    .logo-container svg {
+        width: 90px;
+        margin-right: 30px;
+    }
+}
+
+.role-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.login-btn {
+    background-color: #5a619e;
+    color: white;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .login-btn:hover {
+    background-color: #454e86;
+  }
+  
+.role-btn {
+  border: none;
+  background: #f0f0f0;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.role-btn.active {
+  background: #202966;
+  color: #fff;
+}
+
+.role-btn i {
+  margin-right: 5px;
+}
+
+.role-btn:hover {
+  background: #d0d0d0;
+  color: #202966;
+}
