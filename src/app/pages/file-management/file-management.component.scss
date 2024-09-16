@@ -1,13 +1,240 @@
-/* Configuracion global del contenedor aparte de la sidebar */
+
 .main {
-    height: 100%; /* Ocupa todo el espacio disponible */
+    height: 100%; 
     padding: 16px;
     padding-right: 0;
-    overflow: auto; /* Permite el desplazamiento si el contenido es demasiado grande */
-    flex: 1; /* Hace que el contenido ocupe el espacio restante */
+    overflow: auto; 
+    flex: 1; 
   }
 
-/* Contenido general. Siemrpe debe estar dentro de .main */
+
 .content {
-    padding: 16px; /* Ajusta el padding según sea necesario */
+    padding: 16px; 
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+:host {
+  height: 100%;
+}
+
+.main {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+}
+
+.sidebar {
+  background-color: #d3d3d3;
+  width: 20%; 
+  padding: 20px; 
+  position: 100px;
+  display: flex;
+  flex-direction: column;
+  overflow: 1;
+  overflow-y: auto; 
+}
+
+h2 {
+  color: #16226D;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 25px;
+}
+
+.file-list {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.historial {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  width: 100%;
+  background-color: #f0f0f0;
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
+  height: auto;
+  min-height: 35px;
+  margin-bottom: 5px;
+}
+
+.historial:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.historial .botones {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.historial .botones i {
+  font-size: 1rem;
+  padding: 5px;
+  border-radius: 1rem;
+}
+
+.historial .titulo {
+  flex-grow: 1;
+  margin-top: 7px;
+  margin-left: 10px;
+  text-align: center;
+  display: flex;
+  font-weight: bold;
+}
+
+.menu {
+  position: relative;
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #555;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.menu-options {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.option:hover {
+  background-color: #f0f0f0;
+}
+
+.option i {
+  margin-right: 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+.file-upload-section {
+  flex: 1;
+  padding: 30px;
+  background-color: #fff;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.upload-btn {
+  background-color: #5A618E;
+  color: white;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  border-radius: 30px;
+  transition: background-color 0.3s ease;
+}
+
+
+.upload-btn:hover {
+  background-color: #5A618E;
+}
+
+
+
+.drag-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+  border: 2px dashed #ccc;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.drag-upload:hover {
+  border-color: #16226D;
+}
+
+.drag-upload p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.drag-upload i {
+  font-size: 30px;
+  color: #5A618E;
+}
+
+.alie-logo {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  font-family: 'Arya', sans-serif;
+  font-size: 70px;
+  font-weight: bold;
+  color: #16226D; 
+}
+
+.category-question {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #16226D;
+}
+
+.category-select {
+  width: 100%;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid #AEAEB2;
+  background-color: #AEAEB2;
+  color: #FEF7FF;
+  font-size: 16px;
+  cursor: pointer;
+  appearance: none; 
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 fill=%22%23333%22 class=%22bi bi-chevron-down%22 viewBox=%220 0 16 16%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z%22/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 12px;
+}
+
+.category-select:focus {
+  outline: none;
+  border-color: #AEAEB2;
+  box-shadow: 0 0 5px AEAEB2(0, 86, 179, 0.5);
+}
+

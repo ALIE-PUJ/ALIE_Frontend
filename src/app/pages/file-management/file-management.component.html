@@ -1,14 +1,59 @@
 <app-sidebar>
-
-    <!-- Content of the agent-chat must be wrapped with the sidebar so its responsive to the toggle -->
-
-    <!-- Main contiene la configuracion para estar fuera de la sidebar. No quitar -->
     <div class="main">
+  
 
-        <!-- Demas contenido general -->
-        <div class="content">
-            <p>file-management works!</p>
+      <div class="sidebar">
+        <h2>Archivos Cargados</h2>
+        <div class="file-list">
+          <div *ngFor="let file of uploadedFiles" class="historial">
+            <div class="botones">
+              <i class="bi bi-file-earmark"></i>
+            </div>
+            <p class="titulo">{{ file.name }}</p>
+            <div class="menu">
+              <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(file)"></i>
+              <div *ngIf="file.showOptions" class="menu-options" (click)="$event.stopPropagation()">
+                <div class="option" (click)="viewFile(file)">
+                  <i class="bi bi-eye"></i>
+                  <span>Ver</span>
+                </div>
+                <div class="option" (click)="editFile(file)">
+                  <i class="bi bi-pencil"></i>
+                  <span>Editar</span>
+                </div>
+                <div class="option" (click)="deleteFile(file)">
+                  <i class="bi bi-trash"></i>
+                  <span>Eliminar</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
+  
 
-</app-sidebar>
+      <div class="file-upload-section">
+        <button (click)="triggerFileInput()" class="upload-btn">Adjunta Archivos</button>
+        
+        <p class="category-question">¿El archivo a cual de estas categorías pertenece?:</p>
+        
+        <select [(ngModel)]="selectedCategory" class="category-select">
+          <option value="Privado General">Privado General</option>
+          <option value="Privado Q&A">Privado Q&A</option>
+          <option value="Publico General">Público General</option>
+          <option value="Publico Q&A">Público Q&A</option>
+        </select>
+  
+        <!-- Logo ALIE en la esquina superior derecha -->
+        <div class="alie-logo">ALIE</div>
+  
+        <div class="drag-upload" (drop)="onFileDrop($event)" (dragover)="onDragOver($event)">
+          <input type="file" #fileInput (change)="onFileSelect($event)" hidden>
+          <p (click)="triggerFileInput()">Arrastra o sube tus archivos</p>
+          <i class="bi bi-upload" (click)="triggerFileInput()"></i>
+        </div>
+      </div>
+  
+    </div>
+  </app-sidebar>
+  
