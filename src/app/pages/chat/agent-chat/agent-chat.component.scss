@@ -161,8 +161,13 @@ i {
 
 .message-container {
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   margin: 0 8%;
+}
+
+.message-container .message-icons {
+  align-self: flex-start;
 }
 
 .agent-message {
@@ -275,11 +280,11 @@ i {
 .message-icons i {
   cursor: pointer;
   font-size: 18px;
-  color: #666;
+  color: #505991;
 }
 
 .message-icons i:hover {
-  color: #333;
+  color: #242c63;
 }
 
 .options-modal {
