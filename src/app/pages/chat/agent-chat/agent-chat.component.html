@@ -57,11 +57,19 @@
               {{ message.content }}
             </p>
 
-            <!-- Iconos debajo de los mensajes del bot -->
             <div *ngIf="message.sender === 'agent'" class="message-icons">
               <i class="bi bi-hand-thumbs-up-fill" (click)="handleThumbUp(message)"></i>
               <i class="bi bi-hand-thumbs-down-fill" (click)="handleThumbDown(message)"></i>
               <i class="bi bi-arrow-repeat" (click)="handleRetry(message)"></i>
+            </div>
+            <div class="confirmation-box" *ngIf="showConfirmation">
+              <div class="confirmation-content">
+                <p>¿Quieres hablar con una persona?</p>
+                <div class="confirmation-options">
+                  <button (click)="handleYes()">Sí</button>
+                  <button (click)="handleNo()">No, seguir con ALIE</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -80,19 +88,3 @@
     </div>
   </div>
 </app-sidebar>
-
-<!-- Modal de Opciones -->
-<div class="options-modal" *ngIf="showOptionsModal">
-  <div class="modal-content">
-    <h3>Selecciona una opción:</h3>
-    <div class="option-grid">
-      <button (click)="selectOption('Opción 1')">Opción 1</button>
-      <button (click)="selectOption('Opción 2')">Opción 2</button>
-      <button (click)="selectOption('Opción 3')">Opción 3</button>
-      <button (click)="selectOption('Opción 4')">Opción 4</button>
-      <button (click)="selectOption('Opción 5')">Opción 5</button>
-      <button (click)="selectOption('Opción 6')">Opción 6</button>
-    </div>
-    <button class="close-button" (click)="closeOptionsModal()">Cerrar</button>
-  </div>
-</div>

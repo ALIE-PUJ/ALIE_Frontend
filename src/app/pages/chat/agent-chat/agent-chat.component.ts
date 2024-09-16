@@ -36,6 +36,8 @@ export class AgentChatComponent {
   hasBotResponded: boolean = false;  
   showOptionsModal: boolean = false; 
   nextChatId: number = 4; 
+  showConfirmation: boolean = false;
+  messageToThumbDown: any;
 
   constructor() {
     this.chats.reverse();  
@@ -145,27 +147,26 @@ export class AgentChatComponent {
     this.chats = this.chats.map(chat => ({ ...chat, showOptions: false }));
   }
 
-  // Funciones de manejo de los botones de feedback
   handleThumbUp(message: any) {
     alert('¡Gracias por tu feedback positivo!');
-  }
-
-  handleThumbDown(message: any) {
-    this.showOptionsModal = true;
   }
 
   handleRetry(message: any) {
     alert('Reintentando la acción...');
   }
 
-  // Cierra la ventana emergente de opciones
-  closeOptionsModal() {
-    this.showOptionsModal = false;
+  handleThumbDown(message: any): void {
+    this.showConfirmation = true;
+    this.messageToThumbDown = message;
   }
 
-  // Acción para cuando se selecciona una opción en la ventana emergente
-  selectOption(option: string) {
-    alert(`Opción seleccionada: ${option}`);
-    this.closeOptionsModal();
+  handleYes(): void {
+    this.showConfirmation = false;
+    console.log('Hablando con una persona');
   }
+
+  handleNo(): void {
+    this.showConfirmation = false;
+  }
+
 }

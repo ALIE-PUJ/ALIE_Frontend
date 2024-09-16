@@ -340,3 +340,41 @@ i {
 .close-button:hover {
   background: #c82333;
 }
+
+.confirmation-box {
+  position: fixed;
+  top: 60%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  background-color: #c0bfbf;
+  border: 1px solid #c0bfbf;
+  padding: 20px;
+  z-index: 1000;
+  border-radius: 20px;
+}
+
+.confirmation-content p {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.confirmation-options {
+  display: flex;
+  justify-content: space-between;
+}
+
+.confirmation-options button {
+  background-color: #656366;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.confirmation-options button:hover {
+  background-color: #656366;
+}
+
+
