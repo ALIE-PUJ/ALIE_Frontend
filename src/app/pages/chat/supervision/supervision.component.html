@@ -1,9 +1,8 @@
 <app-sidebar>
   <div class="main">
 
-    <!-- Panel de la izquierda con los chats -->
+    <!-- Sidebar with chats -->
     <div class="sidebar">
-      <!-- Sección de intervención -->
       <h2>Intervención</h2>
       <div class="chat-list">
         <div *ngFor="let chat of interventionChats" class="chat-item">
@@ -29,7 +28,6 @@
         </div>
       </div>
 
-      <!-- Sección de Chats Activos -->
       <h2>Chats Activos</h2>
       <div class="chat-list">
         <div *ngFor="let chat of activeChats" class="historial" (click)="selectInterventionChat(chat)">
@@ -54,34 +52,33 @@
       </div>
     </div>
 
-    <!-- Panel de conversación -->
+    <!-- Chat conversation window -->
     <div class="chat-window" *ngIf="selectedChat">
       <div class="chat-header">
         <span>{{ selectedChat.name }}</span>
       </div>
 
-      <!-- Logo ALIE en la esquina superior derecha -->
+      <!-- Logo ALIE in the top right corner -->
       <div class="alie-logo">
         ALIE
       </div>
 
-      <!-- Mostrar los mensajes del usuario -->
+      <!-- Display user messages -->
       <div class="chat-messages">
-        <!-- Mensajes del usuario -->
         <div *ngFor="let message of selectedChat.userMessages">
           <div class="message user">
             {{ message.text }}
           </div>
         </div>
 
-        <!-- Mensajes del agente -->
+        <!-- Display agent messages -->
         <div *ngFor="let message of selectedChat.agentMessages">
           <div class="message agent">
             {{ message.text }}
           </div>
         </div>
 
-        <!-- Mensajes de intervención -->
+        <!-- Display intervention messages -->
         <div *ngFor="let message of selectedChat.interventionMessages">
           <div class="message intervention">
             {{ message.text }}
@@ -89,13 +86,16 @@
         </div>
       </div>
 
-      <!-- Campo de entrada para enviar un mensaje de intervención -->
+      <!-- Input field for sending intervention messages -->
       <div class="chat-input-container" *ngIf="selectedChat.canInteract">
-        <input type="text" [(ngModel)]="newMessage" placeholder="Escribe un mensaje para intervenir en la conversación..." />
-        <button (keydown.enter)="sendMessage()">✈️</button>
+        <input 
+          type="text" 
+          [(ngModel)]="newMessage" 
+          placeholder="Escribe un mensaje para intervenir en la conversación..." 
+          (keydown.enter)="sendMessage()" 
+        />
+        <button (click)="sendMessage()">✈️</button>  <!-- Send message on button click -->
       </div>
     </div>
   </div>
 </app-sidebar>
-
-  
