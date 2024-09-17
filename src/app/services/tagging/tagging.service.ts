@@ -1,0 +1,29 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TaggingService {
+
+  private apiUrl = 'http://localhost:5000/tag'; // Flask API URL
+
+  constructor(private http: HttpClient) {}
+
+  // Function to send data to Flask API
+  tagMessage(user_message: string, agent_message: string, sentiment_tag: string): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    const body = {
+      user_message: user_message,
+      agent_message: agent_message,
+      sentiment_tag: sentiment_tag
+    };
+
+    console.log("Tagging requested. Tagging service body to send: ", body);
+
+    return this.http.post<any>(this.apiUrl, body, { headers });
+  }
+
+}

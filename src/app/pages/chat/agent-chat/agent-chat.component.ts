@@ -1,7 +1,8 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TaggingService } from '../../../services/tagging/tagging.service';
 
 @Component({
   selector: 'app-agent-chat',
@@ -10,8 +11,14 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './agent-chat.component.html',
   styleUrls: ['./agent-chat.component.scss'],
 })
+
 export class AgentChatComponent {
-  activeChatId: string = '1';  
+
+  // Servicio de tagging
+  private taggingService = inject(TaggingService);
+
+  // Otras variables
+  activeChatId: string = '1';
   chats: any[] = [
     {
       id: '1',
@@ -32,15 +39,16 @@ export class AgentChatComponent {
       showOptions: false,
     },
   ];
-  message: string = '';  
-  hasBotResponded: boolean = false;  
-  showOptionsModal: boolean = false; 
-  nextChatId: number = 4; 
+
+  message: string = '';
+  hasBotResponded: boolean = false;
+  showOptionsModal: boolean = false;
+  nextChatId: number = 4;
   showConfirmation: boolean = false;
   messageToThumbDown: any;
 
   constructor() {
-    this.chats.reverse();  
+    this.chats.reverse();
   }
 
   // Obtener los mensajes por ID de chat
@@ -50,7 +58,7 @@ export class AgentChatComponent {
 
   // Obtener el título del chat activo (en el panel izquierdo)
   getActiveChatTitle(): string {
-    return 'ALIE';  
+    return 'ALIE';
   }
 
   // Obtener el título del chat en el panel izquierdo
@@ -88,13 +96,13 @@ export class AgentChatComponent {
     const newChatId = this.nextChatId.toString();  // Asignar el próximo ID disponible
     this.chats.unshift({
       id: newChatId,
-      title: `Nuevo Chat ${newChatId}`,  
+      title: `Nuevo Chat ${newChatId}`,
       messages: [],
       showOptions: false,
     });
-    this.activeChatId = newChatId; 
-    this.hasBotResponded = false;  
-    this.nextChatId++;  
+    this.activeChatId = newChatId;
+    this.hasBotResponded = false;
+    this.nextChatId++;
   }
 
   // Mostrar/ocultar las opciones de un chat
@@ -149,15 +157,54 @@ export class AgentChatComponent {
 
   handleThumbUp(message: any) {
     alert('¡Gracias por tu feedback positivo!');
-  }
 
-  handleRetry(message: any) {
-    alert('Reintentando la acción...');
+    this.taggingService.tagMessage("Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'pos')
+      .subscribe(
+        (response) => {
+          // Handle successful response
+          if (response.success) {
+            console.log('Success:', response.message);
+            console.log('Tag Document:', response.tag_document);
+          } else {
+            // Handle case where the response is not successful but no error is thrown
+            console.error('Error:', response.message);
+          }
+        },
+        (error) => {
+          // Handle any errors from the HTTP call
+          console.error('HTTP Error:', error);
+        }
+      );
+
   }
 
   handleThumbDown(message: any): void {
     this.showConfirmation = true;
     this.messageToThumbDown = message;
+
+    // Tagging negativo
+    this.taggingService.tagMessage("Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'neg')
+      .subscribe(
+        (response) => {
+          // Handle successful response
+          if (response.success) {
+            console.log('Success:', response.message);
+            console.log('Tag Document:', response.tag_document);
+          } else {
+            // Handle case where the response is not successful but no error is thrown
+            console.error('Error:', response.message);
+          }
+        },
+        (error) => {
+          // Handle any errors from the HTTP call
+          console.error('HTTP Error:', error);
+        }
+      );
+
+  }
+
+  handleRetry(message: any) {
+    alert('Reintentando la acción...');
   }
 
   handleYes(): void {
