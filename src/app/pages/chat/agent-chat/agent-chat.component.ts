@@ -158,7 +158,7 @@ export class AgentChatComponent {
   handleThumbUp(message: any) {
     alert('¡Gracias por tu feedback positivo!');
 
-    this.taggingService.tagMessage("Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'pos')
+    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'pos')
       .subscribe(
         (response) => {
           // Handle successful response
@@ -183,7 +183,7 @@ export class AgentChatComponent {
     this.messageToThumbDown = message;
 
     // Tagging negativo
-    this.taggingService.tagMessage("Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'neg')
+    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'neg')
       .subscribe(
         (response) => {
           // Handle successful response
