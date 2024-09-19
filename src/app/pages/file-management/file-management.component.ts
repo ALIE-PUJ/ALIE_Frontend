@@ -14,16 +14,16 @@ import { FileService } from '../../services/files/file.service';
 export class FileManagementComponent implements OnInit {
   uploadedFiles: Array<{ name: string; category: string; showOptions: boolean }> = [];
   selectedCategory = 'Privado General';
+  authToken = 'XXX';
 
-  constructor(private fileService: FileService) {} // Inyecta el servicio
+  constructor(private fileService: FileService) {}
 
   ngOnInit(): void {
     this.loadFiles();
   }
 
-  // Cargar archivos desde el servidor
   loadFiles(): void {
-    this.fileService.getFiles().subscribe({
+    this.fileService.getFiles(this.authToken).subscribe({
       next: (response) => {
         if (response.success) {
           this.uploadedFiles = response.files;
@@ -37,17 +37,15 @@ export class FileManagementComponent implements OnInit {
     });
   }
 
-  // Activar el input de archivos oculto
   triggerFileInput() {
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     fileInput.click();
   }
 
-  // Manejar la selección de archivos
   onFileSelect(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.fileService.uploadFile(file, this.selectedCategory).subscribe(response => {
+      this.fileService.uploadFile(file, this.selectedCategory, this.authToken).subscribe(response => {
         if (response.success) {
           this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
         } else {
@@ -60,17 +58,15 @@ export class FileManagementComponent implements OnInit {
     }
   }
 
-  // Manejar el evento de arrastrar sobre el área
   onDragOver(event: any) {
     event.preventDefault();
   }
 
-  // Manejar la caída de archivos
   onFileDrop(event: any) {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      this.fileService.uploadFile(file, this.selectedCategory).subscribe(response => {
+      this.fileService.uploadFile(file, this.selectedCategory, this.authToken).subscribe(response => {
         if (response.success) {
           this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
         } else {
@@ -83,21 +79,17 @@ export class FileManagementComponent implements OnInit {
     }
   }
 
-  // Alternar la visibilidad de opciones
   toggleOptions(file: any) {
     file.showOptions = !file.showOptions;
   }
 
-  // Método para ver el archivo
   viewFile(file: any) {
-    this.fileService.viewFile(file); // Llamar a la función del servicio
+    this.fileService.viewFile(file, this.authToken);
   }
 
-  // Método para eliminar el archivo
   deleteFile(file: any) {
-    this.fileService.deleteFile(file.name).subscribe({
+    this.fileService.deleteFile(file.name, this.authToken).subscribe({
       next: (response) => {
-        console.log('Respuesta del servidor:', response);
         if (response.success) {
           const index = this.uploadedFiles.findIndex(f => f.name === file.name);
           if (index > -1) {
