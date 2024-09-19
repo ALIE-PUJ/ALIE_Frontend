@@ -5,6 +5,7 @@
   background-color: white;
 }
 
+
 .content {
     padding: 16px; 
 }
@@ -87,13 +88,18 @@ h2 {
 }
 
 .historial .titulo {
-  flex-grow: 1;
-  margin-top: 7px;
-  margin-left: 10px;
-  text-align: center;
   display: flex;
-  font-weight: bold;
+  align-items: center;
+  flex-grow: 1;
+  margin: 0 8px;
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
+
 
 .menu {
   position: relative;

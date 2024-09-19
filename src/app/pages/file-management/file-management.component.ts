@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../layout/sidebar/sidebar.component';
@@ -104,5 +104,13 @@ export class FileManagementComponent implements OnInit {
         alert('Error al eliminar el archivo');
       }
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.menu') && !target.closest('.menu-icon')) {
+      this.uploadedFiles.forEach(file => file.showOptions = false);
+    }
   }
 }
