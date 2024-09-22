@@ -1,7 +1,5 @@
 <app-sidebar>
     <div class="main">
-  
-
       <div class="sidebar">
         <h2>Archivos Cargados</h2>
         <div class="file-list">
@@ -16,10 +14,6 @@
                 <div class="option" (click)="viewFile(file)">
                   <i class="bi bi-eye"></i>
                   <span>Ver</span>
-                </div>
-                <div class="option" (click)="editFile(file)">
-                  <i class="bi bi-pencil"></i>
-                  <span>Editar</span>
                 </div>
                 <div class="option" (click)="deleteFile(file)">
                   <i class="bi bi-trash"></i>
@@ -44,7 +38,6 @@
           <option value="Publico Q&A">Público Q&A</option>
         </select>
   
-        <!-- Logo ALIE en la esquina superior derecha -->
         <div class="alie-logo">ALIE</div>
   
         <div class="drag-upload" (drop)="onFileDrop($event)" (dragover)="onDragOver($event)">

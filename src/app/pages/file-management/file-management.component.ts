@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../layout/sidebar/sidebar.component';
+import { FileService } from '../../services/files/file.service';
 
 @Component({
   selector: 'app-file-management',
@@ -10,62 +11,106 @@ import { SidebarComponent } from '../../layout/sidebar/sidebar.component';
   templateUrl: './file-management.component.html',
   styleUrls: ['./file-management.component.scss']
 })
-export class FileManagementComponent {
+export class FileManagementComponent implements OnInit {
   uploadedFiles: Array<{ name: string; category: string; showOptions: boolean }> = [];
-
   selectedCategory = 'Privado General';
+  authToken = 'XXX';
 
-  // Trigger the hidden file input
+  constructor(private fileService: FileService) {}
+
+  ngOnInit(): void {
+    this.loadFiles();
+  }
+
+  loadFiles(): void {
+    this.fileService.getFiles(this.authToken).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.uploadedFiles = response.files;
+        } else {
+          console.error('Error al obtener los archivos', response.message);
+        }
+      },
+      error: (err) => {
+        console.error('Error en la carga de archivos', err);
+      }
+    });
+  }
+
   triggerFileInput() {
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     fileInput.click();
   }
 
-  // Handle file selection
   onFileSelect(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
+      this.fileService.uploadFile(file, this.selectedCategory, this.authToken).subscribe(response => {
+        if (response.success) {
+          this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
+        } else {
+          alert('Error al subir el archivo');
+        }
+      }, error => {
+        console.error('Error en la carga de archivos', error);
+        alert('Error al subir el archivo');
+      });
     }
   }
 
-  // Handle drag over event
   onDragOver(event: any) {
     event.preventDefault();
   }
 
-  // Handle file drop
   onFileDrop(event: any) {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
+      this.fileService.uploadFile(file, this.selectedCategory, this.authToken).subscribe(response => {
+        if (response.success) {
+          this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
+        } else {
+          alert('Error al subir el archivo');
+        }
+      }, error => {
+        console.error('Error en la carga de archivos', error);
+        alert('Error al subir el archivo');
+      });
     }
   }
 
-  // Toggle options visibility
   toggleOptions(file: any) {
     file.showOptions = !file.showOptions;
   }
 
-  // File action methods
   viewFile(file: any) {
-    // Placeholder logic to view the file (replace with your actual logic)
-    alert(`Viewing file: ${file.name}`);
-  }
-
-  editFile(file: any) {
-    // Placeholder logic to edit the file (replace with your actual logic)
-    const newFileName = prompt(`Edit file name for: ${file.name}`, file.name);
-    if (newFileName !== null && newFileName.trim() !== '') {
-      file.name = newFileName;
-    }
+    this.fileService.viewFile(file, this.authToken);
   }
 
   deleteFile(file: any) {
-    const index = this.uploadedFiles.indexOf(file);
-    if (index > -1) {
-      this.uploadedFiles.splice(index, 1);
+    this.fileService.deleteFile(file.name, this.authToken).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const index = this.uploadedFiles.findIndex(f => f.name === file.name);
+          if (index > -1) {
+            this.uploadedFiles.splice(index, 1);
+          }
+        } else {
+          alert('Error al eliminar el archivo');
+        }
+      },
+      error: (err) => {
+        console.error('Error en la eliminación del archivo', err);
+        alert('Error al eliminar el archivo');
+      }
+    });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.menu') && !target.closest('.menu-icon')) {
+      this.uploadedFiles.forEach(file => file.showOptions = false);
     }
   }
 }
