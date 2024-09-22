@@ -3,12 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 
-// Interfaz para los mensajes
 interface Message {
   text: string;
 }
 
-// Interfaz para el chat
 interface Chat {
   id: number;
   name: string;
