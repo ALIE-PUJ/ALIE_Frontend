@@ -2,7 +2,8 @@ import { Component, HostListener, inject } from '@angular/core';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TaggingService } from '../../../services/tagging/tagging.service';
+import { AgentService } from '../../../services/chat/agent.service';  
+import { Router } from '@angular/router';  
 
 @Component({
   selector: 'app-agent-chat',
@@ -11,209 +12,288 @@ import { TaggingService } from '../../../services/tagging/tagging.service';
   templateUrl: './agent-chat.component.html',
   styleUrls: ['./agent-chat.component.scss'],
 })
-
 export class AgentChatComponent {
 
-  // Servicio de tagging
-  private taggingService = inject(TaggingService);
+  private chatService = inject(AgentService);
+  private router = inject(Router);  
 
-  // Otras variables
-  activeChatId: string = '1';
-  chats: any[] = [
-    {
-      id: '1',
-      title: 'ALIE',
-      messages: [],
-      showOptions: false,
-    },
-    {
-      id: '2',
-      title: 'Uso intranet',
-      messages: [{ content: '¿Cómo puedo usar la intranet?', sender: 'user' }],
-      showOptions: false,
-    },
-    {
-      id: '3',
-      title: 'Horarios inscripciones',
-      messages: [{ content: '¿Cuándo empiezan las inscripciones?', sender: 'user' }],
-      showOptions: false,
-    },
-  ];
-
+  activeChatId: string = '';
+  chats: any[] = [];
   message: string = '';
   hasBotResponded: boolean = false;
-  showOptionsModal: boolean = false;
-  nextChatId: number = 4;
   showConfirmation: boolean = false;
   messageToThumbDown: any;
 
+  auth_token: string = 'your_token_here';
+  user_id: string = '1';  
+
   constructor() {
-    this.chats.reverse();
+    this.listChats();
   }
 
-  // Obtener los mensajes por ID de chat
-  getMessagesByChatId(chatId: string) {
-    return this.chats.find((chat) => chat.id === chatId)?.messages || [];
+  listChats() {
+    const auth_token = this.auth_token;  
+    const user_id = this.user_id; 
+  
+    this.chatService.listChatsByUser(user_id, auth_token).subscribe((chats: any[]) => {
+      this.chats = chats.map(chat => ({
+        memory_key: chat.memory_key,
+        title: chat.nombre || 'Chat sin título',
+        messages: [], 
+        showOptions: false
+      }));
+    }, (error) => {
+      console.error('Error al obtener los chats', error);
+    });
   }
+  
+  
 
-  // Obtener el título del chat activo (en el panel izquierdo)
-  getActiveChatTitle(): string {
-    return 'ALIE';
-  }
+  // Método para agregar un nuevo chat
+  addNewChat() {
+    const payload = {
+      auth_token: this.auth_token,
+      mensajes_agente: [],
+      mensajes_usuario: [],
+      mensajes_supervision: [],
+      user_id: this.user_id
+    };
 
-  // Obtener el título del chat en el panel izquierdo
-  getLeftChatTitle(chatId: string): string {
-    const chat = this.chats.find((chat) => chat.id === chatId);
-    return chat ? chat.title : 'Chat';
+    this.chatService.guardarChat(payload).subscribe((response) => {
+      const newChat = {
+        memory_key: response.memory_key,
+        nombre: response.nombre,
+        messages: [],
+        showOptions: false
+      };
+      this.chats.unshift(newChat);
+      this.activeChatId = newChat.memory_key;
+      this.hasBotResponded = false;
+    }, (error) => {
+      console.error('Error al crear el nuevo chat', error);
+    });
   }
 
   // Cambiar el chat activo
   switchChat(chatId: string) {
-    this.activeChatId = chatId;  // Cambiar el ID del chat activo
+    this.activeChatId = chatId;
+    this.getMessagesByChatId(chatId);
   }
 
-  // Enviar un mensaje en el chat activo
-  sendMessage() {
-    if (this.message.trim() !== '') {
-      const chat = this.chats.find((chat) => chat.id === this.activeChatId);
-      if (chat) {
-        chat.messages.push({ content: this.message, sender: 'user' });
-        this.message = '';  // Limpiar el campo de entrada
-
-        // Respuesta automática del bot si no ha respondido antes
-        if (!this.hasBotResponded) {
-          this.hasBotResponded = true;
-          setTimeout(() => {
-            chat.messages.push({ content: 'Hola, ¿en qué puedo ayudarte?', sender: 'agent' });
-          }, 1000);
-        }
+  // Cargar los mensajes de un chat desde el backend
+  loadChatMessages(chatId: string) {
+    this.chatService.getChat(this.auth_token, chatId).subscribe((chat) => {
+      const selectedChat = this.chats.find((c) => c.memory_key === chatId);
+      if (selectedChat) {
+        selectedChat.messages = [
+          ...chat.mensajes_usuario.map((msg: any) => ({ content: msg, sender: 'user' })),
+          ...chat.mensajes_agente.map((msg: any) => ({ content: msg, sender: 'agent' }))
+        ];
       }
-    }
+    }, (error) => {
+      console.error('Error al obtener el chat', error);
+    });
   }
 
-  // Añadir un nuevo chat al panel izquierdo
-  addNewChat() {
-    const newChatId = this.nextChatId.toString();  // Asignar el próximo ID disponible
-    this.chats.unshift({
-      id: newChatId,
-      title: `Nuevo Chat ${newChatId}`,
-      messages: [],
-      showOptions: false,
-    });
-    this.activeChatId = newChatId;
-    this.hasBotResponded = false;
-    this.nextChatId++;
-  }
-
-  // Mostrar/ocultar las opciones de un chat
-  toggleOptions(chatId: string) {
-    this.chats = this.chats.map(chat => {
-      if (chat.id === chatId) {
-        return { ...chat, showOptions: !chat.showOptions };
-      }
-      return { ...chat, showOptions: false };
-    });
+  // Obtener el nombre del chat activo
+  getActiveChatTitle() {
+    const activeChat = this.chats.find(chat => chat.memory_key === this.activeChatId);
+    return activeChat ? activeChat.nombre : 'Chat sin título';
   }
 
   // Renombrar un chat
   renameChat(chatId: string) {
     const newTitle = prompt('Ingrese el nuevo nombre del chat:');
     if (newTitle) {
-      this.chats = this.chats.map(chat =>
-        chat.id === chatId ? { ...chat, title: newTitle } : chat
-      );
-      this.closeAllMenus();
+      const chat = this.chats.find(chat => chat.memory_key === chatId);
+      if (chat) {
+        chat.nombre = newTitle;
+        const payload = {
+          auth_token: this.auth_token,
+          memory_key: chatId,
+          nombre: newTitle,
+          mensajes_agente: chat.messages.filter((msg: { sender: string; }) => msg.sender === 'agent').map((msg: { content: any; }) => msg.content),
+          mensajes_usuario: chat.messages.filter((msg: { sender: string; }) => msg.sender === 'user').map((msg: { content: any; }) => msg.content),
+          mensajes_supervision: [],
+          user_id: this.user_id
+        };
+
+        this.chatService.guardarChat(payload).subscribe(() => {
+          console.log('Nombre del chat actualizado');
+        }, (error) => {
+          console.error('Error al actualizar el nombre del chat', error);
+        });
+      }
     }
+    this.closeAllMenus();
   }
 
   // Eliminar un chat
   deleteChat(chatId: string) {
-    this.chats = this.chats.filter((chat) => chat.id !== chatId);
-    this.closeAllMenus();
+    this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
+    this.chatService.deleteChat(this.auth_token, chatId).subscribe(() => {
+      console.log('Chat eliminado');
+    }, (error) => {
+      console.error('Error al eliminar el chat', error);
+    });
   }
 
-  // Escuchar clics fuera de los menús de opciones
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const menuElements = document.querySelectorAll('.menu, .menu-options');
-    let isClickInside = false;
+// Enviar un mensaje
+sendMessage() {
+  if (this.message.trim() !== '') {
+    const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
+    if (chat) {
+  
+      const userMessage = { content: this.message, sender: 'user' };
+      const formattedUserMessage = JSON.stringify({ texto: this.message });  
 
-    menuElements.forEach(menu => {
-      if (menu.contains(target)) {
-        isClickInside = true;
-      }
-    });
+      chat.messages.push(userMessage);
+      this.messages.push(userMessage);  
 
-    if (!isClickInside) {
-      this.closeAllMenus();
+      const payload = {
+        auth_token: this.auth_token,
+        memory_key: this.activeChatId,
+        nombre: chat.nombre,
+        mensajes_agente: [],
+        mensajes_usuario: [formattedUserMessage], 
+        mensajes_supervision: [],
+        user_id: this.user_id
+      };
+
+
+      this.chatService.guardarChat(payload).subscribe(() => {
+
+        this.message = '';
+
+        this.getAgentResponse(chat);
+      }, (error) => {
+        console.error('Error al guardar el mensaje del usuario', error);
+      });
     }
   }
+}
 
-  // Cerrar todos los menús de opciones
+
+
+
+// Obtener la respuesta del agente y guardarla en la base de datos
+getAgentResponse(chat: any) {
+ 
+  const agentResponse = 'Gracias por tu mensaje, estamos revisando tu solicitud.';
+
+  const formattedAgentMessage = JSON.stringify({ texto: agentResponse });
+
+
+  const agentMessage = { content: agentResponse, sender: 'agent' };
+  chat.messages.push(agentMessage);
+  this.messages.push(agentMessage); 
+
+  const agentPayload = {
+    auth_token: this.auth_token,           
+    memory_key: this.activeChatId,           
+    mensajes_agente: [formattedAgentMessage], 
+    mensajes_usuario: [],                    
+    mensajes_supervision: [],                
+    user_id: this.user_id                     
+  };
+
+
+  this.chatService.guardarChat(agentPayload).subscribe(() => {
+    console.log('Respuesta del agente guardada correctamente en la base de datos');
+  }, (error) => {
+    console.error('Error al guardar la respuesta del agente en la base de datos', error);
+  });
+}
+
+
+
+  handleRetry(message: any) {
+    this.getAgentResponse(message);
+  }
+
+
+  handleThumbUp(message: any) {
+    console.log('Mensaje marcado como "Me gusta"', message);
+  }
+
+ 
+  handleThumbDown(message: any) {
+    this.messageToThumbDown = message;
+    this.showConfirmation = true;
+  }
+
+
+  handleYes() {
+    this.router.navigate(['/supervision']);  
+  }
+
+  
+  handleNo() {
+    this.showConfirmation = false;
+  }
+
+  
+  toggleOptions(chatId: string) {
+    this.chats = this.chats.map(chat => {
+      if (chat.memory_key === chatId) {
+        return { ...chat, showOptions: !chat.showOptions };
+      }
+      return { ...chat, showOptions: false };
+    });
+  }
+
   closeAllMenus() {
     this.chats = this.chats.map(chat => ({ ...chat, showOptions: false }));
   }
 
-  handleThumbUp(message: any) {
-    alert('¡Gracias por tu feedback positivo!');
+  archiveChat(chatId: string) {
+    const payload = {
+      auth_token: this.auth_token,
+      memory_key: chatId
+    };
+  
+    this.chatService.archiveChat(payload).subscribe(() => {
 
-    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'pos')
-      .subscribe(
-        (response) => {
-          // Handle successful response
-          if (response.success) {
-            console.log('Success:', response.message);
-            console.log('Tag Document:', response.tag_document);
-          } else {
-            // Handle case where the response is not successful but no error is thrown
-            console.error('Error:', response.message);
-          }
-        },
-        (error) => {
-          // Handle any errors from the HTTP call
-          console.error('HTTP Error:', error);
-        }
-      );
-
+      this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
+      console.log('Chat archivado');
+    }, (error) => {
+      console.error('Error al archivar el chat', error);
+    });
   }
 
-  handleThumbDown(message: any): void {
-    this.showConfirmation = true;
-    this.messageToThumbDown = message;
+  messages: { content: string, sender: string }[] = [];  
+ // Obtener mensajes del chat por ID
+getMessagesByChatId(chatId: string) {
+  const auth_token = this.auth_token;
 
-    // Tagging negativo
-    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'neg')
-      .subscribe(
-        (response) => {
-          // Handle successful response
-          if (response.success) {
-            console.log('Success:', response.message);
-            console.log('Tag Document:', response.tag_document);
-          } else {
-            // Handle case where the response is not successful but no error is thrown
-            console.error('Error:', response.message);
-          }
-        },
-        (error) => {
-          // Handle any errors from the HTTP call
-          console.error('HTTP Error:', error);
-        }
-      );
+  this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
 
-  }
+    const userMessages = chat.mensajes_usuario.map((msg: string) => {
+      try {
+        const parsedMsg = JSON.parse(msg);  
+        return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'user' };  
+      } catch (error) {
+        return { content: msg, sender: 'user' };  
+      }
+    });
 
-  handleRetry(message: any) {
-    alert('Reintentando la acción...');
-  }
+ 
+    const agentMessages = chat.mensajes_agente.map((msg: string) => {
+      try {
+        const parsedMsg = JSON.parse(msg);  
+        return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'agent' };  
+      } catch (error) {
+        return { content: msg, sender: 'agent' };  
+      }
+    });
 
-  handleYes(): void {
-    this.showConfirmation = false;
-    console.log('Hablando con una persona');
-  }
+    this.messages = [...userMessages, ...agentMessages];
+  }, (error) => {
+    console.error('Error al obtener los mensajes del chat', error);
+  });
+}
 
-  handleNo(): void {
-    this.showConfirmation = false;
-  }
+  
 
+  
 }
