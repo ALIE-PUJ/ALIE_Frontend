@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AgentService } from '../../../services/chat/agent.service';  
 import { Router } from '@angular/router';  
+import { TaggingService } from '../../../services/tagging/tagging.service';
 
 @Component({
   selector: 'app-agent-chat',
@@ -16,6 +17,7 @@ export class AgentChatComponent {
 
   private chatService = inject(AgentService);
   private router = inject(Router);  
+  private taggingService = inject(TaggingService);
 
   activeChatId: string = '';
   chats: any[] = [];
@@ -214,12 +216,52 @@ getAgentResponse(chat: any) {
 
   handleThumbUp(message: any) {
     console.log('Mensaje marcado como "Me gusta"', message);
+
+    // Tagging positivo
+    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'pos')
+    .subscribe(
+      (response) => {
+        // Handle successful response
+        if (response.success) {
+          console.log('Success:', response.message);
+          console.log('Tag Document:', response.tag_document);
+        } else {
+          // Handle case where the response is not successful but no error is thrown
+          console.error('Error:', response.message);
+        }
+      },
+      (error) => {
+        // Handle any errors from the HTTP call
+        console.error('HTTP Error:', error);
+      }
+    );
+
   }
 
  
   handleThumbDown(message: any) {
     this.messageToThumbDown = message;
     this.showConfirmation = true;
+
+    // Tagging negativo
+    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'neg')
+    .subscribe(
+      (response) => {
+        // Handle successful response
+        if (response.success) {
+          console.log('Success:', response.message);
+          console.log('Tag Document:', response.tag_document);
+        } else {
+          // Handle case where the response is not successful but no error is thrown
+          console.error('Error:', response.message);
+        }
+      },
+      (error) => {
+        // Handle any errors from the HTTP call
+        console.error('HTTP Error:', error);
+      }
+    );
+
   }
 
 
