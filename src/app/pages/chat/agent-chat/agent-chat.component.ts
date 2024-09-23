@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular/core';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -28,6 +28,9 @@ export class AgentChatComponent {
   loadingDots: string = ''; // Para almacenar los puntos de carga
   loadingIndex: number = 0; // Para llevar la cuenta de la secuencia
   
+  // Referencia al DIV de mensajes para hacer scroll automatico
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+
 
   // Variables
   activeChatId: string = '';
@@ -408,6 +411,19 @@ export class AgentChatComponent {
     this.isLoading = false;
     this.loadingDots = ''; // Limpia los puntos cuando se detiene la carga
   }
+
+  
+  // Scroll automatico al final de la lista de mensajes
+  ngAfterViewChecked() {
+    this.scrollToBottom(); // Se asegura de hacer scroll al final después de cada actualización
+  }
+
+  scrollToBottom(): void {
+    if (this.messagesContainer) {
+      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    }
+  }
+  
 
 
 

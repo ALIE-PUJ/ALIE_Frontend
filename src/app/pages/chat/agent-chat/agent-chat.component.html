@@ -51,7 +51,7 @@
         </div>
 
         <!-- Lista de mensajes en el chat -->
-        <div class="messages">
+        <div class="messages" #messagesContainer>
 
           <div *ngFor="let message of messages" class="message-container">
             <p [ngClass]="{
