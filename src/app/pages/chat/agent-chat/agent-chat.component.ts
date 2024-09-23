@@ -2,9 +2,10 @@ import { Component, HostListener, inject } from '@angular/core';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AgentService } from '../../../services/chat/agent.service';  
-import { Router } from '@angular/router';  
+import { AgentService } from '../../../services/chat/agent.service';
+import { Router } from '@angular/router';
 import { TaggingService } from '../../../services/tagging/tagging.service';
+import { AlieService } from '../../../services/alie/alie.service';
 
 @Component({
   selector: 'app-agent-chat',
@@ -15,10 +16,14 @@ import { TaggingService } from '../../../services/tagging/tagging.service';
 })
 export class AgentChatComponent {
 
+  // Inject Services
   private chatService = inject(AgentService);
-  private router = inject(Router);  
+  private router = inject(Router);
   private taggingService = inject(TaggingService);
+  private alieService = inject(AlieService)
 
+
+  // Variables
   activeChatId: string = '';
   chats: any[] = [];
   message: string = '';
@@ -27,29 +32,29 @@ export class AgentChatComponent {
   messageToThumbDown: any;
 
   auth_token: string = 'your_token_here';
-  user_id: string = '1';  
+  user_id: string = '1';
 
   constructor() {
     this.listChats();
   }
 
   listChats() {
-    const auth_token = this.auth_token;  
-    const user_id = this.user_id; 
-  
+    const auth_token = this.auth_token;
+    const user_id = this.user_id;
+
     this.chatService.listChatsByUser(user_id, auth_token).subscribe((chats: any[]) => {
       this.chats = chats.map(chat => ({
         memory_key: chat.memory_key,
         title: chat.nombre || 'Chat sin título',
-        messages: [], 
+        messages: [],
         showOptions: false
       }));
     }, (error) => {
       console.error('Error al obtener los chats', error);
     });
   }
-  
-  
+
+
 
   // Método para agregar un nuevo chat
   addNewChat() {
@@ -140,72 +145,90 @@ export class AgentChatComponent {
     });
   }
 
-// Enviar un mensaje
-sendMessage() {
-  if (this.message.trim() !== '') {
-    const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
-    if (chat) {
-  
-      const userMessage = { content: this.message, sender: 'user' };
-      const formattedUserMessage = JSON.stringify({ texto: this.message });  
+  // Enviar un mensaje
+  sendMessage() {
+    if (this.message.trim() !== '') {
+      const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
+      if (chat) {
 
-      chat.messages.push(userMessage);
-      this.messages.push(userMessage);  
+        const userMessage = { content: this.message, sender: 'user' };
+        const formattedUserMessage = JSON.stringify({ texto: this.message });
 
-      const payload = {
+        chat.messages.push(userMessage);
+        this.messages.push(userMessage);
+
+        const payload = {
+          auth_token: this.auth_token,
+          memory_key: this.activeChatId,
+          nombre: chat.nombre,
+          mensajes_agente: [],
+          mensajes_usuario: [formattedUserMessage],
+          mensajes_supervision: [],
+          user_id: this.user_id
+        };
+
+
+        // Guardar el mensaje del usuario
+        this.chatService.guardarChat(payload).subscribe(
+          async () => {
+            this.message = ''; // Limpiar el mensaje de entrada
+            await this.getAgentResponse(chat); // Esperar la respuesta del agente
+          },
+          (error) => {
+            console.error('Error al guardar el mensaje del usuario', error);
+          }
+        );
+
+        /*
+        this.chatService.guardarChat(payload).subscribe(() => {
+
+          this.message = '';
+
+          // Esperar la respuesta
+          this.getAgentResponse(chat);
+        }, (error) => {
+          console.error('Error al guardar el mensaje del usuario', error);
+        });
+        */
+      }
+    }
+  }
+
+
+
+
+  // Obtener la respuesta del agente y guardarla en la base de datos
+  async getAgentResponse(chat: any) {
+    try {
+      console.log("Current chat: ", chat);
+      let userMessage = chat.messages[chat.messages.length - 1].content;
+      console.log("User message to send: ", userMessage);
+
+      // Obtener respuesta del modelo ALIE
+      let alie_answer = await this.getALIE_Response(userMessage, "False");
+      console.log("ALIE ANSWER = ", alie_answer);
+
+      // Manejo del chat en la base de datos
+      const agentMessage = { content: alie_answer || 'Lo siento, no tengo una respuesta en este momento.', sender: 'agent' };
+      chat.messages.push(agentMessage);
+      this.messages.push(agentMessage);
+
+      const agentPayload = {
         auth_token: this.auth_token,
         memory_key: this.activeChatId,
-        nombre: chat.nombre,
-        mensajes_agente: [],
-        mensajes_usuario: [formattedUserMessage], 
+        mensajes_agente: [JSON.stringify({ texto: agentMessage.content })],
+        mensajes_usuario: [],
         mensajes_supervision: [],
         user_id: this.user_id
       };
 
-
-      this.chatService.guardarChat(payload).subscribe(() => {
-
-        this.message = '';
-
-        this.getAgentResponse(chat);
-      }, (error) => {
-        console.error('Error al guardar el mensaje del usuario', error);
-      });
+      // Guardar la respuesta del agente
+      await this.chatService.guardarChat(agentPayload).toPromise();
+      console.log('Respuesta del agente guardada correctamente en la base de datos');
+    } catch (error) {
+      console.error('Error en getAgentResponse:', error);
     }
   }
-}
-
-
-
-
-// Obtener la respuesta del agente y guardarla en la base de datos
-getAgentResponse(chat: any) {
- 
-  const agentResponse = 'Gracias por tu mensaje, estamos revisando tu solicitud.';
-
-  const formattedAgentMessage = JSON.stringify({ texto: agentResponse });
-
-
-  const agentMessage = { content: agentResponse, sender: 'agent' };
-  chat.messages.push(agentMessage);
-  this.messages.push(agentMessage); 
-
-  const agentPayload = {
-    auth_token: this.auth_token,           
-    memory_key: this.activeChatId,           
-    mensajes_agente: [formattedAgentMessage], 
-    mensajes_usuario: [],                    
-    mensajes_supervision: [],                
-    user_id: this.user_id                     
-  };
-
-
-  this.chatService.guardarChat(agentPayload).subscribe(() => {
-    console.log('Respuesta del agente guardada correctamente en la base de datos');
-  }, (error) => {
-    console.error('Error al guardar la respuesta del agente en la base de datos', error);
-  });
-}
 
 
 
@@ -219,62 +242,62 @@ getAgentResponse(chat: any) {
 
     // Tagging positivo
     this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'pos')
-    .subscribe(
-      (response) => {
-        // Handle successful response
-        if (response.success) {
-          console.log('Success:', response.message);
-          console.log('Tag Document:', response.tag_document);
-        } else {
-          // Handle case where the response is not successful but no error is thrown
-          console.error('Error:', response.message);
+      .subscribe(
+        (response) => {
+          // Handle successful response
+          if (response.success) {
+            console.log('Success:', response.message);
+            console.log('Tag Document:', response.tag_document);
+          } else {
+            // Handle case where the response is not successful but no error is thrown
+            console.error('Error:', response.message);
+          }
+        },
+        (error) => {
+          // Handle any errors from the HTTP call
+          console.error('HTTP Error:', error);
         }
-      },
-      (error) => {
-        // Handle any errors from the HTTP call
-        console.error('HTTP Error:', error);
-      }
-    );
+      );
 
   }
 
- 
+
   handleThumbDown(message: any) {
     this.messageToThumbDown = message;
     this.showConfirmation = true;
 
     // Tagging negativo
     this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'neg')
-    .subscribe(
-      (response) => {
-        // Handle successful response
-        if (response.success) {
-          console.log('Success:', response.message);
-          console.log('Tag Document:', response.tag_document);
-        } else {
-          // Handle case where the response is not successful but no error is thrown
-          console.error('Error:', response.message);
+      .subscribe(
+        (response) => {
+          // Handle successful response
+          if (response.success) {
+            console.log('Success:', response.message);
+            console.log('Tag Document:', response.tag_document);
+          } else {
+            // Handle case where the response is not successful but no error is thrown
+            console.error('Error:', response.message);
+          }
+        },
+        (error) => {
+          // Handle any errors from the HTTP call
+          console.error('HTTP Error:', error);
         }
-      },
-      (error) => {
-        // Handle any errors from the HTTP call
-        console.error('HTTP Error:', error);
-      }
-    );
+      );
 
   }
 
 
   handleYes() {
-    this.router.navigate(['/supervision']);  
+    this.router.navigate(['/supervision']);
   }
 
-  
+
   handleNo() {
     this.showConfirmation = false;
   }
 
-  
+
   toggleOptions(chatId: string) {
     this.chats = this.chats.map(chat => {
       if (chat.memory_key === chatId) {
@@ -293,7 +316,7 @@ getAgentResponse(chat: any) {
       auth_token: this.auth_token,
       memory_key: chatId
     };
-  
+
     this.chatService.archiveChat(payload).subscribe(() => {
 
       this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
@@ -303,39 +326,63 @@ getAgentResponse(chat: any) {
     });
   }
 
-  messages: { content: string, sender: string }[] = [];  
- // Obtener mensajes del chat por ID
-getMessagesByChatId(chatId: string) {
-  const auth_token = this.auth_token;
+  messages: { content: string, sender: string }[] = [];
+  // Obtener mensajes del chat por ID
+  getMessagesByChatId(chatId: string) {
+    const auth_token = this.auth_token;
 
-  this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
+    this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
 
-    const userMessages = chat.mensajes_usuario.map((msg: string) => {
-      try {
-        const parsedMsg = JSON.parse(msg);  
-        return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'user' };  
-      } catch (error) {
-        return { content: msg, sender: 'user' };  
-      }
+      const userMessages = chat.mensajes_usuario.map((msg: string) => {
+        try {
+          const parsedMsg = JSON.parse(msg);
+          return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'user' };
+        } catch (error) {
+          return { content: msg, sender: 'user' };
+        }
+      });
+
+
+      const agentMessages = chat.mensajes_agente.map((msg: string) => {
+        try {
+          const parsedMsg = JSON.parse(msg);
+          return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'agent' };
+        } catch (error) {
+          return { content: msg, sender: 'agent' };
+        }
+      });
+
+      this.messages = [...userMessages, ...agentMessages];
+    }, (error) => {
+      console.error('Error al obtener los mensajes del chat', error);
     });
+  }
 
- 
-    const agentMessages = chat.mensajes_agente.map((msg: string) => {
-      try {
-        const parsedMsg = JSON.parse(msg);  
-        return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'agent' };  
-      } catch (error) {
-        return { content: msg, sender: 'agent' };  
-      }
+
+
+  // Manejo ALIE (No tocar pls)
+
+  // Debe ser una solicitud asincrona
+  getALIE_Response(input: string, priority: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.alieService.get_response_from_model("authToken", input, priority)
+        .subscribe(
+          (response) => {
+            if (response.answer) {
+              console.log('Success:', response.answer);
+              resolve(response.answer); // Resuelve la promesa con el mensaje
+            } else {
+              console.error('Error:', response);
+              resolve("Estamos teniendo problemas, intenta en unos momentos"); // Resuelve con un mensaje por defecto
+            }
+          },
+          (error) => {
+            console.error('HTTP Error:', error);
+            resolve("Estamos teniendo problemas, intenta en unos momentos"); // Resuelve con un mensaje por defecto
+          }
+        );
     });
+  }
 
-    this.messages = [...userMessages, ...agentMessages];
-  }, (error) => {
-    console.error('Error al obtener los mensajes del chat', error);
-  });
-}
 
-  
-
-  
 }
