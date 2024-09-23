@@ -218,7 +218,7 @@ export class AgentChatComponent {
 
       // Obtener respuesta del modelo ALIE con prioridad baja "False"
       this.startLoadingAnimation()
-      let alie_answer = await this.getALIE_Response(userMessage, "True");
+      let alie_answer = await this.getALIE_Response(userMessage, "False");
       // let alie_answer = await this.getALIE_Response(userMessage, "True"); // Si se quisiera prioridad alta
       this.stopLoadingAnimation()
       console.log("ALIE ANSWER = ", alie_answer);
