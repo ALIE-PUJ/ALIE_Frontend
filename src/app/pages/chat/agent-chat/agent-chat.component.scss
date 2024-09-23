@@ -378,3 +378,57 @@ i {
 }
 
 
+
+
+
+// Loading message
+.loading-message {
+  font-size: 1.2em;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.loading-dots {
+  display: inline-block;
+}
+
+@keyframes loadingDots {
+  0% {
+    content: '';
+  }
+  10% {
+    content: '.';
+  }
+  20% {
+    content: '..';
+  }
+  30% {
+    content: '...';
+  }
+  40% {
+    content: '';
+  }
+  50% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  70% {
+    content: '';
+  }
+  80% {
+    content: '.';
+  }
+  90% {
+    content: '..';
+  }
+  100% {
+    content: '...';
+  }
+}
+
+.loading-dots:before {
+  animation: loadingDots 2s infinite;
+  font-size: 1.2em; /* Tamaño de los puntos */
+}

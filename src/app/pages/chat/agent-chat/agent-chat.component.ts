@@ -22,6 +22,12 @@ export class AgentChatComponent {
   private taggingService = inject(TaggingService);
   private alieService = inject(AlieService)
 
+  // Loading variables
+  isLoading: boolean = false;
+  loadingMessage: string = 'ALIE está encontrando la información que necesitas';
+  loadingDots: string = ''; // Para almacenar los puntos de carga
+  loadingIndex: number = 0; // Para llevar la cuenta de la secuencia
+  
 
   // Variables
   activeChatId: string = '';
@@ -204,9 +210,22 @@ export class AgentChatComponent {
       let userMessage = chat.messages[chat.messages.length - 1].content;
       console.log("User message to send: ", userMessage);
 
-      // Obtener respuesta del modelo ALIE
+      // Mensaje de carga
+      this.isLoading = true;
+
+      // Obtener respuesta del modelo ALIE con prioridad baja "False"
+      this.startLoadingAnimation()
       let alie_answer = await this.getALIE_Response(userMessage, "False");
+      this.stopLoadingAnimation()
       console.log("ALIE ANSWER = ", alie_answer);
+
+      // Desactivar mensaje de carga
+      this.isLoading = false;
+
+
+
+
+
 
       // Manejo del chat en la base de datos
       const agentMessage = { content: alie_answer || 'Lo siento, no tengo una respuesta en este momento.', sender: 'agent' };
@@ -360,6 +379,37 @@ export class AgentChatComponent {
 
 
 
+  // Mensaje de espera
+
+  startLoadingAnimation() {
+    this.loadingDots = ''; // Resetea los puntos de carga
+    this.loadingIndex = 0; // Resetea el índice
+    
+    // Inicia el intervalo para actualizar los puntos
+    const interval = setInterval(() => {
+      this.updateLoadingDots();
+      
+      // Para detener la animación cuando ya no se está cargando
+      if (!this.isLoading) {
+        clearInterval(interval);
+        this.loadingDots = ''; // Limpia los puntos cuando termina
+      }
+    }, 500); // Cambia la velocidad aquí si es necesario
+  }
+  
+  updateLoadingDots() {
+    const sequences = ['', '.', '..', '...', '..', '.', '']; // La secuencia que deseas
+    this.loadingDots = sequences[this.loadingIndex];
+    this.loadingIndex = (this.loadingIndex + 1) % sequences.length; // Ciclo a través de las secuencias
+  }
+  
+  stopLoadingAnimation() {
+    this.isLoading = false;
+    this.loadingDots = ''; // Limpia los puntos cuando se detiene la carga
+  }
+
+
+
   // Manejo ALIE (No tocar pls)
 
   // Debe ser una solicitud asincrona
@@ -373,7 +423,7 @@ export class AgentChatComponent {
               resolve(response.answer); // Resuelve la promesa con el mensaje
             } else {
               console.error('Error:', response);
-              resolve("Estamos teniendo problemas, intenta en unos momentos"); // Resuelve con un mensaje por defecto
+              resolve("Estamos teniendo problemas, intenta en unos momentos"); // Resuelve con un mensaje por defecto si no se responde la solicitud
             }
           },
           (error) => {
