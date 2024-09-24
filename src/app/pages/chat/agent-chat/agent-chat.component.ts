@@ -177,7 +177,7 @@ export class AgentChatComponent {
         };
 
 
-        // Guardar el mensaje del usuario
+        // Guardar el mensaje del usuario. Llamada asíncrona
         this.chatService.guardarChat(payload).subscribe(
           async () => {
             this.message = ''; // Limpiar el mensaje de entrada
@@ -188,6 +188,7 @@ export class AgentChatComponent {
           }
         );
 
+        // Llamada síncrona. Ya no se usa
         /*
         this.chatService.guardarChat(payload).subscribe(() => {
 
@@ -262,9 +263,20 @@ export class AgentChatComponent {
 
   handleThumbUp(message: any) {
     console.log('Mensaje marcado como "Me gusta"', message);
+  
 
-    // Tagging positivo
-    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'pos')
+    console.log("Mensajes del chat: ", this.messages)
+    let agentMessage = this.messages[this.messages.length - 1].content;
+    let userMessage = this.messages[this.messages.length - 2].content;
+
+    // Mensaje seleccionado, del agente
+    console.log("Agent Message content: ", agentMessage)
+
+    // Mensaje seleccionado, del usuario
+    console.log("User Message content: ", userMessage)
+
+    // Tagging negativo
+    this.taggingService.tagMessage("authToken", userMessage, agentMessage, 'pos')
       .subscribe(
         (response) => {
           // Handle successful response
@@ -289,8 +301,18 @@ export class AgentChatComponent {
     this.messageToThumbDown = message;
     this.showConfirmation = true;
 
+    console.log("Mensajes del chat: ", this.messages)
+    let agentMessage = this.messages[this.messages.length - 1].content;
+    let userMessage = this.messages[this.messages.length - 2].content;
+
+    // Mensaje seleccionado, del agente
+    console.log("Agent Message content: ", agentMessage)
+
+    // Mensaje seleccionado, del usuario
+    console.log("User Message content: ", userMessage)
+
     // Tagging negativo
-    this.taggingService.tagMessage("authToken", "Mensaje de prueba de usuario", 'Mensaje de prueba de agente', 'neg')
+    this.taggingService.tagMessage("authToken", userMessage, agentMessage, 'neg')
       .subscribe(
         (response) => {
           // Handle successful response
@@ -349,7 +371,9 @@ export class AgentChatComponent {
     });
   }
 
+  // Mensajes
   messages: { content: string, sender: string }[] = [];
+
   // Obtener mensajes del chat por ID
   getMessagesByChatId(chatId: string) {
     const auth_token = this.auth_token;
