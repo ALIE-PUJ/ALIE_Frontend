@@ -275,7 +275,7 @@ export class AgentChatComponent {
     // Mensaje seleccionado, del usuario
     console.log("User Message content: ", userMessage)
 
-    // Tagging negativo
+    // Tagging positivo
     this.taggingService.tagMessage("authToken", userMessage, agentMessage, 'pos')
       .subscribe(
         (response) => {
