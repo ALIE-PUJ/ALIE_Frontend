@@ -70,11 +70,11 @@ export class FileManagementComponent implements OnInit {
         if (response.success) {
           this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
         } else {
-          alert('Error al subir el archivo');
+          alert('Error en la carga del archivo, verifica que sea de tipo PDF');
         }
       }, error => {
-        console.error('Error en la carga de archivos', error);
-        alert('Error al subir el archivo');
+        console.error('Error en la carga del archivo, verifica que sea de tipo PDF', error);
+        alert('Error en la carga del archivo, verifica que sea de tipo PDF');
       });
     }
   }

@@ -41,7 +41,7 @@
         <div class="alie-logo">ALIE</div>
   
         <div class="drag-upload" (drop)="onFileDrop($event)" (dragover)="onDragOver($event)">
-          <input type="file" #fileInput (change)="onFileSelect($event)" hidden>
+          <input type="file" #fileInput (change)="onFileSelect($event)"  accept=".pdf" hidden>
           <p (click)="triggerFileInput()">Arrastra o sube tus archivos</p>
           <i class="bi bi-upload" (click)="triggerFileInput()"></i>
         </div>
