@@ -32,9 +32,15 @@ export class AgentService {
   }
 
 
-  deleteChat(memory_key: string, auth_token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/chat/delete`, { memory_key, auth_token });
+  deleteChat(auth_token: string, memory_key: string) {
+    const payload = {
+      auth_token: auth_token,
+      memory_key: memory_key
+    };
+  
+    return this.http.post(`${this.apiUrl}/chat/delete`, payload);
   }
+  
 
 
 getAgentResponse(memory_key: string, auth_token: string): Observable<any> {

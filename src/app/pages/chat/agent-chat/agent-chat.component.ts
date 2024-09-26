@@ -65,30 +65,38 @@ export class AgentChatComponent {
 
 
 
-  // Método para agregar un nuevo chat
-  addNewChat() {
-    const payload = {
-      auth_token: this.auth_token,
-      mensajes_agente: [],
-      mensajes_usuario: [],
-      mensajes_supervision: [],
-      user_id: this.user_id
-    };
+  // Método para agregar un nuevo chat y abrirlo automáticamente
+addNewChat() {
+  const payload = {
+    auth_token: this.auth_token,
+    mensajes_agente: [],
+    mensajes_usuario: [],
+    mensajes_supervision: [],
+    user_id: this.user_id
+  };
 
-    this.chatService.guardarChat(payload).subscribe((response) => {
-      const newChat = {
-        memory_key: response.memory_key,
-        nombre: response.nombre,
-        messages: [],
-        showOptions: false
-      };
-      this.chats.unshift(newChat);
-      this.activeChatId = newChat.memory_key;
-      this.hasBotResponded = false;
-    }, (error) => {
-      console.error('Error al crear el nuevo chat', error);
-    });
-  }
+  // Guardar el nuevo chat en el backend
+  this.chatService.guardarChat(payload).subscribe((response) => {
+    const newChat = {
+      memory_key: response.memory_key,
+      title: response.nombre || 'Nuevo Chat', // O el título generado por el backend
+      messages: [],
+      showOptions: false,
+      isEditing: false // No en modo edición
+    };
+    
+    // Agregar el nuevo chat a la lista de chats
+    this.chats.unshift(newChat);
+
+    // Cambiar el chat activo al nuevo chat
+    this.switchChat(newChat.memory_key);
+    this.hasBotResponded = false; // Reiniciar estado del bot
+
+  }, (error) => {
+    console.error('Error al crear el nuevo chat', error);
+  });
+}
+
 
   // Cambiar el chat activo
   switchChat(chatId: string) {
@@ -111,38 +119,48 @@ export class AgentChatComponent {
     });
   }
 
-  // Obtener el nombre del chat activo
+ 
   getActiveChatTitle() {
     const activeChat = this.chats.find(chat => chat.memory_key === this.activeChatId);
     return activeChat ? activeChat.nombre : 'Chat sin título';
   }
 
-  // Renombrar un chat
-  renameChat(chatId: string) {
-    const newTitle = prompt('Ingrese el nuevo nombre del chat:');
-    if (newTitle) {
-      const chat = this.chats.find(chat => chat.memory_key === chatId);
-      if (chat) {
-        chat.nombre = newTitle;
-        const payload = {
-          auth_token: this.auth_token,
-          memory_key: chatId,
-          nombre: newTitle,
-          mensajes_agente: chat.messages.filter((msg: { sender: string; }) => msg.sender === 'agent').map((msg: { content: any; }) => msg.content),
-          mensajes_usuario: chat.messages.filter((msg: { sender: string; }) => msg.sender === 'user').map((msg: { content: any; }) => msg.content),
-          mensajes_supervision: [],
-          user_id: this.user_id
-        };
 
-        this.chatService.guardarChat(payload).subscribe(() => {
-          console.log('Nombre del chat actualizado');
-        }, (error) => {
-          console.error('Error al actualizar el nombre del chat', error);
-        });
-      }
+enableEditing(chat: any) {
+  this.chats = this.chats.map(c => {
+    if (c.memory_key === chat.memory_key) {
+      return { ...c, isEditing: true };
     }
-    this.closeAllMenus();
+    return { ...c, isEditing: false }; 
+  });
+}
+
+
+saveChatName(chat: any) {
+  if (chat.isEditing) {
+    chat.isEditing = false;  
+
+    const payload = {
+      auth_token: this.auth_token,
+      memory_key: chat.memory_key,
+      nombre: chat.title,  
+      mensajes_agente: [],  
+      mensajes_usuario: [],  
+      mensajes_supervision: [],  
+      user_id: this.user_id
+    };
+
+   
+    this.chatService.guardarChat(payload).subscribe(() => {
+      console.log('Nombre del chat actualizado correctamente');
+    }, (error) => {
+      console.error('Error al actualizar el nombre del chat', error);
+    });
   }
+}
+
+
+
 
   // Eliminar un chat
   deleteChat(chatId: string) {
@@ -256,9 +274,73 @@ export class AgentChatComponent {
 
 
 
-  handleRetry(message: any) {
-    this.getAgentResponse(message);
+  handleRetry() {
+    const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
+  
+    if (!chat) {
+      console.error('Chat no encontrado');
+      return;
+    }
+  
+    // Obtener el chat desde la base de datos para asegurar que obtenemos el último mensaje del usuario
+    this.chatService.getChat(this.activeChatId, this.auth_token).subscribe(
+      (chatData: any) => {
+        const userMessages = chatData.mensajes_usuario;
+  
+        if (!userMessages || userMessages.length === 0) {
+          console.error('No se encontraron mensajes del usuario en la base de datos para reenviar.');
+          return;
+        }
+  
+        // Obtener el último mensaje enviado por el usuario desde la base de datos
+        const lastUserMessage = userMessages[userMessages.length - 1];
+  
+        // Asegurarse de que el último mensaje es un JSON válido
+        let parsedMessage;
+        try {
+          parsedMessage = JSON.parse(lastUserMessage);
+        } catch (e) {
+          parsedMessage = { texto: lastUserMessage };
+        }
+  
+        // Volver a enviar el último mensaje del usuario al agente
+        this.getAgentResponseRetry(parsedMessage.texto, chat);
+      },
+      (error) => {
+        console.error('Error al obtener el chat desde la base de datos:', error);
+      }
+    );
   }
+  
+
+  async getAgentResponseRetry(userMessage: string, chat: any) {
+    try {
+      if (!userMessage) {
+        throw new Error('El mensaje del usuario no contiene contenido válido.');
+      }
+  
+      // Mostrar mensaje de carga mientras se obtiene la respuesta del agente
+      this.isLoading = true;
+      this.startLoadingAnimation();
+  
+      // Obtener la nueva respuesta del agente con el último mensaje del usuario
+      let alie_answer = await this.getALIE_Response(userMessage, "False");
+      this.stopLoadingAnimation();
+  
+      // Desactivar el mensaje de carga
+      this.isLoading = false;
+  
+      // Añadir la nueva respuesta del agente a los mensajes del chat
+      const agentMessage = { content: alie_answer || 'Lo siento, no tengo una respuesta en este momento.', sender: 'agent' };
+      chat.messages.push(agentMessage); // Añadimos el nuevo mensaje del agente a los mensajes locales
+      this.messages.push(agentMessage); // Actualizamos los mensajes en la interfaz
+    } catch (error) {
+      console.error('Error en getAgentResponseRetry:');
+    }
+  }
+  
+  
+  
 
 
   handleThumbUp(message: any) {
@@ -372,38 +454,66 @@ export class AgentChatComponent {
   }
 
   // Mensajes
-  messages: { content: string, sender: string }[] = [];
-
-  // Obtener mensajes del chat por ID
-  getMessagesByChatId(chatId: string) {
-    const auth_token = this.auth_token;
-
-    this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
-
-      const userMessages = chat.mensajes_usuario.map((msg: string) => {
-        try {
-          const parsedMsg = JSON.parse(msg);
-          return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'user' };
-        } catch (error) {
-          return { content: msg, sender: 'user' };
-        }
-      });
+messages: { content: string, sender: string }[] = [];
+lastAgentMessageIndex: number | null = null; 
 
 
-      const agentMessages = chat.mensajes_agente.map((msg: string) => {
-        try {
-          const parsedMsg = JSON.parse(msg);
-          return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'agent' };
-        } catch (error) {
-          return { content: msg, sender: 'agent' };
-        }
-      });
+getMessagesByChatId(chatId: string) {
+  const auth_token = this.auth_token;
 
-      this.messages = [...userMessages, ...agentMessages];
-    }, (error) => {
-      console.error('Error al obtener los mensajes del chat', error);
+  this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
+ 
+    this.messages = [];
+    this.lastAgentMessageIndex = null;
+
+    const userMessages = chat.mensajes_usuario.map((msg: string) => {
+      try {
+        const parsedMsg = JSON.parse(msg);
+        return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'user' };
+      } catch (error) {
+        return { content: msg, sender: 'user' };
+      }
     });
+
+   
+    const agentMessages = chat.mensajes_agente.map((msg: string) => {
+      try {
+        const parsedMsg = JSON.parse(msg);
+        return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'agent' };
+      } catch (error) {
+        return { content: msg, sender: 'agent' };
+      }
+    });
+
+  
+    this.messages = this.alternateMessages(userMessages, agentMessages);
+
+ 
+   
+ // Actualizar el índice del último mensaje del agente
+ const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
+ this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
+}, (error) => {
+ console.error('Error al obtener los mensajes del chat', error);
+});
+}
+
+
+alternateMessages(userMessages: any[], agentMessages: any[]): any[] {
+  const alternatedMessages = [];
+  const maxLength = Math.max(userMessages.length, agentMessages.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    if (i < userMessages.length) {
+      alternatedMessages.push(userMessages[i]);
+    }
+    if (i < agentMessages.length) {
+      alternatedMessages.push(agentMessages[i]);
+    }
   }
+
+  return alternatedMessages;
+}
 
 
 

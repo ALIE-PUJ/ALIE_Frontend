@@ -14,14 +14,20 @@
             <div class="botones">
               <i class="bi bi-chat-left"></i>
             </div>
+
             <!-- Título del chat en el panel izquierdo -->
-            <p class="titulo">{{ chat.title || 'Chat sin título' }}</p>
+            <!-- Mostrar el título si no está en modo edición, mostrar el input si está editando -->
+            <p class="titulo" *ngIf="!chat.isEditing" (dblclick)="enableEditing(chat)">
+              {{ chat.title || 'Chat sin título' }}
+            </p>
+            <input *ngIf="chat.isEditing" [(ngModel)]="chat.title" (blur)="saveChatName(chat)"
+              (keydown.enter)="saveChatName(chat)" class="edit-input" />
 
             <!-- Opciones para renombrar, archivar y eliminar chats -->
             <div class="menu">
               <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat.memory_key)"></i>
               <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
-                <div class="option" (click)="renameChat(chat.memory_key)">
+                <div class="option" (click)="enableEditing(chat)">
                   <i class="bi bi-pencil"></i>
                   <span>Renombrar</span>
                 </div>
@@ -42,7 +48,7 @@
       <div class="right">
         <!-- Título del chat activo -->
         <h1 *ngIf="messages.length === 0">
-          {{ getActiveChatTitle() }}
+          ALIE
         </h1>
 
         <!-- Subtítulo cuando no hay mensajes en el chat -->
@@ -52,8 +58,7 @@
 
         <!-- Lista de mensajes en el chat -->
         <div class="messages" #messagesContainer>
-
-          <div *ngFor="let message of messages" class="message-container">
+          <div *ngFor="let message of messages; let i = index" class="message-container">
             <p [ngClass]="{
                 'agent-message': message.sender === 'agent',
                 'user-message': message.sender === 'user'
@@ -62,10 +67,10 @@
             </p>
 
             <!-- Iconos de interacción con los mensajes del agente -->
-            <div *ngIf="message.sender === 'agent'" class="message-icons">
+            <div *ngIf="message.sender === 'agent' && i === lastAgentMessageIndex" class="message-icons">
               <i class="bi bi-hand-thumbs-up-fill" (click)="handleThumbUp(message)"></i>
               <i class="bi bi-hand-thumbs-down-fill" (click)="handleThumbDown(message)"></i>
-              <i class="bi bi-arrow-repeat" (click)="handleRetry(message)"></i>
+              <i class="bi bi-arrow-repeat" (click)="handleRetry()"></i>
             </div>
 
             <!-- Caja de confirmación para intervención humana -->
@@ -79,10 +84,7 @@
               </div>
             </div>
           </div>
-
         </div>
-
-        <!-- Navegación: campo para enviar mensajes -->
 
         <!-- Mensaje de carga -->
         <div *ngIf="isLoading" class="message-container loading-message">
