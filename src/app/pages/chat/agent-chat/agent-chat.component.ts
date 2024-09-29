@@ -324,7 +324,7 @@ saveChatName(chat: any) {
       this.startLoadingAnimation();
   
       // Obtener la nueva respuesta del agente con el último mensaje del usuario
-      let alie_answer = await this.getALIE_Response(userMessage, "False");
+      let alie_answer = await this.getALIE_Response(userMessage, "True");
       this.stopLoadingAnimation();
   
       // Desactivar el mensaje de carga
