@@ -194,6 +194,76 @@ i {
   
   max-width: 800px; /* Para evitar que se pase del tamano de la pagina */
 }
+.navegacion {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 25px;
+  gap: 10px;
+}
+
+.texto {
+  padding: 10px;
+  border: none;
+  border-radius: 25px;
+  flex-grow: 1; /* El campo de texto se expandirá */
+  font-size: 1rem;
+  background-color: #61609e;
+  color: white;
+}
+
+.texto::placeholder {
+  color: white;
+  opacity: 0.8;
+}
+
+/* Estilos de los botones para enviar mensajes */
+.send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4e5481;
+  border: none;
+  color: white;
+  border-radius: 50%; /* Hacer el botón circular */
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.send-button i {
+  font-size: 20px; /* Tamaño del ícono */
+}
+
+.send-button:hover {
+  background-color: #61609e;
+}
+
+.enviar-supervisor {
+  background-color: #2f48e9;
+}
+
+button:hover {
+  background-color: #505991;
+}
+
+.supervisor-message {
+  background-color: #3a4dca;
+  border-radius: 25px 25px 25px 0;
+  padding: 10px 15px;
+  max-width: 85%;
+  align-self: flex-start;
+  color: #fff;
+  word-wrap: break-word;
+  margin-left: 0;
+  margin-right: auto;
+  position: relative;
+  
+  max-width: 800px; /* Para evitar que se pase del tamano de la pagina */
+}
+
 
 .user-message {
   background-color: #656366;

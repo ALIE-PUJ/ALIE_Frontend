@@ -42,6 +42,7 @@ export class AgentChatComponent {
 
   auth_token: string = 'your_token_here';
   user_id: string = '1';
+  isIntervened: boolean | undefined;
 
   constructor() {
     this.listChats();
@@ -79,18 +80,18 @@ addNewChat() {
   this.chatService.guardarChat(payload).subscribe((response) => {
     const newChat = {
       memory_key: response.memory_key,
-      title: response.nombre || 'Nuevo Chat', // O el título generado por el backend
+      title: response.nombre || 'Nuevo Chat', 
       messages: [],
       showOptions: false,
-      isEditing: false // No en modo edición
+      isEditing: false 
     };
     
-    // Agregar el nuevo chat a la lista de chats
+
     this.chats.unshift(newChat);
 
-    // Cambiar el chat activo al nuevo chat
+
     this.switchChat(newChat.memory_key);
-    this.hasBotResponded = false; // Reiniciar estado del bot
+    this.hasBotResponded = false; 
 
   }, (error) => {
     console.error('Error al crear el nuevo chat', error);
@@ -104,7 +105,7 @@ addNewChat() {
     this.getMessagesByChatId(chatId);
   }
 
-  // Cargar los mensajes de un chat desde el backend
+
   loadChatMessages(chatId: string) {
     this.chatService.getChat(this.auth_token, chatId).subscribe((chat) => {
       const selectedChat = this.chats.find((c) => c.memory_key === chatId);
@@ -172,18 +173,16 @@ saveChatName(chat: any) {
     });
   }
 
-  // Enviar un mensaje
   sendMessage() {
     if (this.message.trim() !== '') {
       const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
       if (chat) {
-
         const userMessage = { content: this.message, sender: 'user' };
         const formattedUserMessage = JSON.stringify({ texto: this.message });
-
+  
         chat.messages.push(userMessage);
         this.messages.push(userMessage);
-
+  
         const payload = {
           auth_token: this.auth_token,
           memory_key: this.activeChatId,
@@ -193,34 +192,115 @@ saveChatName(chat: any) {
           mensajes_supervision: [],
           user_id: this.user_id
         };
+  
+  
+        this.chatService.getChat(this.activeChatId, this.auth_token).subscribe(
+          (response: any) => {
 
+            if (response.intervenido === true) {
+ 
+              this.chatService.guardarChat(payload).subscribe(
+                () => {
+                  this.message = ''; 
+                  console.log('El chat está intervenido, guardando el mensaje sin llamar al agente.');
+                },
+                (error) => {
+                  console.error('Error al guardar el mensaje en un chat intervenido', error);
+                }
+              );
+            } else {
 
-        // Guardar el mensaje del usuario. Llamada asíncrona
-        this.chatService.guardarChat(payload).subscribe(
-          async () => {
-            this.message = ''; // Limpiar el mensaje de entrada
-            await this.getAgentResponse(chat); // Esperar la respuesta del agente
+              this.chatService.guardarChat(payload).subscribe(
+                async () => {
+                  this.message = '';
+                  await this.getAgentResponse(chat); 
+                },
+                (error) => {
+                  console.error('Error al guardar el mensaje del usuario', error);
+                }
+              );
+            }
           },
           (error) => {
-            console.error('Error al guardar el mensaje del usuario', error);
+            console.error('Error al consultar el estado del chat', error);
           }
         );
-
-        // Llamada síncrona. Ya no se usa
-        /*
-        this.chatService.guardarChat(payload).subscribe(() => {
-
-          this.message = '';
-
-          // Esperar la respuesta
-          this.getAgentResponse(chat);
-        }, (error) => {
-          console.error('Error al guardar el mensaje del usuario', error);
-        });
-        */
       }
     }
   }
+  
+
+ // Obtener el chat activo por su memory_key
+getActiveChat() {
+  return this.chats.find((chat) => chat.memory_key === this.activeChatId);
+}
+
+// Enviar un mensaje al agente
+sendMessageToAgent() {
+  const chat = this.getActiveChat();
+  if (chat && this.message.trim() !== '') {
+    const userMessage = { content: this.message, sender: 'user' };
+    const formattedUserMessage = JSON.stringify({ texto: this.message });
+
+    chat.messages.push(userMessage);
+    this.messages.push(userMessage);
+
+    const payload = {
+      auth_token: this.auth_token,
+      memory_key: this.activeChatId,
+      nombre: chat.title,
+      mensajes_agente: [],
+      mensajes_usuario: [formattedUserMessage],
+      mensajes_supervision: [],
+      user_id: this.user_id
+    };
+
+ 
+    this.chatService.guardarChat(payload).subscribe(
+      async () => {
+        this.message = ''; 
+        await this.getAgentResponse(chat); 
+      },
+      (error) => {
+        console.error('Error al guardar el mensaje del usuario', error);
+      }
+    );
+  }
+}
+
+// Enviar un mensaje al supervisor si el chat está intervenido
+sendMessageToSupervisor() {
+  const chat = this.getActiveChat();
+  if (chat && this.message.trim() !== '') {
+    const userMessage = { content: this.message, sender: 'user' };
+    const formattedUserMessage = JSON.stringify({ texto: this.message });
+
+    chat.messages.push(userMessage);
+    this.messages.push(userMessage);
+
+    const payload = {
+      auth_token: this.auth_token,
+      memory_key: this.activeChatId,
+      nombre: chat.title,
+      mensajes_agente: [],
+      mensajes_usuario: [formattedUserMessage],
+      mensajes_supervision: [],
+      user_id: this.user_id,
+      intervenido: true 
+    };
+
+  
+    this.chatService.guardarChat(payload).subscribe(
+      () => {
+        this.message = ''; // Limpiar el mensaje de entrada
+        console.log('Mensaje enviado al supervisor.');
+      },
+      (error) => {
+        console.error('Error al guardar el mensaje con intervención', error);
+      }
+    );
+  }
+}
 
 
 
@@ -414,13 +494,49 @@ saveChatName(chat: any) {
 
   }
 
+  isChatIntervened(chatId: string): boolean {
+    const chat = this.chats.find((c) => c.memory_key === chatId);
+    return chat ? chat.intervenido : true;
+  }
+  
 
   handleYes() {
-    this.router.navigate(['/supervision']);
+    const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
+    if (!chat) {
+      console.error('Chat no encontrado');
+      return;
+    }
+  
+    // Crear el payload para cambiar solo el estado de intervenido, sin modificar los mensajes
+    const payload = {
+      auth_token: this.auth_token,
+      memory_key: chat.memory_key,
+      intervenido: true  // Marcar el chat como intervenido
+    };
+  
+    // Llamar al servicio para actualizar solo el estado de intervención del chat
+    this.chatService.actualizarEstadoIntervenido(payload).subscribe(() => {
+
+      chat.intervenido = true;
+      // Añadir el mensaje de espera al array de mensajes del usuario
+      this.messages.push({
+        content: 'Un humano está en camino para ayudarte...',
+        sender: 'system'
+      });
+  
+      // Desactivar la caja de confirmación y cualquier respuesta del bot
+      this.hasBotResponded = false;
+      this.showConfirmation = false;
+    }, (error) => {
+      console.error('Error al marcar el chat como intervenido', error);
+    });
   }
+  
+  
 
 
   handleNo() {
+    this.isIntervened = false;
     this.showConfirmation = false;
   }
 
@@ -457,14 +573,33 @@ saveChatName(chat: any) {
 messages: { content: string, sender: string }[] = [];
 lastAgentMessageIndex: number | null = null; 
 
+ngOnInit() {
+
+  this.startPollingForMessages();
+}
+
+ngOnDestroy() {
+
+  clearInterval(this.pollingInterval);
+}
+
+pollingInterval: any;
+
+startPollingForMessages() {
+  this.pollingInterval = setInterval(() => {
+    this.getMessagesByChatId(this.activeChatId);
+  }, 5000);
+}
 
 getMessagesByChatId(chatId: string) {
   const auth_token = this.auth_token;
 
   this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
- 
     this.messages = [];
     this.lastAgentMessageIndex = null;
+
+    // Verificar si el chat está intervenido y actualizar el estado local
+    const isIntervenido = chat.intervenido;
 
     const userMessages = chat.mensajes_usuario.map((msg: string) => {
       try {
@@ -475,7 +610,6 @@ getMessagesByChatId(chatId: string) {
       }
     });
 
-   
     const agentMessages = chat.mensajes_agente.map((msg: string) => {
       try {
         const parsedMsg = JSON.parse(msg);
@@ -485,23 +619,36 @@ getMessagesByChatId(chatId: string) {
       }
     });
 
-  
-    this.messages = this.alternateMessages(userMessages, agentMessages);
+    const supervisorMessages = chat.mensajes_supervision.map((msg: string) => {
+      try {
+        const parsedMsg = JSON.parse(msg);
+        return { content: parsedMsg.texto || parsedMsg.content || msg, sender: 'supervisor' };
+      } catch (error) {
+        return { content: msg, sender: 'supervisor' };
+      }
+    });
 
- 
-   
- // Actualizar el índice del último mensaje del agente
- const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
- this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
-}, (error) => {
- console.error('Error al obtener los mensajes del chat', error);
-});
+    this.messages = this.alternateMessages(userMessages, agentMessages, supervisorMessages);
+
+    // Actualizar el índice del último mensaje del agente
+    const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
+    this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
+
+    // Verificar el estado de intervención y guardar el estado local
+    const chatToUpdate = this.chats.find(c => c.memory_key === chatId);
+    if (chatToUpdate) {
+      chatToUpdate.intervenido = isIntervenido;  // Actualizar el estado local
+    }
+  }, (error) => {
+    console.error('Error al obtener los mensajes del chat', error);
+  });
 }
 
 
-alternateMessages(userMessages: any[], agentMessages: any[]): any[] {
+
+alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages: any[]): any[] {
   const alternatedMessages = [];
-  const maxLength = Math.max(userMessages.length, agentMessages.length);
+  const maxLength = Math.max(userMessages.length, agentMessages.length, supervisorMessages.length);
 
   for (let i = 0; i < maxLength; i++) {
     if (i < userMessages.length) {
@@ -509,6 +656,9 @@ alternateMessages(userMessages: any[], agentMessages: any[]): any[] {
     }
     if (i < agentMessages.length) {
       alternatedMessages.push(agentMessages[i]);
+    }
+    if (i < supervisorMessages.length) {
+      alternatedMessages.push(supervisorMessages[i]);
     }
   }
 

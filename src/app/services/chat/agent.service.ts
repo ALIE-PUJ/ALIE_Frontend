@@ -31,6 +31,11 @@ export class AgentService {
     return this.http.post(`${this.apiUrl}/chat/list_all`, { auth_token });
   }
 
+  actualizarEstadoIntervenido(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/chat/update_intervention`, payload);
+  }
+  
+
 
   deleteChat(auth_token: string, memory_key: string) {
     const payload = {
@@ -55,5 +60,10 @@ obtenerRespuestaAgente(auth_token: string, memory_key: string): Observable<any> 
 
 archiveChat(payload: any): Observable<any> {
   return this.http.post(`${this.apiUrl}/chat/archive`, payload);
+}
+
+getInterventionChats(auth_token: string): Observable<any> {
+  const payload = { auth_token };
+  return this.http.post(`${this.apiUrl}/chat/list_intervention`, payload);
 }
 }

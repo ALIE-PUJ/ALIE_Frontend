@@ -16,7 +16,6 @@
             </div>
 
             <!-- Título del chat en el panel izquierdo -->
-            <!-- Mostrar el título si no está en modo edición, mostrar el input si está editando -->
             <p class="titulo" *ngIf="!chat.isEditing" (dblclick)="enableEditing(chat)">
               {{ chat.title || 'Chat sin título' }}
             </p>
@@ -61,7 +60,8 @@
           <div *ngFor="let message of messages; let i = index" class="message-container">
             <p [ngClass]="{
                 'agent-message': message.sender === 'agent',
-                'user-message': message.sender === 'user'
+                'user-message': message.sender === 'user',
+                'supervisor-message': message.sender === 'supervisor'
               }">
               {{ message.content }}
             </p>
@@ -92,11 +92,24 @@
         </div>
 
         <div class="navegacion">
-          <input type="text" class="texto" placeholder="Envía un mensaje..." [(ngModel)]="message"
-            (keydown.enter)="sendMessage()" />
-          <i class="bi bi-send" (click)="sendMessage()"></i>
-          <p>ALIE - Trabajo de grado - Pontificia Universidad Javeriana</p>
+          <!-- Input para escribir el mensaje -->
+          <input type="text" class="texto" placeholder="Escribe un mensaje..." [(ngModel)]="message" />
+        
+  
+          <button class="send-button" *ngIf="!isChatIntervened(activeChatId)" (click)="sendMessageToAgent()">
+            <i class="bi bi-send"></i>
+          </button>
+        
+        
+          <button class="send-button" *ngIf="isChatIntervened(activeChatId)" (click)="sendMessageToSupervisor()">
+            <i class="bi bi-send-check"></i>
+          </button>
         </div>
+        
+        
+        
+             
+        
       </div>
     </div>
   </div>
