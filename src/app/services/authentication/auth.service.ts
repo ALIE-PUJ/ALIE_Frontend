@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
+import { User } from '../../model/User';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ import { map } from 'rxjs';
 export class AuthService {
   private apiUrl = /* process.env['ALIE_URL'] ?? */ 'http://localhost:2001';
 
+  private user: User | null = null;
   private token: string | null = null;
 
   constructor(private http: HttpClient) { }
@@ -22,6 +24,7 @@ export class AuthService {
     ).pipe(
       map((res: any) => {
         this.token = res['token'];
+        this.user = res['user'];
 
         if (this.token) {
           localStorage.setItem('token', this.token);
