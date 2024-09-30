@@ -6,7 +6,7 @@ import { map } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = process.env['ALIE_URL'] ?? 'http://localhost:2001';
+  private apiUrl = /* process.env['ALIE_URL'] ?? */ 'http://localhost:2001';
 
   private token: string | null = null;
 
