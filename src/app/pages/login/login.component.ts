@@ -27,9 +27,9 @@ export class LoginComponent {
   handleLogin() {
     if (this.email.value && this.password.value) {
       this.authService.login(this.email.value, this.password.value).subscribe((res) => {
-        if (res['token'] && res['id_categoria'] === 1) {
+        if (res['token'] && res['user']['id_categoria'] === 1) {
           this.loginAsStudent();
-        } else if (res['token'] && res['id_categoria'] === 2) {
+        } else if (res['token'] && res['user']['id_categoria'] === 2) {
           this.loginAsAdmin();
         } else {
           alert('Credenciales incorrectas');
@@ -49,6 +49,7 @@ export class LoginComponent {
 
   loginAsAdmin() {
     localStorage.setItem('ActiveRole', 'Admin');
+    this.router.navigate(['/chat']);
     // Add your login logic for admin here
     // alert('Logged in as Admin');
   }
