@@ -35,6 +35,12 @@ export class AuthService {
     );
   }
 
+  logout() {
+    this.token = null;
+    this.user = null;
+    localStorage.removeItem('token');
+  }
+
   getUser() {
     return this.user;
   }
