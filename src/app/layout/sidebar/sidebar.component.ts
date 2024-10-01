@@ -18,6 +18,7 @@ export class SidebarComponent {
   @Input() userRole: string = 'Admin';
   @Input() userId: string = '12345';
   @Input() userName: string = 'XXX';
+  @Input() userEmail: string = 'XXX@gmail.com';
   isCollapsed = false;
 
   // Inicializacion
@@ -50,8 +51,14 @@ export class SidebarComponent {
     console.log("[SIDEBAR]: Active User Id = ", this.userId);
 
     // Get user name from DB
-    this.userName = 'Luis Bravo'; // Estudiante por defecto, hasta configurar la BD
+    const storedActiveUserName = localStorage.getItem('ActiveUserName');
+    this.userName = storedActiveUserName ? storedActiveUserName : 'Usuario XXX'; // Estudiante por defecto
     console.log("[SIDEBAR]: Active User Name = ", this.userName);
+
+    // Get user email from DB
+    const storedActiveUserEmail = localStorage.getItem('ActiveUserEmail');
+    this.userEmail = storedActiveUserEmail ? storedActiveUserEmail : 'XXX@gmail.com'; // Correo por defecto
+    console.log("[SIDEBAR]: Active User Email = ", this.userEmail);
   }
 
 }

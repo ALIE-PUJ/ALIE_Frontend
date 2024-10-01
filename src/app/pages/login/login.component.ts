@@ -28,9 +28,31 @@ export class LoginComponent {
     if (this.email.value && this.password.value) {
       this.authService.login(this.email.value, this.password.value).subscribe((res) => {
         if (res['token'] && res['user']['id_categoria'] === 1) {
-          this.loginAsStudent();
+          
+          // Set user data in local storage
+          let userName = res['user']['usuario'];
+          let userId = res['user']['id_usuario'];
+          let userEmail = res['user']['email'];
+
+          localStorage.setItem('ActiveUserName', userName);
+          localStorage.setItem('ActiveUserId', userId);
+          localStorage.setItem('ActiveUserEmail', userEmail);
+
+          this.loginAsStudent(); // Redirect to chat page as student
+
         } else if (res['token'] && res['user']['id_categoria'] === 2) {
-          this.loginAsAdmin();
+
+          // Set user data in local storage
+          let userName = res['user']['usuario'];
+          let userId = res['user']['id_usuario'];
+          let userEmail = res['user']['email'];
+
+          localStorage.setItem('ActiveUserName', userName);
+          localStorage.setItem('ActiveUserId', userId);
+          localStorage.setItem('ActiveUserEmail', userEmail);
+
+          this.loginAsAdmin(); // Redirect to chat page as admin
+
         } else {
           alert('Credenciales incorrectas');
         }
@@ -41,7 +63,6 @@ export class LoginComponent {
 
   loginAsStudent() {
     localStorage.setItem('ActiveRole', 'Student');
-    localStorage.setItem('ActiveUserId', '12345');
     this.router.navigate(['/chat']);
     // Add your login logic for student here
     // alert('Logged in as Student');
