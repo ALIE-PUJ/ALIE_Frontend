@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router'; // Import RouterModule
+import { Router, RouterModule } from '@angular/router'; // Import RouterModule
+import { AuthService } from '../../services/authentication/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,6 +20,8 @@ export class SidebarComponent {
   @Input() userId: string = '12345';
   @Input() userName: string = 'XXX';
   isCollapsed = false;
+
+  constructor(private authService: AuthService, private router: Router) { }
 
   // Inicializacion
   ngOnInit() {
@@ -52,6 +55,11 @@ export class SidebarComponent {
     // Get user name from DB
     this.userName = 'Luis Bravo'; // Estudiante por defecto, hasta configurar la BD
     console.log("[SIDEBAR]: Active User Name = ", this.userName);
+  }
+
+  handleLogout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
 }
