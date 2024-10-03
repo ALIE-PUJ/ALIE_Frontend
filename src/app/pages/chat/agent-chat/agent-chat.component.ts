@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, ViewChild, AfterViewChecked  } from '@angular/core';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -581,6 +581,12 @@ ngOnDestroy() {
   clearInterval(this.pollingInterval);
 }
 
+ngAfterViewChecked() {
+  this.scrollToBottom();
+  const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
+  this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
+}
+
 pollingInterval: any;
 
 startPollingForMessages() {
@@ -652,6 +658,13 @@ getMessagesByChatId(chatId: string) {
     if (chatToUpdate) {
       chatToUpdate.intervenido = isIntervenido;  
     }
+
+    this.messages = this.alternateMessages(userMessages, agentMessages, supervisorMessages);
+
+// Recalcular el índice del último mensaje del agente
+const lastAgentIndex1 = this.messages.map(m => m.sender).lastIndexOf('agent');
+this.lastAgentMessageIndex = lastAgentIndex1 !== -1 ? lastAgentIndex1 : null;
+
   }, (error) => {
     // Manejo del error
     if (error.status === 404) {
@@ -719,10 +732,6 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
   }
 
   
-  // Scroll automatico al final de la lista de mensajes
-  ngAfterViewChecked() {
-    this.scrollToBottom(); // Se asegura de hacer scroll al final después de cada actualización
-  }
 
   scrollToBottom(): void {
     if (this.messagesContainer) {
