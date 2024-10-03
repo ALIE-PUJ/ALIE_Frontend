@@ -1,5 +1,5 @@
 # Etapa de compilación
-FROM oven/bun:latest
+FROM oven/bun:latest AS build
 
 # Copia los archivos de configuracion
 COPY package.json ./
@@ -11,15 +11,17 @@ RUN bun install
 # Copia el codigo
 COPY . .
 
+CMD [ "tail", "-f", "/dev/null" ]
+
 # Compila el codigo
-RUN bun run build
+# RUN bun run build
 
-# Etapa de ejecución
-FROM oven/bun:latest
+# # Etapa de ejecución
+# FROM oven/bun:latest
 
-# Copia la aplicación compilada
-COPY --from=0 ./dist ./dist
+# # Copia la aplicación compilada
+# COPY --from=build ./dist ./dist
 
-# Ejecuta la aplicación
-CMD ["bun", "run", "server/server.mjs"]
-EXPOSE 4200
+# # Ejecuta la aplicación
+# CMD ["bun", "run", "server/server.mjs"]
+# EXPOSE 4200
