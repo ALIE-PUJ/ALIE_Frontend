@@ -27,5 +27,6 @@ FROM oven/bun:latest
 COPY --from=build /home/bun/app/dist ./dist
 
 # Ejecuta la aplicación
-CMD ["bun", "run", "dist/server/server.mjs"]
+CMD ["bun", "run", "dist/alie-frontend/server/server.mjs"]
+CMD [ "tail", "-f", "/dev/null" ]
 EXPOSE 4200
