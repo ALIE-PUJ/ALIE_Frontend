@@ -37,28 +37,43 @@ export class SidebarComponent {
 
   // Control de acceso
   verifyAccess(): void {
-    // Recuperar el rol activo del usuario que inicio sesion, desde localStorage
-    const storedActiveRole = localStorage.getItem('ActiveRole');
-    this.userRole = storedActiveRole ? storedActiveRole : 'Student'; // Estudiante por defecto
-    console.log("[SIDEBAR]: Active Role = ", this.userRole);
+    if (typeof localStorage !== 'undefined') {
+      // Recuperar el rol activo del usuario que inició sesión, desde localStorage
+      const storedActiveRole = localStorage.getItem('ActiveRole');
+      this.userRole = storedActiveRole ? storedActiveRole : 'Student'; // Estudiante por defecto
+      console.log("[SIDEBAR]: Active Role = ", this.userRole);
+    } else {
+      // Manejar el caso cuando localStorage no está disponible (por ejemplo, en el servidor)
+      console.log("[SIDEBAR]: localStorage is not available. Defaulting role to 'Student'.");
+      this.userRole = 'Student';
+    }
   }
+
 
   // Id y nombre de usuario
   getUserData(): void {
-    // Recuperar el id activo del usuario que inicio sesion, desde localStorage
-    const storedActiveUserId = localStorage.getItem('ActiveUserId');
-    this.userId = storedActiveUserId ? storedActiveUserId : '12345'; // Estudiante por defecto
-    console.log("[SIDEBAR]: Active User Id = ", this.userId);
+    if (typeof localStorage !== 'undefined') {
+      // Recuperar el id activo del usuario que inició sesión, desde localStorage
+      const storedActiveUserId = localStorage.getItem('ActiveUserId');
+      this.userId = storedActiveUserId ? storedActiveUserId : '12345'; // ID por defecto
+      console.log("[SIDEBAR]: Active User Id = ", this.userId);
 
-    // Get user name from DB
-    const storedActiveUserName = localStorage.getItem('ActiveUserName');
-    this.userName = storedActiveUserName ? storedActiveUserName : 'Usuario XXX'; // Estudiante por defecto
-    console.log("[SIDEBAR]: Active User Name = ", this.userName);
+      // Recuperar el nombre del usuario
+      const storedActiveUserName = localStorage.getItem('ActiveUserName');
+      this.userName = storedActiveUserName ? storedActiveUserName : 'Usuario XXX'; // Nombre por defecto
+      console.log("[SIDEBAR]: Active User Name = ", this.userName);
 
-    // Get user email from DB
-    const storedActiveUserEmail = localStorage.getItem('ActiveUserEmail');
-    this.userEmail = storedActiveUserEmail ? storedActiveUserEmail : 'XXX@gmail.com'; // Correo por defecto
-    console.log("[SIDEBAR]: Active User Email = ", this.userEmail);
+      // Recuperar el correo electrónico del usuario
+      const storedActiveUserEmail = localStorage.getItem('ActiveUserEmail');
+      this.userEmail = storedActiveUserEmail ? storedActiveUserEmail : 'XXX@gmail.com'; // Correo por defecto
+      console.log("[SIDEBAR]: Active User Email = ", this.userEmail);
+    } else {
+      // Manejar el caso cuando localStorage no está disponible (por ejemplo, en el servidor)
+      console.log("[SIDEBAR]: localStorage is not available. Using default user data.");
+      this.userId = '12345';
+      this.userName = 'Usuario XXX';
+      this.userEmail = 'XXX@gmail.com';
+    }
   }
 
 }
