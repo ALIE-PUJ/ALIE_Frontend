@@ -28,28 +28,55 @@ export class LoginComponent {
 
   handleLogin() {
     if (this.email.value && this.password.value) {
-      this.authService.login(this.email.value, this.password.value).subscribe((res) => {
-        if (res['token'] && res['user']['id_categoria'] === 1) {
-          this.loginAsStudent();
-        } else if (res['token'] && res['user']['id_categoria'] === 2) {
-          this.loginAsAdmin();
-        } else {
-          alert('Error al procesar la solicitud');
+      this.authService.login(this.email.value, this.password.value).subscribe(
+        (res) => {
+          // Verifica si la respuesta tiene token y es de categoría válida
+          if (res['token'] && res['user']['id_categoria'] === 1) {
+            
+            // Guardar datos del usuario en local storage
+            let userName = res['user']['usuario'];
+            let userId = res['user']['id_usuario'];
+            let userEmail = res['user']['email'];
+  
+            localStorage.setItem('ActiveUserName', userName);
+            localStorage.setItem('ActiveUserId', userId);
+            localStorage.setItem('ActiveUserEmail', userEmail);
+  
+            this.loginAsStudent(); // Redirigir a la página de chat como estudiante
+  
+          } else if (res['token'] && res['user']['id_categoria'] === 2) {
+  
+            // Guardar datos del usuario en local storage
+            let userName = res['user']['usuario'];
+            let userId = res['user']['id_usuario'];
+            let userEmail = res['user']['email'];
+  
+            localStorage.setItem('ActiveUserName', userName);
+            localStorage.setItem('ActiveUserId', userId);
+            localStorage.setItem('ActiveUserEmail', userEmail);
+  
+            this.loginAsAdmin(); // Redirigir a la página de chat como admin
+  
+          } else {
+            // Si no es estudiante ni admin, mostrar alerta
+            alert('Credenciales incorrectas');
+            console.log("Credenciales incorrectas");
+          }
+        },
+        (error) => {
+          // Manejar error en la solicitud
+          console.error('Error en la solicitud de login:', error);
+          alert('Error en la solicitud de login. Por favor, verifica tus credenciales.');
         }
-      }, (err: HttpErrorResponse) => {
-        if (err.status === 401) {
-          alert('Credenciales incorrectas');
-        } else {
-          alert(err["message"]);
-        }
-      });
-      
+      );
+    } else {
+      alert('Por favor, llena todos los campos.');
     }
   }
+  
 
   loginAsStudent() {
     localStorage.setItem('ActiveRole', 'Student');
-    localStorage.setItem('ActiveUserId', '12345');
     this.router.navigate(['/chat']);
     // Add your login logic for student here
     // alert('Logged in as Student');
