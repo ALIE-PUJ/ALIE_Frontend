@@ -1,31 +1,24 @@
 # Etapa de compilación
-FROM oven/bun:latest AS build
+FROM node:latest AS build
 
-# Instala Node.js
-RUN apt-get update && apt-get install -y curl
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
-RUN bash nodesource_setup.sh
-RUN apt-get update && apt-get install -y nodejs
-
-# Copia los archivos de configuracion
-COPY package.json ./
-COPY bun.lockb ./
-
-# Instala las dependencias
-RUN bun install
+# Crea el directorio de la aplicación
+WORKDIR /usr/src/app
 
 # Copia el codigo
 COPY . .
 
+# Instala las dependencias
+RUN npm install
+
 # Compila el codigo
-RUN bun run build
+RUN npm run build
 
 # Etapa de ejecución
-FROM oven/bun:latest
+FROM node:latest
 
 # Copia la aplicación compilada
-COPY --from=build /home/bun/app/dist ./dist
+COPY --from=build /usr/src/app/dist/alie-frontend/server .
 
 # Ejecuta la aplicación
-CMD ["bun", "run", "dist/alie-frontend/server/server.mjs"]
+CMD ["node", "server/server.mjs"]
 EXPOSE 4000
