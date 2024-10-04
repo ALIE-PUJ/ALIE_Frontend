@@ -1,0 +1,12 @@
+services:
+  alie-frontend:
+    image: harbor.alie.javeriana.edu.co/alie-frontend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 4200:4000
+    expose:
+      - 4000

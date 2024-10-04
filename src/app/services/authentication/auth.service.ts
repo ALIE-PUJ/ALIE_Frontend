@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { User } from '../../model/User';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = /* process.env['ALIE_URL'] ?? */ 'http://localhost:2001';
+  private apiUrl = environment.services.auth.apiUrl;
 
   private user: User | null = null;
   private token: string | null = null;
@@ -33,6 +34,12 @@ export class AuthService {
         return res;
       })
     );
+  }
+
+  logout() {
+    this.token = null;
+    this.user = null;
+    localStorage.removeItem('token');
   }
 
   getUser() {
