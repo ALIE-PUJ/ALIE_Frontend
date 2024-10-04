@@ -28,5 +28,4 @@ COPY --from=build /home/bun/app/dist ./dist
 
 # Ejecuta la aplicación
 CMD ["bun", "run", "dist/alie-frontend/server/server.mjs"]
-CMD [ "tail", "-f", "/dev/null" ]
-EXPOSE 4200
+EXPOSE 4000
