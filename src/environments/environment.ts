@@ -1,21 +1,21 @@
 export const environment = {
   services: {
     alie: {
-      apiUrl: 'Not Defined',
+      apiUrl: 'http://alie.javeriana.edu.co/api/ia',
     },
     chat: {
-      apiUrl: 'Not Defined',
+      apiUrl: 'http://alie.javeriana.edu.co/api/front',
     },
     tagging: {
-      apiUrl: 'Not Defined'
+      apiUrl: 'http://alie.javeriana.edu.co/api/front/tag'
     },
     auth: {
-      apiUrl: 'Not Defined',
+      apiUrl: 'http://alie.javeriana.edu.co/api/auth',
     },
     files: {
-      submitUrl: 'Not Defined',
-      listUrl: 'Not Defined',
-      deleteUrl: 'Not Defined',
+      submitUrl: 'http://alie.javeriana.edu.co/api/front/submit',
+      listUrl: 'http://alie.javeriana.edu.co/api/front/list',
+      deleteUrl: 'http://alie.javeriana.edu.co/api/front/delete',
     }
   }
 };
