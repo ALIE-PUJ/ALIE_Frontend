@@ -39,7 +39,13 @@ export class AuthService {
   logout() {
     this.token = null;
     this.user = null;
+
+    // Removes all user related information from local storage
     localStorage.removeItem('token');
+    localStorage.removeItem('ActiveUserId');
+    localStorage.removeItem('ActiveUserName');
+    localStorage.removeItem('ActiveUserEmail');
+    localStorage.removeItem('ActiveRole');
   }
 
   getUser() {

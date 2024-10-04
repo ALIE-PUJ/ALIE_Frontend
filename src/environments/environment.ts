@@ -17,5 +17,8 @@ export const environment = {
       listUrl: 'http://alie.javeriana.edu.co/api/front/list',
       deleteUrl: 'http://alie.javeriana.edu.co/api/front/delete',
     }
+  },
+  ui: {
+    enableNoLoginAccess: false,
   }
 };
