@@ -17,7 +17,7 @@ export class SidebarComponent {
 
   // Sidebar Variables
   // Get user role from input. Can be Student or Admin
-  @Input() userRole: string = 'Admin';
+  @Input() userRole: string = 'Testing';
   @Input() userId: string = '12345';
   @Input() userName: string = 'XXX';
   @Input() userEmail: string = 'XXX@gmail.com';
@@ -48,9 +48,9 @@ export class SidebarComponent {
       if (storedActiveRole) {
         this.userRole = storedActiveRole;
       } else if (environment.ui.enableNoLoginAccess) {
-        this.userRole = 'Student';
-      } else {
         this.userRole = 'Testing';
+      } else {
+        this.router.navigate(['/login']);
       }
 
       console.log("[SIDEBAR]: Active Role = ", this.userRole);
@@ -59,7 +59,7 @@ export class SidebarComponent {
       console.log("[SIDEBAR]: localStorage is not available.");
 
       if (environment.ui.enableNoLoginAccess) {
-        this.userRole = 'Student';
+        this.userRole = 'Testing';
       }
     }
   }
