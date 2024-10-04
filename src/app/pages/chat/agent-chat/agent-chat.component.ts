@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, ViewChild, AfterViewChecked  } from '@angular/core';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -569,38 +569,54 @@ sendMessageToSupervisor() {
     });
   }
 
-  // Mensajes
+ // Mensajes
 messages: { content: string, sender: string }[] = [];
-lastAgentMessageIndex: number | null = null; 
+lastAgentMessageIndex: number | null = null;
 
 ngOnInit() {
-
   this.startPollingForMessages();
 }
 
 ngOnDestroy() {
-
   clearInterval(this.pollingInterval);
+}
+
+ngAfterViewChecked() {
+  this.scrollToBottom();
+  const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
+  this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
 }
 
 pollingInterval: any;
 
 startPollingForMessages() {
-  this.pollingInterval = setInterval(() => {
-    this.getMessagesByChatId(this.activeChatId);
-  }, 5000);
+  if (this.activeChatId && this.auth_token) {
+    this.pollingInterval = setInterval(() => {
+      this.getMessagesByChatId(this.activeChatId);
+    }, 10000);
+  } else {
+    console.warn('No se pudo iniciar el polling porque faltan chatId o auth_token');
+  }
 }
 
+
 getMessagesByChatId(chatId: string) {
-  const auth_token = this.auth_token;
+  const auth_token = this.auth_token;  
+
+  
+  if (!chatId || !auth_token) {
+    console.error('Error: Falta el chatId o auth_token');
+    return;
+  }
 
   this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
     this.messages = [];
     this.lastAgentMessageIndex = null;
 
-    // Verificar si el chat está intervenido y actualizar el estado local
+
     const isIntervenido = chat.intervenido;
 
+   
     const userMessages = chat.mensajes_usuario.map((msg: string) => {
       try {
         const parsedMsg = JSON.parse(msg);
@@ -610,6 +626,7 @@ getMessagesByChatId(chatId: string) {
       }
     });
 
+  
     const agentMessages = chat.mensajes_agente.map((msg: string) => {
       try {
         const parsedMsg = JSON.parse(msg);
@@ -618,6 +635,7 @@ getMessagesByChatId(chatId: string) {
         return { content: msg, sender: 'agent' };
       }
     });
+
 
     const supervisorMessages = chat.mensajes_supervision.map((msg: string) => {
       try {
@@ -628,23 +646,40 @@ getMessagesByChatId(chatId: string) {
       }
     });
 
+   
     this.messages = this.alternateMessages(userMessages, agentMessages, supervisorMessages);
 
-    // Actualizar el índice del último mensaje del agente
+
     const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
     this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
 
-    // Verificar el estado de intervención y guardar el estado local
+  
     const chatToUpdate = this.chats.find(c => c.memory_key === chatId);
     if (chatToUpdate) {
-      chatToUpdate.intervenido = isIntervenido;  // Actualizar el estado local
+      chatToUpdate.intervenido = isIntervenido;  
     }
+
+    this.messages = this.alternateMessages(userMessages, agentMessages, supervisorMessages);
+
+// Recalcular el índice del último mensaje del agente
+const lastAgentIndex1 = this.messages.map(m => m.sender).lastIndexOf('agent');
+this.lastAgentMessageIndex = lastAgentIndex1 !== -1 ? lastAgentIndex1 : null;
+
   }, (error) => {
-    console.error('Error al obtener los mensajes del chat', error);
+    // Manejo del error
+    if (error.status === 404) {
+      console.error('Error: Chat no encontrado', error);
+      this.showUserMessage('Chat no encontrado.');
+    } else {
+      console.error('Error al obtener los mensajes del chat', error);
+      this.showUserMessage('Hubo un error al obtener los mensajes del chat.');
+    }
   });
 }
 
-
+showUserMessage(message: string) {
+  alert(message);  
+}
 
 alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages: any[]): any[] {
   const alternatedMessages = [];
@@ -697,10 +732,6 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
   }
 
   
-  // Scroll automatico al final de la lista de mensajes
-  ngAfterViewChecked() {
-    this.scrollToBottom(); // Se asegura de hacer scroll al final después de cada actualización
-  }
 
   scrollToBottom(): void {
     if (this.messagesContainer) {
