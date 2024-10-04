@@ -1,27 +1,27 @@
+# Etapa base
+FROM node:latest AS base
+
+# Crea el directorio de la aplicación
+WORKDIR /usr/src/app
+
 # Etapa de compilación
-FROM oven/bun:latest AS build
-
-# Copia los archivos de configuracion
-COPY package.json ./
-COPY bun.lockb ./
-
-# Instala las dependencias
-RUN bun install
+FROM base AS build
 
 # Copia el codigo
 COPY . .
 
-CMD [ "tail", "-f", "/dev/null" ]
+# Instala las dependencias
+RUN npm install
 
 # Compila el codigo
-# RUN bun run build
+RUN npm run build
 
-# # Etapa de ejecución
-# FROM oven/bun:latest
+# Etapa de ejecución
+FROM base AS production
 
-# # Copia la aplicación compilada
-# COPY --from=build ./dist ./dist
+# Copia la aplicación compilada
+COPY --from=build /usr/src/app/dist/alie-frontend/ .
 
-# # Ejecuta la aplicación
-# CMD ["bun", "run", "server/server.mjs"]
-# EXPOSE 4200
+# Ejecuta la aplicación
+CMD ["node", "server/server.mjs"]
+EXPOSE 4000
