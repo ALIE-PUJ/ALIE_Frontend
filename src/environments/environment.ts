@@ -1,21 +1,21 @@
 export const environment = {
   services: {
     alie: {
-      apiUrl: 'http://localhost:3000/alie',
+      apiUrl: 'Not Defined',
     },
     chat: {
-      apiUrl: 'http://localhost:5000',
+      apiUrl: 'Not Defined',
     },
     tagging: {
-      apiUrl: 'http://localhost:5000/tag'
+      apiUrl: 'Not Defined'
     },
     auth: {
-      apiUrl: 'http://localhost:2001',
+      apiUrl: 'Not Defined',
     },
     files: {
-      submitUrl: 'http://localhost:5000/files/submit',
-      listUrl: 'http://localhost:5000/files/list',
-      deleteUrl: 'http://localhost:5000/files/delete',
+      submitUrl: 'Not Defined',
+      listUrl: 'Not Defined',
+      deleteUrl: 'Not Defined',
     }
   }
 };
