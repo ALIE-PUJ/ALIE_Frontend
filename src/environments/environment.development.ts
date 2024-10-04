@@ -16,7 +16,6 @@ export const environment = {
       submitUrl: 'http://localhost:5000/files/submit',
       listUrl: 'http://localhost:5000/files/list',
       deleteUrl: 'http://localhost:5000/files/delete',
-      viewUrl: 'http://localhost:5000/files/view'
     }
   }
 };
