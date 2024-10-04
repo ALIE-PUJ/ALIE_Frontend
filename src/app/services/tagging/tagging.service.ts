@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaggingService {
 
-  private apiUrl = 'http://localhost:5000/tag'; // Flask API URL
+  private apiUrl = environment.services.tagging.apiUrl; // Flask API URL
 
   constructor(private http: HttpClient) {}
 

@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileService {
-  private apiUrl = 'http://localhost:5000/files/submit'; // Flask API URL
-  private listFilesUrl = 'http://localhost:5000/files/list';
-  private deleteFileUrl = 'http://localhost:5000/files/delete';
+  private apiUrl = environment.services.files.submitUrl;
+  private listFilesUrl = environment.services.files.listUrl;
+  private deleteFileUrl = environment.services.files.deleteUrl;
 
   constructor(private http: HttpClient) {}
 
