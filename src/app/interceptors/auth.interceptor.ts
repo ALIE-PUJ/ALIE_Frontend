@@ -1,7 +1,22 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  req.headers.set('Authorization', 'Bearer ' + localStorage.getItem('token'));
+  console.log('[authInterceptor] Intercepting HTTP Request');
 
-  return next(req);
+  if (typeof localStorage === 'undefined') {
+    console.log('[authInterceptor] Skipping in server-side rendering');
+    return next(req);
+  }
+
+  if (localStorage.getItem('token') === null) {
+    console.log('[authInterceptor] No token found in localStorage');
+    return next(req);
+  }
+
+  console.log('[authInterceptor] Adding Authorization header to request');
+  const reqAuth = req.clone({
+    headers: req.headers.set('Authorization', 'Bearer ' + localStorage.getItem('token') || '')
+  });
+
+  return next(reqAuth);
 };
