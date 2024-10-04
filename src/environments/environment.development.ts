@@ -19,6 +19,6 @@ export const environment = {
     }
   },
   ui: {
-    enableNoLoginAccess: false,
+    enableNoLoginAccess: true,
   }
 };
