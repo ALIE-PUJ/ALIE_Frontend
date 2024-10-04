@@ -17,5 +17,8 @@ export const environment = {
       listUrl: 'http://localhost:5000/files/list',
       deleteUrl: 'http://localhost:5000/files/delete',
     }
+  },
+  ui: {
+    enableNoLoginAccess: true,
   }
 };
