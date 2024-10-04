@@ -1,8 +1,11 @@
-# Etapa de compilación
-FROM node:latest AS build
+# Etapa base
+FROM node:latest AS base
 
 # Crea el directorio de la aplicación
 WORKDIR /usr/src/app
+
+# Etapa de compilación
+FROM base AS build
 
 # Copia el codigo
 COPY . .
@@ -14,10 +17,10 @@ RUN npm install
 RUN npm run build
 
 # Etapa de ejecución
-FROM node:latest
+FROM base AS production
 
 # Copia la aplicación compilada
-COPY --from=build /usr/src/app/dist/alie-frontend/server .
+COPY --from=build /usr/src/app/dist/alie-frontend/ .
 
 # Ejecuta la aplicación
 CMD ["node", "server/server.mjs"]
