@@ -4,10 +4,10 @@ export const environment = {
       apiUrl: 'http://localhost:3000/alie',
     },
     chat: {
-      apiUrl: 'http://localhost:5000'
+      apiUrl: 'http://localhost:5000',
     },
     tagging: {
-      apiUrl: 'http://localhost:5000/tag',
+      apiUrl: 'http://localhost:5000/tag'
     },
     auth: {
       apiUrl: 'http://localhost:2001',
