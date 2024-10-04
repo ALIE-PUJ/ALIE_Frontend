@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment.development';
 })
 export class AlieService {
 
-  private apiUrl = environment.services.alie; // Flask API URL
+  private apiUrl = environment.services.alie.apiUrl; // Flask API URL
 
   constructor(private http: HttpClient) {}
 
