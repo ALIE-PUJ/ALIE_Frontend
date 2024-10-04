@@ -10,7 +10,7 @@ export const environment = {
       apiUrl: 'http://localhost:5000/tag'
     },
     auth: {
-      apiUrl: 'http://localhost:2001',
+      apiUrl: 'http://localhost:2001/api/auth',
     },
     files: {
       submitUrl: 'http://localhost:5000/files/submit',
