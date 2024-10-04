@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router'; // Import RouterModule
 import { AuthService } from '../../services/authentication/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -43,12 +44,23 @@ export class SidebarComponent {
     if (typeof localStorage !== 'undefined') {
       // Recuperar el rol activo del usuario que inició sesión, desde localStorage
       const storedActiveRole = localStorage.getItem('ActiveRole');
-      this.userRole = storedActiveRole ? storedActiveRole : 'Student'; // Estudiante por defecto
+
+      if (storedActiveRole) {
+        this.userRole = storedActiveRole;
+      } else if (environment.ui.enableNoLoginAccess) {
+        this.userRole = 'Student';
+      } else {
+        this.userRole = 'Testing';
+      }
+
       console.log("[SIDEBAR]: Active Role = ", this.userRole);
     } else {
       // Manejar el caso cuando localStorage no está disponible (por ejemplo, en el servidor)
-      console.log("[SIDEBAR]: localStorage is not available. Defaulting role to 'Student'.");
-      this.userRole = 'Student';
+      console.log("[SIDEBAR]: localStorage is not available.");
+
+      if (environment.ui.enableNoLoginAccess) {
+        this.userRole = 'Student';
+      }
     }
   }
 
