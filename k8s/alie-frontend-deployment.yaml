@@ -21,7 +21,7 @@ spec:
         io.kompose.service: alie-frontend
     spec:
       containers:
-        - image: harbor.alie.javeriana.edu.co/alie-frontend:latest
+        - image: harbor.alie.javeriana.edu.co/images/alie-frontend:latest
           name: alie-frontend
           ports:
             - containerPort: 4000

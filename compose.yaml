@@ -1,6 +1,6 @@
 services:
   alie-frontend:
-    image: harbor.alie.javeriana.edu.co/alie-frontend:latest
+    image: harbor.alie.javeriana.edu.co/images/alie-frontend:latest
     build:
       context: .
       dockerfile: Dockerfile
