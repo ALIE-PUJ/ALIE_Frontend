@@ -52,7 +52,7 @@ export class AgentChatComponent {
     const auth_token = this.auth_token;
     const user_id = this.user_id;
 
-    this.chatService.listChatsByUser(user_id, auth_token).subscribe((chats: any[]) => {
+    this.chatService.listChatsByUser(user_id).subscribe((chats: any[]) => {
       this.chats = chats.map(chat => ({
         memory_key: chat.memory_key,
         title: chat.nombre || 'Chat sin título',
@@ -69,7 +69,6 @@ export class AgentChatComponent {
   // Método para agregar un nuevo chat y abrirlo automáticamente
 addNewChat() {
   const payload = {
-    auth_token: this.auth_token,
     mensajes_agente: [],
     mensajes_usuario: [],
     mensajes_supervision: [],
@@ -107,7 +106,7 @@ addNewChat() {
 
 
   loadChatMessages(chatId: string) {
-    this.chatService.getChat(this.auth_token, chatId).subscribe((chat) => {
+    this.chatService.getChat(chatId).subscribe((chat) => {
       const selectedChat = this.chats.find((c) => c.memory_key === chatId);
       if (selectedChat) {
         selectedChat.messages = [
@@ -142,7 +141,6 @@ saveChatName(chat: any) {
     chat.isEditing = false;  
 
     const payload = {
-      auth_token: this.auth_token,
       memory_key: chat.memory_key,
       nombre: chat.title,  
       mensajes_agente: [],  
@@ -166,7 +164,7 @@ saveChatName(chat: any) {
   // Eliminar un chat
   deleteChat(chatId: string) {
     this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
-    this.chatService.deleteChat(this.auth_token, chatId).subscribe(() => {
+    this.chatService.deleteChat(chatId).subscribe(() => {
       console.log('Chat eliminado');
     }, (error) => {
       console.error('Error al eliminar el chat', error);
@@ -184,7 +182,6 @@ saveChatName(chat: any) {
         this.messages.push(userMessage);
   
         const payload = {
-          auth_token: this.auth_token,
           memory_key: this.activeChatId,
           nombre: chat.nombre,
           mensajes_agente: [],
@@ -194,7 +191,7 @@ saveChatName(chat: any) {
         };
   
   
-        this.chatService.getChat(this.activeChatId, this.auth_token).subscribe(
+        this.chatService.getChat(this.activeChatId).subscribe(
           (response: any) => {
 
             if (response.intervenido === true) {
@@ -246,7 +243,6 @@ sendMessageToAgent() {
     this.messages.push(userMessage);
 
     const payload = {
-      auth_token: this.auth_token,
       memory_key: this.activeChatId,
       nombre: chat.title,
       mensajes_agente: [],
@@ -279,7 +275,6 @@ sendMessageToSupervisor() {
     this.messages.push(userMessage);
 
     const payload = {
-      auth_token: this.auth_token,
       memory_key: this.activeChatId,
       nombre: chat.title,
       mensajes_agente: [],
@@ -363,7 +358,7 @@ sendMessageToSupervisor() {
     }
   
     // Obtener el chat desde la base de datos para asegurar que obtenemos el último mensaje del usuario
-    this.chatService.getChat(this.activeChatId, this.auth_token).subscribe(
+    this.chatService.getChat(this.activeChatId).subscribe(
       (chatData: any) => {
         const userMessages = chatData.mensajes_usuario;
   
@@ -438,7 +433,7 @@ sendMessageToSupervisor() {
     console.log("User Message content: ", userMessage)
 
     // Tagging positivo
-    this.taggingService.tagMessage("authToken", userMessage, agentMessage, 'pos')
+    this.taggingService.tagMessage(userMessage, agentMessage, 'pos')
       .subscribe(
         (response) => {
           // Handle successful response
@@ -474,7 +469,7 @@ sendMessageToSupervisor() {
     console.log("User Message content: ", userMessage)
 
     // Tagging negativo
-    this.taggingService.tagMessage("authToken", userMessage, agentMessage, 'neg')
+    this.taggingService.tagMessage(userMessage, agentMessage, 'neg')
       .subscribe(
         (response) => {
           // Handle successful response
@@ -509,7 +504,6 @@ sendMessageToSupervisor() {
   
     // Crear el payload para cambiar solo el estado de intervenido, sin modificar los mensajes
     const payload = {
-      auth_token: this.auth_token,
       memory_key: chat.memory_key,
       intervenido: true  // Marcar el chat como intervenido
     };
@@ -556,7 +550,6 @@ sendMessageToSupervisor() {
 
   archiveChat(chatId: string) {
     const payload = {
-      auth_token: this.auth_token,
       memory_key: chatId
     };
 
@@ -609,7 +602,7 @@ getMessagesByChatId(chatId: string) {
     return;
   }
 
-  this.chatService.getChat(chatId, auth_token).subscribe((chat: any) => {
+  this.chatService.getChat(chatId).subscribe((chat: any) => {
     this.messages = [];
     this.lastAgentMessageIndex = null;
 
@@ -747,7 +740,7 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
   // Debe ser una solicitud asincrona
   getALIE_Response(input: string, priority: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.alieService.get_response_from_model("authToken", input, priority)
+      this.alieService.get_response_from_model(input, priority)
         .subscribe(
           (response) => {
             if (response.answer) {

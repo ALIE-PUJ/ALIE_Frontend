@@ -15,39 +15,38 @@ export class AgentService {
     return this.http.post(`${this.apiUrl}/guardar`, payload);
   }
 
-  getChat(memory_key: string, auth_token: string): Observable<any> {
-    const payload = { auth_token, memory_key };
+  getChat(memory_key: string): Observable<any> {
+    const payload = { memory_key };
     return this.http.post(`${this.apiUrl}/get`, payload);
   }
 
-  listChatsByUser(user_id: string, auth_token: string): Observable<any> {
-    const payload = { auth_token, user_id };
+  listChatsByUser(user_id: string): Observable<any> {
+    const payload = { user_id };
     return this.http.post(`${this.apiUrl}/list`, payload);
   }
 
-  listAllChats(auth_token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/list_all`, { auth_token });
+  listAllChats(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/list_all`, { });
   }
 
   actualizarEstadoIntervenido(payload: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/update_intervention`, payload);
   }
 
-  deleteChat(auth_token: string, memory_key: string) {
+  deleteChat(memory_key: string) {
     const payload = {
-      auth_token: auth_token,
       memory_key: memory_key
     };
 
     return this.http.post(`${this.apiUrl}/delete`, payload);
   }
 
-  getAgentResponse(memory_key: string, auth_token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/respuesta_agente`, { memory_key, auth_token });
+  getAgentResponse(memory_key: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/respuesta_agente`, { memory_key });
   }
 
 
-  obtenerRespuestaAgente(auth_token: string, memory_key: string): Observable<any> {
+  obtenerRespuestaAgente(memory_key: string): Observable<any> {
     return of({ mensaje: 'Gracias por tu mensaje, estamos revisando tu solicitud.' });
   }
 
@@ -56,8 +55,8 @@ export class AgentService {
     return this.http.post(`${this.apiUrl}/archive`, payload);
   }
 
-  getInterventionChats(auth_token: string): Observable<any> {
-    const payload = { auth_token };
+  getInterventionChats(): Observable<any> {
+    const payload = { };
     return this.http.post(`${this.apiUrl}/list_intervention`, payload);
   }
   

@@ -41,7 +41,7 @@ console: any;
     // Eliminar un chat
     deleteChat(chatId: string) {
       this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
-      this.chatService.deleteChat(this.auth_token, chatId).subscribe(() => {
+      this.chatService.deleteChat(chatId).subscribe(() => {
         console.log('Chat eliminado');
       }, (error) => {
         console.error('Error al eliminar el chat', error);
@@ -50,7 +50,7 @@ console: any;
 
   // Cargar chats que requieren intervención
   loadInterventionChats() {
-    this.chatService.getInterventionChats(this.auth_token).subscribe((chats: any[]) => {
+    this.chatService.getInterventionChats().subscribe((chats: any[]) => {
       this.interventionChats = chats;
     }, (error) => {
       console.error('Error al cargar los chats de intervención', error);
@@ -59,7 +59,7 @@ console: any;
 
   // Cargar chats activos (no intervenidos)
   loadActiveChats() {
-    this.chatService.listAllChats(this.auth_token).subscribe((chats: any[]) => {
+    this.chatService.listAllChats().subscribe((chats: any[]) => {
       this.activeChats = chats.filter(chat => chat.intervenido !== true).map(chat => ({
         memory_key: chat.memory_key,
         nombre: chat.nombre || 'Chat sin título',
@@ -73,7 +73,7 @@ console: any;
 
   // Seleccionar un chat de intervención
 selectInterventionChat(chat: any) {
-  this.chatService.getChat(chat.memory_key, this.auth_token).subscribe((selectedChat) => {
+  this.chatService.getChat(chat.memory_key).subscribe((selectedChat) => {
     this.selectedChat = {
       ...selectedChat,
       mensajes_usuario: this.formatMessages(selectedChat.mensajes_usuario,'user'),
@@ -93,7 +93,7 @@ selectInterventionChat(chat: any) {
 
 // Seleccionar un chat activo
 selectActiveChat(chat: any) {
-  this.chatService.getChat(chat.memory_key, this.auth_token).subscribe((selectedChat) => {
+  this.chatService.getChat(chat.memory_key).subscribe((selectedChat) => {
     this.selectedChat = {
       ...selectedChat,
       mensajes_usuario: this.formatMessages(selectedChat.mensajes_usuario,'user'),
@@ -137,7 +137,6 @@ formatMessages(messages: string[], senderType: string) {
       const formattedSupervisorMessage = JSON.stringify({ texto: this.newMessage, timestamp: Date.now() });
 
       const payload = {
-        auth_token: this.auth_token,
         memory_key: this.selectedChat.memory_key,
         nombre: this.selectedChat.nombre || 'Chat sin título', 
         mensajes_agente: [],  
@@ -161,7 +160,7 @@ formatMessages(messages: string[], senderType: string) {
   }
 
   getMessagesByChatId(chatId: string) {
-    this.chatService.getChat(chatId, this.auth_token).subscribe((chat: any) => {
+    this.chatService.getChat(chatId).subscribe((chat: any) => {
       const userMessages = chat.mensajes_usuario.map((msg: string) => {
         try {
           const parsedMsg = JSON.parse(msg);

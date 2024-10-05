@@ -23,7 +23,7 @@ export class FileManagementComponent implements OnInit {
   }
 
   loadFiles(): void {
-    this.fileService.getFiles(this.authToken).subscribe({
+    this.fileService.getFiles().subscribe({
       next: (response) => {
         if (response.success) {
           this.uploadedFiles = response.files;
@@ -45,7 +45,7 @@ export class FileManagementComponent implements OnInit {
   onFileSelect(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.fileService.uploadFile(file, this.selectedCategory, this.authToken).subscribe(response => {
+      this.fileService.uploadFile(file, this.selectedCategory).subscribe(response => {
         if (response.success) {
           this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
         } else {
@@ -66,7 +66,7 @@ export class FileManagementComponent implements OnInit {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      this.fileService.uploadFile(file, this.selectedCategory, this.authToken).subscribe(response => {
+      this.fileService.uploadFile(file, this.selectedCategory).subscribe(response => {
         if (response.success) {
           this.uploadedFiles.push({ name: file.name, category: this.selectedCategory, showOptions: false });
         } else {
@@ -84,11 +84,11 @@ export class FileManagementComponent implements OnInit {
   }
 
   viewFile(file: any) {
-    this.fileService.viewFile(file, this.authToken);
+    this.fileService.viewFile(file);
   }
 
   deleteFile(file: any) {
-    this.fileService.deleteFile(file.name, this.authToken).subscribe({
+    this.fileService.deleteFile(file.name).subscribe({
       next: (response) => {
         if (response.success) {
           const index = this.uploadedFiles.findIndex(f => f.name === file.name);
