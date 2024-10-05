@@ -1,7 +1,7 @@
 export const environment = {
   services: {
     alie: {
-      apiUrl: 'http://localhost:3000/api/ia',
+      apiUrl: 'http://localhost:3000/api/ia/chat',
     },
     chat: {
       apiUrl: 'http://localhost:5000/api/front/chat',

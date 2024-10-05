@@ -1,7 +1,7 @@
 export const environment = {
   services: {
     alie: {
-      apiUrl: 'http://alie.javeriana.edu.co/api/ia',
+      apiUrl: 'http://alie.javeriana.edu.co/api/ia/chat',
     },
     chat: {
       apiUrl: 'http://alie.javeriana.edu.co/api/front/chat',
