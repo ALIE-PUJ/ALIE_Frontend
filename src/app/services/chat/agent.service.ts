@@ -7,64 +7,58 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class AgentService {
-  private apiUrl = environment.services.chat.apiUrl;  
+  private apiUrl = environment.services.chat.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   guardarChat(payload: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/chat/guardar`, payload);
+    return this.http.post(`${this.apiUrl}/guardar`, payload);
   }
-
 
   getChat(memory_key: string, auth_token: string): Observable<any> {
     const payload = { auth_token, memory_key };
-    return this.http.post(`${this.apiUrl}/chat/get`, payload);
+    return this.http.post(`${this.apiUrl}/get`, payload);
   }
-
 
   listChatsByUser(user_id: string, auth_token: string): Observable<any> {
     const payload = { auth_token, user_id };
-    return this.http.post(`${this.apiUrl}/chat/list`, payload);
+    return this.http.post(`${this.apiUrl}/list`, payload);
   }
 
-
   listAllChats(auth_token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/chat/list_all`, { auth_token });
+    return this.http.post(`${this.apiUrl}/list_all`, { auth_token });
   }
 
   actualizarEstadoIntervenido(payload: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/chat/update_intervention`, payload);
+    return this.http.post(`${this.apiUrl}/update_intervention`, payload);
   }
-  
-
 
   deleteChat(auth_token: string, memory_key: string) {
     const payload = {
       auth_token: auth_token,
       memory_key: memory_key
     };
-  
-    return this.http.post(`${this.apiUrl}/chat/delete`, payload);
+
+    return this.http.post(`${this.apiUrl}/delete`, payload);
+  }
+
+  getAgentResponse(memory_key: string, auth_token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/respuesta_agente`, { memory_key, auth_token });
+  }
+
+
+  obtenerRespuestaAgente(auth_token: string, memory_key: string): Observable<any> {
+    return of({ mensaje: 'Gracias por tu mensaje, estamos revisando tu solicitud.' });
+  }
+
+
+  archiveChat(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/archive`, payload);
+  }
+
+  getInterventionChats(auth_token: string): Observable<any> {
+    const payload = { auth_token };
+    return this.http.post(`${this.apiUrl}/list_intervention`, payload);
   }
   
-
-
-getAgentResponse(memory_key: string, auth_token: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/chat/respuesta_agente`, { memory_key, auth_token });
-}
-
-
-obtenerRespuestaAgente(auth_token: string, memory_key: string): Observable<any> {
-  return of({ mensaje: 'Gracias por tu mensaje, estamos revisando tu solicitud.' });
-}
-
-
-archiveChat(payload: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/chat/archive`, payload);
-}
-
-getInterventionChats(auth_token: string): Observable<any> {
-  const payload = { auth_token };
-  return this.http.post(`${this.apiUrl}/chat/list_intervention`, payload);
-}
 }

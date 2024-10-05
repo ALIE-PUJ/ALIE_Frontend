@@ -7,22 +7,26 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class FileService {
-  private apiUrl = environment.services.files.submitUrl;
-  private listFilesUrl = environment.services.files.listUrl;
-  private deleteFileUrl = environment.services.files.deleteUrl;
-
+  private apiUrl = environment.services.files.apiUrl;
+  
   constructor(private http: HttpClient) {}
 
   uploadFile(file: File, category: string, auth_token: string): Observable<any> {
+
+    let submitUrl = this.apiUrl + '/submit';
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('categoria', category);
     formData.append('auth_token', auth_token); 
 
-    return this.http.post<any>(this.apiUrl, formData);
+    return this.http.post<any>(submitUrl, formData);
   }
 
   getFiles(auth_token: string): Observable<any> {
+
+    let listFilesUrl = this.apiUrl + '/list';
+
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = {
       headers: headers,
@@ -30,21 +34,29 @@ export class FileService {
         auth_token: auth_token 
       }
     };
-    return this.http.get<any>(this.listFilesUrl, options);
+    return this.http.get<any>(listFilesUrl, options);
   }
 
   deleteFile(fileName: string, auth_token: string): Observable<any> {
+
+    let deleteFileUrl = this.apiUrl + '/delete';
+
     const options = {
       params: {
         name: fileName,
         auth_token: auth_token 
       }
     };
-    return this.http.delete<any>(this.deleteFileUrl, options);
+    return this.http.delete<any>(deleteFileUrl, options);
   }
 
   viewFile(file: any, auth_token: string) {
-    const fileUrl = `http://localhost:5000/files/view?name=${encodeURIComponent(file.name)}&auth_token=${auth_token}`; 
+
+    let viewFileUrl = this.apiUrl + '/view';
+
+    // Use the viewFileUrl to open the file in a new tab
+    const fileUrl = `${viewFileUrl}?name=${encodeURIComponent(file.name)}&auth_token=${auth_token}`;
     window.open(fileUrl, '_blank');
   }
+
 }
