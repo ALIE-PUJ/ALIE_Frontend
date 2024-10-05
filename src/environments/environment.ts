@@ -1,10 +1,10 @@
 export const environment = {
   services: {
     alie: {
-      apiUrl: 'http://alie.javeriana.edu.co/api/ia',
+      apiUrl: 'http://alie.javeriana.edu.co/api/ia/chat',
     },
     chat: {
-      apiUrl: 'http://alie.javeriana.edu.co/api/front',
+      apiUrl: 'http://alie.javeriana.edu.co/api/front/chat',
     },
     tagging: {
       apiUrl: 'http://alie.javeriana.edu.co/api/front/tag'
@@ -13,9 +13,7 @@ export const environment = {
       apiUrl: 'http://alie.javeriana.edu.co/api/auth',
     },
     files: {
-      submitUrl: 'http://alie.javeriana.edu.co/api/front/submit',
-      listUrl: 'http://alie.javeriana.edu.co/api/front/list',
-      deleteUrl: 'http://alie.javeriana.edu.co/api/front/delete',
+      apiUrl: 'http://alie.javeriana.edu.co/api/front/files',
     }
   },
   ui: {

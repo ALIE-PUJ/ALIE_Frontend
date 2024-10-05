@@ -11,6 +11,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   } else {
     console.log('[authInterceptor] Adding Authorization header to request');
+    console.log('[authInterceptor] Token:', localStorage.getItem('token'));
     const reqAuth = req.clone({
       headers: req.headers.set('Authorization', 'Bearer ' + localStorage.getItem('token') || '')
     });

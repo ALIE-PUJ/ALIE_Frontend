@@ -13,13 +13,12 @@ export class AlieService {
   constructor(private http: HttpClient) {}
 
   // Function to send data to Flask API
-  get_response_from_model(auth_token: string, input: string, priority: string): Observable<any> {
+  get_response_from_model(input: string, priority: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     const body = {
       input: input,
       priority: priority,
-      auth_token: auth_token,
     };
 
     console.log("Message post sent. Body: ", body);
