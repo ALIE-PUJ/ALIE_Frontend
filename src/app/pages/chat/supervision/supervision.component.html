@@ -12,10 +12,10 @@
             <p class="titulo">{{ chat.nombre }}</p>
             <div class="menu">
               <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat.memory_key)"></i>
-              <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
-                <div class="option" (click)="deleteChat(chat.memory_key)">
-                  <i class="bi bi-trash"></i>
-                  <span>Eliminar</span>
+              <div *ngIf="chat.showOptions" class="menu-options">
+                <div class="option" (click)="archiveChat(chat.memory_key)">
+                  <i class="bi bi-archive"></i>
+                  <span>Archivar</span>
                 </div>
               </div>
             </div>

@@ -35,7 +35,9 @@ html, body {
 }
 
 
-
+.chat-item:hover, .historial:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
 
 
 .user-message {

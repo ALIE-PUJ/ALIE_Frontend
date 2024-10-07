@@ -140,6 +140,18 @@ i {
   border-radius: 4px;
 }
 
+.chat-title-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.chat-title-top-right {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
 
 
 .right h1 {
@@ -147,6 +159,7 @@ i {
   font-size: 2.5em;
   color: #16226d;
   text-align: center;
+  font-family: 'Roboto', sans-serif; 
 }
 
 .right .subtitulo {

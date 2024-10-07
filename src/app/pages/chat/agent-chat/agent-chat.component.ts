@@ -6,6 +6,8 @@ import { AgentService } from '../../../services/chat/agent.service';
 import { Router } from '@angular/router';
 import { TaggingService } from '../../../services/tagging/tagging.service';
 import { AlieService } from '../../../services/alie/alie.service';
+import { AuthService } from '../../../services/authentication/auth.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-agent-chat',
@@ -20,17 +22,17 @@ export class AgentChatComponent {
   private chatService = inject(AgentService);
   private router = inject(Router);
   private taggingService = inject(TaggingService);
-  private alieService = inject(AlieService)
+  private alieService = inject(AlieService);
+  private authService = inject(AuthService); 
 
   // Loading variables
   isLoading: boolean = false;
   loadingMessage: string = 'ALIE está encontrando la información que necesitas';
   loadingDots: string = ''; // Para almacenar los puntos de carga
   loadingIndex: number = 0; // Para llevar la cuenta de la secuencia
-  
+
   // Referencia al DIV de mensajes para hacer scroll automatico
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
-
 
   // Variables
   activeChatId: string = '';
@@ -40,30 +42,72 @@ export class AgentChatComponent {
   showConfirmation: boolean = false;
   messageToThumbDown: any;
 
-  auth_token: string = 'your_token_here';
-  user_id: string = '1';
-  isIntervened: boolean | undefined;
+  auth_token: string | null = null;
+  user_id: string | null = null;
+  isIntervened: boolean = false;
+  isIntervenedFromDB: boolean = false;
 
   constructor() {
+    this.initializeAuth();
     this.listChats();
   }
 
-  listChats() {
-    const auth_token = this.auth_token;
-    const user_id = this.user_id;
+  
+  initializeAuth() {
+    const userId = localStorage.getItem('ActiveUserId');
+    const token = localStorage.getItem('token');
 
-    this.chatService.listChatsByUser(user_id).subscribe((chats: any[]) => {
-      this.chats = chats.map(chat => ({
-        memory_key: chat.memory_key,
-        title: chat.nombre || 'Chat sin título',
-        messages: [],
-        showOptions: false
-      }));
-    }, (error) => {
-      console.error('Error al obtener los chats', error);
-    });
+    if (userId && token) {
+      this.user_id = userId;
+      this.auth_token = token;
+      console.log('User authenticated with ID:', this.user_id);
+    } else {
+      console.error('User is not authenticated, redirecting to login...');
+      this.router.navigate(['/login']); // Redirect to login if not authenticated
+    }
   }
 
+  listChats() {
+    if (this.user_id && this.auth_token) {
+      this.chatService.listChatsByUser(this.user_id).subscribe((chats: any[]) => {
+        console.log('Chats básicos recibidos:', chats);
+  
+        if (chats.length === 0) {
+          this.chats = [];
+          return;
+        }
+  
+        // Obtener los detalles completos de cada chat
+        const detailedChatRequests = chats.map(chat => this.chatService.getChat(chat.memory_key));
+  
+        forkJoin(detailedChatRequests).subscribe((fullChats) => {
+          console.log('Detalles completos de los chats:', fullChats);
+  
+          // Aquí solo necesitamos invertir el orden de los chats
+          this.chats = fullChats
+            .filter(chat => chat.intervenido === false)  
+            .map(chat => ({
+              memory_key: chat.memory_key,
+              title: chat.nombre || 'Chat sin título',
+              messages: [],
+              intervenido: chat.intervenido || false,
+              showOptions: false
+            }))
+            .reverse(); // Invertir el orden para mostrar el último chat creado primero
+  
+          console.log('Chats en orden descendente (más reciente primero):', this.chats);
+        }, (error) => {
+          console.error('Error al obtener los detalles completos de los chats', error);
+        });
+      }, (error) => {
+        console.error('Error al obtener los chats básicos', error);
+      });
+    } else {
+      console.error('User ID or token is missing');
+    }
+  }
+  
+  
 
 
   // Método para agregar un nuevo chat y abrirlo automáticamente
@@ -74,6 +118,8 @@ addNewChat() {
     mensajes_supervision: [],
     user_id: this.user_id
   };
+
+  console.log("Payload being sent:", payload);
 
   // Guardar el nuevo chat en el backend
   this.chatService.guardarChat(payload).subscribe((response) => {
@@ -98,10 +144,32 @@ addNewChat() {
 }
 
 
+checkInterventionStatus(chatId: string) {
+  if (!chatId) {
+    return;
+  }
+
+  this.chatService.getInterventionStatus(chatId).subscribe((response: any) => {
+    if (response.success) {
+      console.log("Estado de intervención recibido del backend:", response.intervenido);
+      
+      this.isIntervened = response.intervenido;
+    } else {
+      console.log('No se encontró el chat o hubo un error:', response.message);
+    }
+  }, (error) => {
+    console.error('Error al consultar el estado de intervención', error);
+  });
+}
+
+
+
+
   // Cambiar el chat activo
   switchChat(chatId: string) {
     this.activeChatId = chatId;
-    this.getMessagesByChatId(chatId);
+    this.getMessagesByChatId(chatId); 
+    this.checkInterventionStatus(chatId);
   }
 
 
@@ -409,10 +477,26 @@ sendMessageToSupervisor() {
       const agentMessage = { content: alie_answer || 'Lo siento, no tengo una respuesta en este momento.', sender: 'agent' };
       chat.messages.push(agentMessage); // Añadimos el nuevo mensaje del agente a los mensajes locales
       this.messages.push(agentMessage); // Actualizamos los mensajes en la interfaz
+  
+      // Guardar la respuesta del agente en la base de datos
+      const agentPayload = {
+        auth_token: this.auth_token,
+        memory_key: this.activeChatId,
+        mensajes_agente: [JSON.stringify({ texto: agentMessage.content })],
+        mensajes_usuario: [],  // No guardamos mensajes de usuario en este payload
+        mensajes_supervision: [],  // No guardamos mensajes de supervisión en este payload
+        user_id: this.user_id
+      };
+  
+      // Guardar la respuesta del agente en la base de datos
+      await this.chatService.guardarChat(agentPayload).toPromise();
+      console.log('Respuesta del agente guardada correctamente en la base de datos');
+  
     } catch (error) {
-      console.error('Error en getAgentResponseRetry:');
+      console.error('Error en getAgentResponseRetry:', error);
     }
   }
+  
   
   
   
@@ -491,9 +575,10 @@ sendMessageToSupervisor() {
 
   isChatIntervened(chatId: string): boolean {
     const chat = this.chats.find((c) => c.memory_key === chatId);
-    return chat ? chat.intervenido : true;
+    return chat ? chat.intervenido : false;
   }
   
+
 
   handleYes() {
     const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
@@ -505,13 +590,15 @@ sendMessageToSupervisor() {
     // Crear el payload para cambiar solo el estado de intervenido, sin modificar los mensajes
     const payload = {
       memory_key: chat.memory_key,
-      intervenido: true  // Marcar el chat como intervenido
+      intervenido: true  
     };
   
     // Llamar al servicio para actualizar solo el estado de intervención del chat
     this.chatService.actualizarEstadoIntervenido(payload).subscribe(() => {
 
       chat.intervenido = true;
+
+      this.isIntervened = true;
       // Añadir el mensaje de espera al array de mensajes del usuario
       this.messages.push({
         content: 'Un humano está en camino para ayudarte...',
@@ -607,7 +694,7 @@ getMessagesByChatId(chatId: string) {
     this.lastAgentMessageIndex = null;
 
 
-    const isIntervenido = chat.intervenido;
+    this.isIntervened = chat.intervenido;
 
    
     const userMessages = chat.mensajes_usuario.map((msg: string) => {
@@ -649,7 +736,7 @@ getMessagesByChatId(chatId: string) {
   
     const chatToUpdate = this.chats.find(c => c.memory_key === chatId);
     if (chatToUpdate) {
-      chatToUpdate.intervenido = isIntervenido;  
+      chatToUpdate.intervenido = this.isIntervened;  
     }
 
     this.messages = this.alternateMessages(userMessages, agentMessages, supervisorMessages);

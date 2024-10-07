@@ -9,54 +9,60 @@
 
         <!-- Historial de chats del usuario -->
         <div class="historial_chat">
-          <div *ngFor="let chat of chats" class="historial" (click)="switchChat(chat.memory_key)"
-            [class.active]="chat.memory_key === activeChatId">
-            <div class="botones">
-              <i class="bi bi-chat-left"></i>
-            </div>
+          <!-- Usar un ng-container para evitar *ngIf y *ngFor en el mismo elemento -->
+          <ng-container *ngFor="let chat of chats">
+            <!-- Mostrar solo los chats no archivados -->
+            <div class="historial" *ngIf="!chat.archivado" (click)="switchChat(chat.memory_key)" 
+              [class.active]="chat.memory_key === activeChatId">
+              <div class="botones">
+                <i class="bi bi-chat-left"></i>
+              </div>
 
-            <!-- Título del chat en el panel izquierdo -->
-            <p class="titulo" *ngIf="!chat.isEditing" (dblclick)="enableEditing(chat)">
-              {{ chat.title || 'Chat sin título' }}
-            </p>
-            <input *ngIf="chat.isEditing" [(ngModel)]="chat.title" (blur)="saveChatName(chat)"
-              (keydown.enter)="saveChatName(chat)" class="edit-input" />
+              <!-- Título del chat en el panel izquierdo -->
+              <p class="titulo" *ngIf="!chat.isEditing" (dblclick)="enableEditing(chat)">
+                {{ chat.title || 'Chat sin título' }}
+              </p>
+              <input *ngIf="chat.isEditing" [(ngModel)]="chat.title" (blur)="saveChatName(chat)"
+                (keydown.enter)="saveChatName(chat)" class="edit-input" />
 
-            <!-- Opciones para renombrar, archivar y eliminar chats -->
-            <div class="menu">
-              <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat.memory_key)"></i>
-              <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
-                <div class="option" (click)="enableEditing(chat)">
-                  <i class="bi bi-pencil"></i>
-                  <span>Renombrar</span>
-                </div>
-                <div class="option" (click)="archiveChat(chat.memory_key)">
-                  <i class="bi bi-archive"></i>
-                  <span>Archivar</span>
-                </div>
-                <div class="option" (click)="deleteChat(chat.memory_key)">
-                  <i class="bi bi-trash"></i>
-                  <span>Eliminar</span>
+              <!-- Opciones para renombrar, archivar y eliminar chats -->
+              <div class="menu">
+                <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat.memory_key)"></i>
+                <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
+                  <div class="option" (click)="enableEditing(chat)">
+                    <i class="bi bi-pencil"></i>
+                    <span>Renombrar</span>
+                  </div>
+                  <div class="option" (click)="archiveChat(chat.memory_key)">
+                    <i class="bi bi-archive"></i>
+                    <span>Archivar</span>
+                  </div>
+                  <div class="option" (click)="deleteChat(chat.memory_key)">
+                    <i class="bi bi-trash"></i>
+                    <span>Eliminar</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </ng-container>
         </div>
       </div>
 
       <div class="right">
-        <!-- Título del chat activo -->
-        <h1 *ngIf="messages.length === 0">
+        <h1 *ngIf="!activeChatId">
+          ALIE
+        </h1>
+        <h1 *ngIf="activeChatId">
           {{ getActiveChatTitle() }}
         </h1>
 
-        <!-- Subtítulo cuando no hay mensajes en el chat -->
-        <div class="subtitulo" *ngIf="messages.length === 0">
+
+        <div class="subtitulo" *ngIf="messages.length === 0 && !activeChatId">
           <p>¿Qué pregunta académica tienes el día de hoy?</p>
         </div>
 
-        <!-- Lista de mensajes en el chat -->
-        <div class="messages" #messagesContainer>
+      
+        <div class="messages" #messagesContainer *ngIf="activeChatId">
           <div *ngFor="let message of messages; let i = index" class="message-container">
             <p [ngClass]="{
                 'agent-message': message.sender === 'agent',
@@ -66,14 +72,14 @@
               {{ message.content }}
             </p>
 
-            <!-- Iconos de interacción con los mensajes del agente -->
+    
             <div *ngIf="message.sender === 'agent' && i === lastAgentMessageIndex" class="message-icons">
               <i class="bi bi-hand-thumbs-up-fill" (click)="handleThumbUp(message)"></i>
               <i class="bi bi-hand-thumbs-down-fill" (click)="handleThumbDown(message)"></i>
               <i class="bi bi-arrow-repeat" (click)="handleRetry()"></i>
             </div>
 
-            <!-- Caja de confirmación para intervención humana -->
+
             <div class="confirmation-box" *ngIf="showConfirmation">
               <div class="confirmation-content">
                 <p>¿Quieres hablar con una persona?</p>
@@ -86,30 +92,23 @@
           </div>
         </div>
 
-        <!-- Mensaje de carga -->
+
         <div *ngIf="isLoading" class="message-container loading-message">
           <p>{{ loadingMessage }}<span class="loading-dots">{{ loadingDots }}</span></p>
         </div>
 
-        <div class="navegacion">
-          <!-- Input para escribir el mensaje -->
+
+        <div class="navegacion" *ngIf="activeChatId">
           <input type="text" class="texto" placeholder="Escribe un mensaje..." [(ngModel)]="message" />
         
-  
-          <button class="send-button" *ngIf="!isChatIntervened(activeChatId)" (click)="sendMessageToAgent()">
+          <button class="send-button" *ngIf="!isIntervened" (click)="sendMessageToAgent()">
             <i class="bi bi-send"></i>
           </button>
         
-        
-          <button class="send-button" *ngIf="isChatIntervened(activeChatId)" (click)="sendMessageToSupervisor()">
+          <button class="send-button" *ngIf="isIntervened" (click)="sendMessageToSupervisor()">
             <i class="bi bi-send-check"></i>
           </button>
         </div>
-        
-        
-        
-             
-        
       </div>
     </div>
   </div>
