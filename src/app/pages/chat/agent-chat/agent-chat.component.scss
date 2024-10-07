@@ -193,6 +193,50 @@ i {
   align-self: flex-start;
 }
 
+
+.archived-section {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+
+.archived-chats {
+  margin-top: 10px;
+  background-color: #d3d3d3;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.left .archived-section{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 0, 255, 0.2);
+  margin: 15px 15px 5px 15px;
+  flex-shrink: 0;
+  height: 45px;
+  padding: 12px 24px;
+  background-color: #16226d;
+}
+
+.left .archived-section {
+  margin: 0;
+  font-weight: 500;
+}
+
+.left .archived-section:hover {
+  background-color: #4553af;
+}
+
+
 .agent-message {
   background-color: #505991;
   border-radius: 25px 25px 25px 0;

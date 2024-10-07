@@ -46,13 +46,15 @@
         ALIE
       </div>
 
-      <div *ngFor="let message of messages">
-        <div [ngClass]="{
-                   'agent-message': message.sender === 'agent',
-                   'user-message': message.sender === 'user',
-                   'supervisor-message': message.sender === 'supervisor'
-             }" class="message-item">
-          {{ message.content }}
+      <div class="message-container" #messagesContainer>
+        <div *ngFor="let message of messages">
+          <div [ngClass]="{
+                 'agent-message': message.sender === 'agent',
+                 'user-message': message.sender === 'user',
+                 'supervisor-message': message.sender === 'supervisor'
+               }" class="message-item">
+            {{ message.content }}
+          </div>
         </div>
       </div>
       

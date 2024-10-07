@@ -108,7 +108,47 @@ export class AgentChatComponent {
   }
   
   
+  list_Archive_Chats() {
+    if (this.user_id && this.auth_token) {
+      this.chatService.listChatsByUser(this.user_id).subscribe((chats: any[]) => {
+        console.log('Chats básicos recibidos:', chats);
+  
+        if (chats.length === 0) {
+          this.chats = [];
+          return;
+        }
+  
+        // Obtener los detalles completos de cada chat
+        const detailedChatRequests = chats.map(chat => this.chatService.getChat(chat.memory_key));
+  
+        forkJoin(detailedChatRequests).subscribe((fullChats) => {
+          console.log('Detalles completos de los chats:', fullChats);
+  
+          // Aquí solo necesitamos invertir el orden de los chats
+          this.chats = fullChats
+            .filter(chat => chat.intervenido === true)  
+            .map(chat => ({
+              memory_key: chat.memory_key,
+              title: chat.nombre || 'Chat sin título',
+              messages: [],
+              intervenido: chat.intervenido || false,
+              showOptions: false
+            }))
+            .reverse(); 
 
+          
+  
+          console.log('Chats en orden descendente (más reciente primero):', this.chats);
+        }, (error) => {
+          console.error('Error al obtener los detalles completos de los chats', error);
+        });
+      }, (error) => {
+        console.error('Error al obtener los chats básicos', error);
+      });
+    } else {
+      console.error('User ID or token is missing');
+    }
+  }
 
   // Método para agregar un nuevo chat y abrirlo automáticamente
 addNewChat() {
@@ -239,60 +279,7 @@ saveChatName(chat: any) {
     });
   }
 
-  sendMessage() {
-    if (this.message.trim() !== '') {
-      const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
-      if (chat) {
-        const userMessage = { content: this.message, sender: 'user' };
-        const formattedUserMessage = JSON.stringify({ texto: this.message });
-  
-        chat.messages.push(userMessage);
-        this.messages.push(userMessage);
-  
-        const payload = {
-          memory_key: this.activeChatId,
-          nombre: chat.nombre,
-          mensajes_agente: [],
-          mensajes_usuario: [formattedUserMessage],
-          mensajes_supervision: [],
-          user_id: this.user_id
-        };
-  
-  
-        this.chatService.getChat(this.activeChatId).subscribe(
-          (response: any) => {
-
-            if (response.intervenido === true) {
  
-              this.chatService.guardarChat(payload).subscribe(
-                () => {
-                  this.message = ''; 
-                  console.log('El chat está intervenido, guardando el mensaje sin llamar al agente.');
-                },
-                (error) => {
-                  console.error('Error al guardar el mensaje en un chat intervenido', error);
-                }
-              );
-            } else {
-
-              this.chatService.guardarChat(payload).subscribe(
-                async () => {
-                  this.message = '';
-                  await this.getAgentResponse(chat); 
-                },
-                (error) => {
-                  console.error('Error al guardar el mensaje del usuario', error);
-                }
-              );
-            }
-          },
-          (error) => {
-            console.error('Error al consultar el estado del chat', error);
-          }
-        );
-      }
-    }
-  }
   
 
  // Obtener el chat activo por su memory_key
@@ -780,7 +767,11 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
   return alternatedMessages;
 }
 
+showArchivedChats: boolean = false;  // Controla si se muestran los chats archivados
 
+toggleArchivedChats() {
+  this.showArchivedChats = !this.showArchivedChats;  // Cambia el estado para mostrar u ocultar
+}
 
   // Mensaje de espera / carga
 

@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar.component';
 import { AgentService } from '../../../services/chat/agent.service';
 import { AuthService } from '../../../services/authentication/auth.service';
 import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-supervision',
@@ -241,8 +242,20 @@ formatMessages(messages: string[], senderType: string) {
       console.error('Error al obtener los mensajes del chat', error);
     });
   }
-  
 
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+  
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+  
+  scrollToBottom(): void {
+    try {
+      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    } catch(err) {
+      console.error('Error scrolling to bottom', err);
+    }
+  }
 
  // Función de intercalación de mensajes
 alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages: any[]): any[] {

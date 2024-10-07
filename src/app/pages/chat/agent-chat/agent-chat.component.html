@@ -3,46 +3,58 @@
     <div class="containerp">
       <div class="left">
         <!-- Botón para añadir un nuevo chat -->
-        <div class="nuevo_chat" (click)="addNewChat()">
+        <div class="nuevo_chat" id="create-chat-btn" (click)="addNewChat()">
           <p>Nuevo Chat</p>
         </div>
 
         <!-- Historial de chats del usuario -->
-        <div class="historial_chat">
-          <!-- Usar un ng-container para evitar *ngIf y *ngFor en el mismo elemento -->
+        <div class="historial_chat" id="chat-list">
           <ng-container *ngFor="let chat of chats">
             <!-- Mostrar solo los chats no archivados -->
-            <div class="historial" *ngIf="!chat.archivado" (click)="switchChat(chat.memory_key)" 
+            <div class="historial" *ngIf="!chat.archivado" id="chat-{{chat.memory_key}}" (click)="switchChat(chat.memory_key)" 
               [class.active]="chat.memory_key === activeChatId">
               <div class="botones">
                 <i class="bi bi-chat-left"></i>
               </div>
 
-              <!-- Título del chat en el panel izquierdo -->
-              <p class="titulo" *ngIf="!chat.isEditing" (dblclick)="enableEditing(chat)">
+              <p class="titulo" *ngIf="!chat.isEditing" id="chat-title-{{chat.memory_key}}" (dblclick)="enableEditing(chat)">
                 {{ chat.title || 'Chat sin título' }}
               </p>
               <input *ngIf="chat.isEditing" [(ngModel)]="chat.title" (blur)="saveChatName(chat)"
                 (keydown.enter)="saveChatName(chat)" class="edit-input" />
 
-              <!-- Opciones para renombrar, archivar y eliminar chats -->
               <div class="menu">
                 <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat.memory_key)"></i>
                 <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
-                  <div class="option" (click)="enableEditing(chat)">
+                  <div class="option" id="rename-chat-{{chat.memory_key}}" (click)="enableEditing(chat)">
                     <i class="bi bi-pencil"></i>
                     <span>Renombrar</span>
                   </div>
-                  <div class="option" (click)="archiveChat(chat.memory_key)">
+                  <div class="option" id="archive-chat-{{chat.memory_key}}" (click)="archiveChat(chat.memory_key)">
                     <i class="bi bi-archive"></i>
                     <span>Archivar</span>
                   </div>
-                  <div class="option" (click)="deleteChat(chat.memory_key)">
+                  <div class="option" id="delete-chat-{{chat.memory_key}}" (click)="deleteChat(chat.memory_key)">
                     <i class="bi bi-trash"></i>
                     <span>Eliminar</span>
                   </div>
                 </div>
               </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="archived-section" id="archived-chats-toggle" (click)="list_Archive_Chats()">
+          <p>Ver chats archivados</p>
+        </div>
+
+        <div *ngIf="showArchivedChats" class="archived-chats">
+          <ng-container *ngFor="let chat of chats">
+            <div class="historial" *ngIf="chat.archivado" id="archived-chat-{{chat.memory_key}}" (click)="switchChat(chat.memory_key)">
+              <div class="botones">
+                <i class="bi bi-archive"></i>
+              </div>
+              <p class="titulo">{{ chat.title || 'Chat Archivado' }}</p>
             </div>
           </ng-container>
         </div>
@@ -56,29 +68,25 @@
           {{ getActiveChatTitle() }}
         </h1>
 
-
         <div class="subtitulo" *ngIf="messages.length === 0 && !activeChatId">
           <p>¿Qué pregunta académica tienes el día de hoy?</p>
         </div>
 
-      
-        <div class="messages" #messagesContainer *ngIf="activeChatId">
+        <div class="messages" id="messages-container" *ngIf="activeChatId">
           <div *ngFor="let message of messages; let i = index" class="message-container">
             <p [ngClass]="{
                 'agent-message': message.sender === 'agent',
                 'user-message': message.sender === 'user',
                 'supervisor-message': message.sender === 'supervisor'
-              }">
+              }" id="message-{{i}}">
               {{ message.content }}
             </p>
 
-    
             <div *ngIf="message.sender === 'agent' && i === lastAgentMessageIndex" class="message-icons">
-              <i class="bi bi-hand-thumbs-up-fill" (click)="handleThumbUp(message)"></i>
-              <i class="bi bi-hand-thumbs-down-fill" (click)="handleThumbDown(message)"></i>
-              <i class="bi bi-arrow-repeat" (click)="handleRetry()"></i>
+              <i class="bi bi-hand-thumbs-up-fill" id="thumb-up-{{i}}" (click)="handleThumbUp(message)"></i>
+              <i class="bi bi-hand-thumbs-down-fill" id="thumb-down-{{i}}" (click)="handleThumbDown(message)"></i>
+              <i class="bi bi-arrow-repeat" id="retry-{{i}}" (click)="handleRetry()"></i>
             </div>
-
 
             <div class="confirmation-box" *ngIf="showConfirmation">
               <div class="confirmation-content">
@@ -92,16 +100,14 @@
           </div>
         </div>
 
-
         <div *ngIf="isLoading" class="message-container loading-message">
           <p>{{ loadingMessage }}<span class="loading-dots">{{ loadingDots }}</span></p>
         </div>
 
-
         <div class="navegacion" *ngIf="activeChatId">
-          <input type="text" class="texto" placeholder="Escribe un mensaje..." [(ngModel)]="message" />
+          <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..." [(ngModel)]="message" />
         
-          <button class="send-button" *ngIf="!isIntervened" (click)="sendMessageToAgent()">
+          <button class="send-button" *ngIf="!isIntervened" id="send-message" (click)="sendMessageToAgent()">
             <i class="bi bi-send"></i>
           </button>
         
