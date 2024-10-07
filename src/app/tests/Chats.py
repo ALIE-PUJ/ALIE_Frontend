@@ -92,15 +92,16 @@ def test_archive_chat():
 
 
 
-# Prueba: Eliminar el chat llamado "Chat 10"
+# Prueba: Eliminar el chat llamado "Chat 11"
 def test_delete_chat():
-    # Localizar el chat con nombre "Chat 10"
+
     chat_10 = WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 11')]"))
     )
 
-    # Abrir el menú de los tres puntos correspondiente
-    menu_icon = chat_10.find_element(By.XPATH, "../../div[@class='menu']/i[@class='bi bi-three-dots-vertical menu-icon']")
+    # Abrir el menú de los tres puntos correspondiente al chat "Chat 11"
+    parent_div = chat_10.find_element(By.XPATH, "../..")  # Subimos dos niveles para obtener el div que contiene el menú
+    menu_icon = parent_div.find_element(By.CSS_SELECTOR, "i.bi.bi-three-dots-vertical.menu-icon")
     menu_icon.click()
 
     # Esperar y hacer clic en la opción "Eliminar"
@@ -109,22 +110,191 @@ def test_delete_chat():
     )
     delete_option.click()
 
-    time.sleep(2)
-
     # Verificar que el chat fue eliminado
     chats = driver.find_elements(By.CSS_SELECTOR, ".historial")
     assert len(chats) == 0, "El chat no fue eliminado correctamente"
     print("Chat eliminado exitosamente.")
 
+# Prueba: Enviar un mensaje en el chat llamado "Chat 12"
+def test_send_message():
+    # Localizar el chat con nombre "Chat 12"
+    chat_12 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 11')]"))
+    )
+    
+    # Hacer clic en el chat para activarlo
+    chat_12.click()
+
+    # Esperar a que el input del mensaje esté disponible
+    message_input = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.ID, "message-input"))
+    )
+
+    # Escribir el mensaje de prueba
+    message_input.send_keys("Hola, esto es una prueba")
+    
+    # Hacer clic en el botón de enviar
+    send_button = driver.find_element(By.ID, "send-message")
+    send_button.click()
+
+    # Verificar que el mensaje fue enviado (puedes verificar la aparición del mensaje en la lista)
+    WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Hola, esto es una prueba')]"))
+    )
+    print("Mensaje enviado exitosamente.")
+
+       # Esperar la respuesta del agente
+    agent_response = WebDriverWait(driver, 30).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(@class, 'agent-message')]"))
+    )
+
+    # Verificar que se recibió un mensaje del agente
+    print("Respuesta del agente recibida:", agent_response.text)
+
+# Prueba: Enviar un mensaje en el chat llamado "Chat 12"
+def test_send_message1():
+    # Localizar el chat con nombre "Chat 12"
+    chat_12 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 12')]"))
+    )
+    
+    # Hacer clic en el chat para activarlo
+    chat_12.click()
+
+    # Esperar a que el input del mensaje esté disponible
+    message_input = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.ID, "message-input"))
+    )
+
+    # Escribir el mensaje de prueba
+    message_input.send_keys("Hola, esto es una prueba")
+    
+    # Hacer clic en el botón de enviar
+    send_button = driver.find_element(By.ID, "send-message")
+    send_button.click()
+
+    # Verificar que el mensaje fue enviado (puedes verificar la aparición del mensaje en la lista)
+    WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Hola, esto es una prueba')]"))
+    )
+    print("Mensaje enviado exitosamente.")
+
+       # Esperar la respuesta del agente
+    agent_response = WebDriverWait(driver, 30).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(@class, 'agent-message')]"))
+    )
+
+    # Verificar que se recibió un mensaje del agente
+    print("Respuesta del agente recibida:", agent_response.text)
+
+
+# Prueba: Enviar un mensaje en el chat llamado "Chat 12"
+def test_send_message2():
+    # Localizar el chat con nombre "Chat 12"
+    chat_12 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 13')]"))
+    )
+    
+    # Hacer clic en el chat para activarlo
+    chat_12.click()
+
+    # Esperar a que el input del mensaje esté disponible
+    message_input = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.ID, "message-input"))
+    )
+
+    # Escribir el mensaje de prueba
+    message_input.send_keys("Hola, esto es una prueba")
+    
+    # Hacer clic en el botón de enviar
+    send_button = driver.find_element(By.ID, "send-message")
+    send_button.click()
+
+    # Verificar que el mensaje fue enviado (puedes verificar la aparición del mensaje en la lista)
+    WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Hola, esto es una prueba')]"))
+    )
+    print("Mensaje enviado exitosamente.")
+
+       # Esperar la respuesta del agente
+    agent_response = WebDriverWait(driver, 30).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(@class, 'agent-message')]"))
+    )
+
+    # Verificar que se recibió un mensaje del agente
+    print("Respuesta del agente recibida:", agent_response.text)
+
+def test_thumbsup():
+    thumbs_up_button = driver.find_element(By.CSS_SELECTOR, "i.bi-hand-thumbs-up-fill")
+    thumbs_up_button.click()
+    print("Thumbs up presionado.")
+
+def test_retry():
+    thumbs_up_button = driver.find_element(By.CSS_SELECTOR, "i.bi-arrow-repeat")
+    thumbs_up_button.click()
+    print("Retry presionado.")
+    agent_response = WebDriverWait(driver, 30).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(@class, 'agent-message')]"))
+    )
+
+    # Verificar que se recibió un mensaje del agente
+    print("Respuesta del agente recibida:", agent_response.text)
+
+def test_thumbsdown():
+    thumbs_down_button = driver.find_element(By.CSS_SELECTOR, "i.bi-hand-thumbs-down-fill")
+    thumbs_down_button.click()
+    print("Thumbs down presionado.")
+
+    # Esperar a que aparezca el menú de confirmación después de "thumbs down"
+    confirmation_box = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, ".confirmation-box"))
+    )
+
+    # Intentar hacer scroll hasta el botón "Sí" para asegurarnos de que es visible
+    confirm_yes_button = confirmation_box.find_element(By.XPATH, "//button[text()='Sí']")
+    driver.execute_script("arguments[0].scrollIntoView(true);", confirm_yes_button)
+
+    # Intentar hacer clic en el botón "Sí"
+    try:
+        confirm_yes_button.click()
+    except Exception as e:
+        # Si el clic es interceptado, usar JavaScript para hacer clic en el botón
+        driver.execute_script("arguments[0].click();", confirm_yes_button)
+    print("Confirmación de 'Sí' seleccionada.")
+
+def test_send_message_supervision():
+
+    message_input = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.ID, "message-input"))
+    )
+
+    # Escribir el mensaje de prueba
+    message_input.send_keys("Hola, esto es una prueba")
+    
+    # Hacer clic en el botón de enviar
+    send_button = driver.find_element(By.ID, "send-message1")
+    send_button.click()
+
+    # Verificar que el mensaje fue enviado (puedes verificar la aparición del mensaje en la lista)
+    WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Hola, esto es una prueba')]"))
+    )
+    print("Mensaje enviado exitosamente.")
 
 
 # Ejecutar las pruebas
 test_student_login("pepito@javeriana.edu.com", "123456", should_pass=True)
 test_create_chat()
-#test_rename_chat()
-#test_archive_chat()
+test_rename_chat()
+test_archive_chat()
+test_create_chat()
 test_delete_chat()
-#test_send_message()
-
+test_create_chat()
+test_send_message()
+test_thumbsup()
+test_create_chat()
+test_send_message1()
+test_thumbsdown()
+test_send_message_supervision()
 # Cerrar el navegador
 driver.quit()
