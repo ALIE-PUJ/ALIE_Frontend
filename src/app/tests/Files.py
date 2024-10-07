@@ -49,7 +49,14 @@ def test_upload_first_file():
     file_input = driver.find_element(By.CSS_SELECTOR, "input[type='file']")
     
     # Ruta del archivo que deseas subir (puedes cambiarla por cualquier ruta válida)
-    pdf_file = r"C:\Users\HP\Documents\Octavo Semestre\Proyecto de grado\ALIE_Frontend\src\app\tests\Curso_ Salud y Bienestar Inducción.pdf"  # Asegúrate de cambiar esta ruta a un archivo válido
+    # Obtener el directorio donde está ejecutándose este script
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Nombre del archivo PDF
+    pdf_file_name = "Curso_ Salud y Bienestar Inducción.pdf"
+
+    # Construir la ruta completa al archivo PDF
+    pdf_file = os.path.join(current_directory, pdf_file_name)
 
 
     file_input.send_keys(pdf_file)
