@@ -30,7 +30,7 @@
                     <i class="bi bi-pencil"></i>
                     <span>Renombrar</span>
                   </div>
-                  <div class="option" id="archive-chat-{{chat.memory_key}}" (click)="archiveChat(chat.memory_key)">
+                  <div class="option" *ngIf="!chat.intervenido" id="archive-chat-{{chat.memory_key}}" (click)="archiveChat(chat.memory_key)">
                     <i class="bi bi-archive"></i>
                     <span>Archivar</span>
                   </div>
@@ -44,11 +44,9 @@
           </ng-container>
         </div>
 
-        <div class="archived-section" id="archived-chats-toggle" (click)="list_Archive_Chats()">
-          <p>Ver chats archivados</p>
-        </div>
 
-        <div *ngIf="showArchivedChats" class="archived-chats">
+
+        <div *ngIf="!showArchivedChats" class="archived-chats">
           <ng-container *ngFor="let chat of chats">
             <div class="historial" *ngIf="chat.archivado" id="archived-chat-{{chat.memory_key}}" (click)="switchChat(chat.memory_key)">
               <div class="botones">
@@ -58,6 +56,13 @@
             </div>
           </ng-container>
         </div>
+        <div class="archived-section" id="archived-chats-toggle" (click)="list_Archive_Chats()">
+          <p>Ver chats archivados</p>
+        </div>
+        <div class="archived-section" id="archived-chats-toggle" (click)="listChats()">
+          <p>Ver chats activos</p>
+        </div>
+
       </div>
 
       <div class="right">
@@ -104,7 +109,7 @@
           <p>{{ loadingMessage }}<span class="loading-dots">{{ loadingDots }}</span></p>
         </div>
 
-        <div class="navegacion" *ngIf="activeChatId">
+        <div class="navegacion" *ngIf="activeChatId && !isChatArchived(activeChatId)">
           <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..." [(ngModel)]="message" />
         
           <button class="send-button" *ngIf="!isIntervened" id="send-message" (click)="sendMessageToAgent()">
@@ -119,3 +124,4 @@
     </div>
   </div>
 </app-sidebar>
+

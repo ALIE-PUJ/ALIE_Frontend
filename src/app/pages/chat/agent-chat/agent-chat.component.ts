@@ -15,7 +15,10 @@ import { forkJoin } from 'rxjs';
   imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './agent-chat.component.html',
   styleUrls: ['./agent-chat.component.scss'],
+  
 })
+
+
 export class AgentChatComponent {
 
   // Inject Services
@@ -76,7 +79,7 @@ export class AgentChatComponent {
           this.chats = [];
           return;
         }
-  
+        this.showArchivedChats = false;
         // Obtener los detalles completos de cada chat
         const detailedChatRequests = chats.map(chat => this.chatService.getChat(chat.memory_key));
   
@@ -111,20 +114,19 @@ export class AgentChatComponent {
   list_Archive_Chats() {
     if (this.user_id && this.auth_token) {
       this.chatService.listChatsByUser(this.user_id).subscribe((chats: any[]) => {
-        console.log('Chats básicos recibidos:', chats);
+        console.log('Chats ARCHIVADOS básicos recibidos:', chats);
   
         if (chats.length === 0) {
           this.chats = [];
           return;
         }
-  
+        this.showArchivedChats = true;
         // Obtener los detalles completos de cada chat
         const detailedChatRequests = chats.map(chat => this.chatService.getChat(chat.memory_key));
   
         forkJoin(detailedChatRequests).subscribe((fullChats) => {
           console.log('Detalles completos de los chats:', fullChats);
   
-          // Aquí solo necesitamos invertir el orden de los chats
           this.chats = fullChats
             .filter(chat => chat.intervenido === true)  
             .map(chat => ({
@@ -149,6 +151,14 @@ export class AgentChatComponent {
       console.error('User ID or token is missing');
     }
   }
+
+  isChatArchived(memoryKey: string): boolean {
+    const chat = this.chats.find(c => c.memory_key === memoryKey);
+    return chat ? chat.intervenido : false;
+  }
+  
+  
+  
 
   // Método para agregar un nuevo chat y abrirlo automáticamente
 addNewChat() {
@@ -356,7 +366,7 @@ sendMessageToSupervisor() {
 
 
   // Obtener la respuesta del agente y guardarla en la base de datos
-  async getAgentResponse(chat: any) {
+  async getAgentResponse(chat: any): Promise <void> {
     try {
       console.log("Current chat: ", chat);
       let userMessage = chat.messages[chat.messages.length - 1].content;
@@ -767,11 +777,23 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
   return alternatedMessages;
 }
 
-showArchivedChats: boolean = false;  // Controla si se muestran los chats archivados
+public showArchivedChats: boolean = false;
 
-toggleArchivedChats() {
-  this.showArchivedChats = !this.showArchivedChats;  // Cambia el estado para mostrar u ocultar
+
+toggleChatsView() {
+  if (this.showArchivedChats) {
+    // Mostrar chats activos
+    this.showArchivedChats = false;
+    this.listChats();  // Aquí debes tener el método que lista los chats activos
+  } else {
+    // Mostrar chats archivados
+    this.showArchivedChats = true;
+    this.list_Archive_Chats();  // Aquí debe estar el método que lista los chats archivados
+  }
 }
+
+
+
 
   // Mensaje de espera / carga
 

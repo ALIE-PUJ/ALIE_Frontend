@@ -57,7 +57,7 @@ i {
   background-color: #4553af;
 }
 
-.historial_chat {
+.historial_chat  {
   margin: 0.5rem 0.2rem;
   display: flex;
   flex-direction: column;
@@ -66,6 +66,8 @@ i {
   height: calc(100% - 100px);
   padding: 0 10px;
 }
+
+
 
 .historial_chat .historial {
   display: flex;
@@ -194,24 +196,7 @@ i {
 }
 
 
-.archived-section {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  height: 100vh;
-  padding: 0;
-  margin: 0;
-}
-
-
-.archived-chats {
-  margin-top: 10px;
-  background-color: #d3d3d3;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.left .archived-section{
+ .archived-section {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,16 +209,18 @@ i {
   flex-shrink: 0;
   height: 45px;
   padding: 12px 24px;
-  background-color: #16226d;
+  background-color: #2e3775;         
 }
 
-.left .archived-section {
-  margin: 0;
-  font-weight: 500;
+.archived-section:hover {
+  background-color: #4553af;  
 }
 
-.left .archived-section:hover {
-  background-color: #4553af;
+.archived-chats {
+  margin-top: 10px;
+  background-color: #d3d3d3;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 
@@ -254,7 +241,7 @@ i {
 .navegacion {
   display: flex;
   align-items: center;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
   padding: 10px;
   border-radius: 25px;
   gap: 10px;
@@ -291,7 +278,9 @@ i {
 }
 
 .send-button i {
-  font-size: 20px; /* Tamaño del ícono */
+  font-size: 20px; 
+  line-height: 50px;
+
 }
 
 .send-button:hover {

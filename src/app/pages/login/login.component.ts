@@ -4,7 +4,6 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/authentication/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { error } from 'console';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
