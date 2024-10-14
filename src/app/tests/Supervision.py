@@ -68,17 +68,17 @@ def test_navegation_supervision():
 
 def test_intervention():
 
-    chat_12 = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 12')]"))
+    chat_3 = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 3')]"))
     )
-    chat_12.click()
+    chat_3.click()
 
     input_field = WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, "input[placeholder='Escribe un mensaje para intervenir en la conversación...']"))
     )
     assert input_field.is_displayed(), "El campo de texto para intervención no está visible."
 
-    input_field.send_keys("Hola, este es un mensaje de prueba en el chat 12.")
+    input_field.send_keys("Hola, este es un mensaje de prueba en el chat 3.")
     
 
     send_button = WebDriverWait(driver, 10).until(
@@ -90,15 +90,15 @@ def test_intervention():
     time.sleep(2)
 
     last_message = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'supervisor-message') and contains(text(), 'Hola, este es un mensaje de prueba en el chat 12.')]"))
+        EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'supervisor-message') and contains(text(), 'Hola, este es un mensaje de prueba en el chat 3.')]"))
     )
     assert last_message.is_displayed(), "El mensaje de intervención no fue enviado correctamente."
 
-    print("Intervención en Chat 12 exitosa.")
+    print("Intervención en Chat 3 exitosa.")
 
 
 # Ejecutar las pruebas
-test_admin_login("maria.avellaneda@javeriana.edu.com", "123456", should_pass=True)
+test_admin_login("luis.bravo@javeriana.edu.com", "123456", should_pass=True)
 test_navegation_supervision()
 test_intervention()
 # Cerrar el navegador

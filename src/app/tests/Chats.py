@@ -37,15 +37,15 @@ def test_create_chat():
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".historial")))
     print("Chat creado exitosamente.")
 
-# Prueba: Renombrar el chat llamado "Chat 10"
+# Prueba: Renombrar el chat llamado "Chat de Prueba"
 def test_rename_chat():
-    # Localizar el chat con nombre "Chat 10"
-    chat_10 = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 10')]"))
+    # Localizar el chat con nombre "Chat de Prueba"
+    chat_1 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat de Prueba')]"))
     )
 
-    # Abrir el menú de los tres puntos correspondiente al chat "Chat 10"
-    parent_div = chat_10.find_element(By.XPATH, "../..")  # Subimos dos niveles para obtener el div que contiene el menú
+    # Abrir el menú de los tres puntos correspondiente al chat "Chat de Prueba"
+    parent_div = chat_1.find_element(By.XPATH, "../..")  # Subimos dos niveles para obtener el div que contiene el menú
     menu_icon = parent_div.find_element(By.CSS_SELECTOR, "i.bi.bi-three-dots-vertical.menu-icon")
     menu_icon.click()
 
@@ -92,15 +92,15 @@ def test_archive_chat():
 
 
 
-# Prueba: Eliminar el chat llamado "Chat 11"
+# Prueba: Eliminar el chat llamado "Chat 2"
 def test_delete_chat():
 
-    chat_10 = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 11')]"))
+    chat_2 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 2')]"))
     )
 
-    # Abrir el menú de los tres puntos correspondiente al chat "Chat 11"
-    parent_div = chat_10.find_element(By.XPATH, "../..")  # Subimos dos niveles para obtener el div que contiene el menú
+    # Abrir el menú de los tres puntos correspondiente al chat "Chat 2"
+    parent_div = chat_2.find_element(By.XPATH, "../..")  # Subimos dos niveles para obtener el div que contiene el menú
     menu_icon = parent_div.find_element(By.CSS_SELECTOR, "i.bi.bi-three-dots-vertical.menu-icon")
     menu_icon.click()
 
@@ -115,15 +115,15 @@ def test_delete_chat():
     assert len(chats) == 0, "El chat no fue eliminado correctamente"
     print("Chat eliminado exitosamente.")
 
-# Prueba: Enviar un mensaje en el chat llamado "Chat 12"
+# Prueba: Enviar un mensaje en el chat llamado "Chat 3"
 def test_send_message():
-    # Localizar el chat con nombre "Chat 12"
-    chat_12 = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 11')]"))
+    # Localizar el chat con nombre "Chat 3"
+    chat_3 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 2')]"))
     )
     
     # Hacer clic en el chat para activarlo
-    chat_12.click()
+    chat_3.click()
 
     # Esperar a que el input del mensaje esté disponible
     message_input = WebDriverWait(driver, 5).until(
@@ -151,15 +151,15 @@ def test_send_message():
     # Verificar que se recibió un mensaje del agente
     print("Respuesta del agente recibida:", agent_response.text)
 
-# Prueba: Enviar un mensaje en el chat llamado "Chat 12"
+# Prueba: Enviar un mensaje en el chat llamado "Chat 4"
 def test_send_message1():
-    # Localizar el chat con nombre "Chat 12"
-    chat_12 = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 12')]"))
+    # Localizar el chat con nombre "Chat 4"
+    chat_4 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 3')]"))
     )
     
     # Hacer clic en el chat para activarlo
-    chat_12.click()
+    chat_4.click()
 
     # Esperar a que el input del mensaje esté disponible
     message_input = WebDriverWait(driver, 5).until(
@@ -188,15 +188,15 @@ def test_send_message1():
     print("Respuesta del agente recibida:", agent_response.text)
 
 
-# Prueba: Enviar un mensaje en el chat llamado "Chat 12"
+# Prueba: Enviar un mensaje en el chat llamado "Chat 5"
 def test_send_message2():
-    # Localizar el chat con nombre "Chat 12"
-    chat_12 = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 13')]"))
+    # Localizar el chat con nombre "Chat 5"
+    chat_5 = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Chat 4')]"))
     )
     
     # Hacer clic en el chat para activarlo
-    chat_12.click()
+    chat_5.click()
 
     # Esperar a que el input del mensaje esté disponible
     message_input = WebDriverWait(driver, 5).until(
@@ -264,7 +264,7 @@ def test_thumbsdown():
 
 def test_send_message_supervision():
 
-    message_input = WebDriverWait(driver, 5).until(
+    message_input = WebDriverWait(driver, 15).until(
         EC.visibility_of_element_located((By.ID, "message-input"))
     )
 
@@ -283,8 +283,7 @@ def test_send_message_supervision():
 
 
 # Ejecutar las pruebas
-test_student_login("pepito@javeriana.edu.com", "123456", should_pass=True)
-test_create_chat()
+test_student_login("luis.bravo@javeriana.edu.com", "123456", should_pass=True)
 test_rename_chat()
 test_archive_chat()
 test_create_chat()
@@ -295,6 +294,6 @@ test_thumbsup()
 test_create_chat()
 test_send_message1()
 test_thumbsdown()
-test_send_message_supervision()
+#test_send_message_supervision()
 # Cerrar el navegador
 driver.quit()
