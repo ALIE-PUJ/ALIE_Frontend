@@ -11,13 +11,14 @@
         <div class="historial_chat" id="chat-list">
           <ng-container *ngFor="let chat of chats">
             <!-- Mostrar solo los chats no archivados -->
-            <div class="historial" *ngIf="!chat.archivado" id="chat-{{chat.memory_key}}" (click)="switchChat(chat.memory_key)" 
-              [class.active]="chat.memory_key === activeChatId">
+            <div class="historial" *ngIf="!chat.archivado" id="chat-{{chat.memory_key}}"
+              (click)="switchChat(chat.memory_key)" [class.active]="chat.memory_key === activeChatId">
               <div class="botones">
                 <i class="bi bi-chat-left"></i>
               </div>
 
-              <p class="titulo" *ngIf="!chat.isEditing" id="chat-title-{{chat.memory_key}}" (dblclick)="enableEditing(chat)">
+              <p class="titulo" *ngIf="!chat.isEditing" id="chat-title-{{chat.memory_key}}"
+                (dblclick)="enableEditing(chat)">
                 {{ chat.title || 'Chat sin título' }}
               </p>
               <input *ngIf="chat.isEditing" [(ngModel)]="chat.title" (blur)="saveChatName(chat)"
@@ -30,7 +31,8 @@
                     <i class="bi bi-pencil"></i>
                     <span>Renombrar</span>
                   </div>
-                  <div class="option" *ngIf="!chat.intervenido" id="archive-chat-{{chat.memory_key}}" (click)="archiveChat(chat.memory_key)">
+                  <div class="option" *ngIf="!chat.intervenido" id="archive-chat-{{chat.memory_key}}"
+                    (click)="archiveChat(chat.memory_key)">
                     <i class="bi bi-archive"></i>
                     <span>Archivar</span>
                   </div>
@@ -48,7 +50,8 @@
 
         <div *ngIf="!showArchivedChats" class="archived-chats">
           <ng-container *ngFor="let chat of chats">
-            <div class="historial" *ngIf="chat.archivado" id="archived-chat-{{chat.memory_key}}" (click)="switchChat(chat.memory_key)">
+            <div class="historial" *ngIf="chat.archivado" id="archived-chat-{{chat.memory_key}}"
+              (click)="switchChat(chat.memory_key)">
               <div class="botones">
                 <i class="bi bi-archive"></i>
               </div>
@@ -57,10 +60,14 @@
           </ng-container>
         </div>
         <div class="archived-section" id="archived-chats-toggle" (click)="list_Archive_Chats()">
-          <p>Ver chats archivados</p>
+          <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+            <p style="margin: 0;">Ver chats <strong>archivados</strong></p>
+          </div>
         </div>
-        <div class="archived-section" id="archived-chats-toggle" (click)="listChats()">
-          <p>Ver chats activos</p>
+        <div class="archived-section" id="archived-chats-toggle" (click)="listChats()" style="margin-bottom: 10%;">
+          <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+            <p style="margin: 0;">Ver chats <strong>activos</strong></p>
+          </div>
         </div>
 
       </div>
@@ -110,12 +117,13 @@
         </div>
 
         <div class="navegacion" *ngIf="activeChatId && !isChatArchived(activeChatId)">
-          <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..." [(ngModel)]="message" />
-        
+          <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..."
+            [(ngModel)]="message" />
+
           <button class="send-button" *ngIf="!isIntervened" id="send-message" (click)="sendMessageToAgent()">
             <i class="bi bi-send"></i>
           </button>
-        
+
           <button class="send-button" *ngIf="isIntervened" id="send-message1" (click)="sendMessageToSupervisor()">
             <i class="bi bi-send-check"></i>
           </button>
@@ -124,4 +132,3 @@
     </div>
   </div>
 </app-sidebar>
-
