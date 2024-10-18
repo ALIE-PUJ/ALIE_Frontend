@@ -5,6 +5,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
+
+# Este test debe ser ejecutado antes que el test de Supervision.py
+
+
 # Configura el driver de Selenium (Chrome en este caso)
 driver = webdriver.Chrome()
 
