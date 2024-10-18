@@ -12,9 +12,7 @@ driver = webdriver.Chrome()
 def test_student_login(email, password, should_pass):
     driver.get("http://localhost:4200/login")  
 
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "studentBtn")))
-    student_btn = driver.find_element(By.ID, "studentBtn")
-    student_btn.click()
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "password")))
 
     email_input = driver.find_element(By.NAME, "email")
     email_input.send_keys(email)
