@@ -284,6 +284,13 @@ saveChatName(chat: any) {
     this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
     this.chatService.deleteChat(chatId).subscribe(() => {
       console.log('Chat eliminado');
+
+      // Limpiar los mensajes si el chat eliminado es el chat activo
+      if (this.activeChatId === chatId) {
+        this.activeChatId = '';
+        this.messages = [];
+      }
+
     }, (error) => {
       console.error('Error al eliminar el chat', error);
     });
