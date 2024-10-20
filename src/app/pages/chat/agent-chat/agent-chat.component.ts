@@ -71,6 +71,12 @@ export class AgentChatComponent {
   }
 
   listChats() {
+
+    // Limpiar los mensajes
+    this.activeChatId = '';
+    this.messages = [];
+
+
     if (this.user_id && this.auth_token) {
       this.chatService.listChatsByUser(this.user_id).subscribe((chats: any[]) => {
         console.log('Chats básicos recibidos:', chats);
@@ -112,6 +118,11 @@ export class AgentChatComponent {
   
   
   list_Archive_Chats() {
+
+    // Limpiar los mensajes
+    this.activeChatId = '';
+    this.messages = [];
+
     if (this.user_id && this.auth_token) {
       this.chatService.listChatsByUser(this.user_id).subscribe((chats: any[]) => {
         console.log('Chats ARCHIVADOS básicos recibidos:', chats);
@@ -648,6 +659,7 @@ sendMessageToSupervisor() {
 
       this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
       console.log('Chat archivado');
+
     }, (error) => {
       console.error('Error al archivar el chat', error);
     });
