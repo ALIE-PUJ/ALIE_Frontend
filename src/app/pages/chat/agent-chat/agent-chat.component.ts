@@ -710,8 +710,8 @@ getMessagesByChatId(chatId: string) {
     this.lastAgentMessageIndex = null;
 
 
-    this.isIntervened = chat.intervenido;
-
+    // this.isIntervened = chat.intervenido;
+    this.checkInterventionStatus(chatId);
    
     const userMessages = chat.mensajes_usuario.map((msg: string) => {
       try {
