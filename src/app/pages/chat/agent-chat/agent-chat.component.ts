@@ -237,7 +237,7 @@ checkInterventionStatus(chatId: string) {
     this.checkInterventionStatus(chatId);
 
     console.log("Current selected chat:", this.getActiveChat());
-
+    this.startPollingForMessages(); // Start polling for messages
   }
 
 
@@ -700,7 +700,8 @@ startPollingForMessages() {
   if (this.activeChatId && this.auth_token) {
     this.pollingInterval = setInterval(() => {
       this.getMessagesByChatId(this.activeChatId);
-    }, 10000);
+      console.log('Polling for messages for chat:', this.activeChatId);
+    }, 5000);
   } else {
     console.warn('No se pudo iniciar el polling porque faltan chatId o auth_token');
   }
