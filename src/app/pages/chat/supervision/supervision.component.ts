@@ -41,7 +41,15 @@ export class SupervisionComponent {
   }
   
   ngOnDestroy() {
-    clearInterval(this.pollingInterval);
+    console.log('SupervisionComponent destroyed. Clearing polling interval...');
+    this.clearPollingInterval();
+  }
+  
+  private clearPollingInterval() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
   }
     
   pollingInterval: any;
@@ -49,11 +57,22 @@ export class SupervisionComponent {
   startPollingForMessages() {
     if (this.selectedChat && this.auth_token) {
       this.pollingInterval = setInterval(() => {
-        this.getMessagesByChatId(this.selectedChat.memory_key);
-        console.log('Polling for messages for chat:', this.selectedChat.memory_key);
-      }, 5000);
+        this.pollingFunction_Supervision(this.selectedChat.memory_key);
+      }, 10000);
     } else {
       console.warn('No se pudo iniciar el polling porque faltan selectedChat.memory_key o auth_token');
+    }
+  }
+
+  pollingFunction_Supervision(chatId: string){
+    if (this.router.url !== '/supervision') { // Verifica si no estás en la ruta /chat
+      console.warn('No estás en la ruta /supervision, deteniendo el polling de chats...');
+      return; // Si no estás en /chat, retorna y no inicia el polling
+    }
+
+    else {
+      console.log('Polling for messages for chat:', this.selectedChat.memory_key);
+      this.getMessagesByChatId(this.selectedChat.memory_key);
     }
   }
 
@@ -233,6 +252,12 @@ formatMessages(messages: string[], senderType: string) {
   }
 
   getMessagesByChatId(chatId: string) {
+
+    if (this.auth_token === null) {
+      console.error('Error: auth_token no encontrado.');
+      return;
+    }
+
     this.chatService.getChat(chatId).subscribe((chat: any) => {
       const userMessages = chat.mensajes_usuario.map((msg: string) => {
         try {

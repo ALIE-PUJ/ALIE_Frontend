@@ -685,7 +685,15 @@ ngOnInit() {
 }
 
 ngOnDestroy() {
-  clearInterval(this.pollingInterval);
+  console.log('AgentChatComponent destroyed. Clearing polling interval...');
+  this.clearPollingInterval();
+}
+
+private clearPollingInterval() {
+  if (this.pollingInterval) {
+    clearInterval(this.pollingInterval);
+    this.pollingInterval = null;
+  }
 }
 
 ngAfterViewChecked() {
@@ -699,18 +707,32 @@ pollingInterval: any;
 startPollingForMessages() {
   if (this.activeChatId && this.auth_token) {
     this.pollingInterval = setInterval(() => {
-      this.getMessagesByChatId(this.activeChatId);
-      console.log('Polling for messages for chat:', this.activeChatId);
-    }, 5000);
+      this.pollingFunction_Chat(this.activeChatId);
+    }, 10000);
   } else {
     console.warn('No se pudo iniciar el polling porque faltan chatId o auth_token');
   }
 }
 
+pollingFunction_Chat(chatId: string){
+  if (this.router.url !== '/chat') { // Verifica si no estás en la ruta /chat
+    console.warn('No estás en la ruta /chat, deteniendo el polling de chats...');
+    return; // Si no estás en /chat, retorna y no inicia el polling
+  }
+
+  else {
+    console.log('Polling for messages for chat:', this.activeChatId);
+    this.getMessagesByChatId(this.activeChatId);
+  }
+}
 
 getMessagesByChatId(chatId: string) {
   const auth_token = this.auth_token;  
 
+  if (this.auth_token === null) {
+    console.error('Error: auth_token no encontrado.');
+    return;
+  }
   
   if (!chatId || !auth_token) {
     console.error('Error: Falta el chatId o auth_token');
@@ -780,7 +802,7 @@ this.lastAgentMessageIndex = lastAgentIndex1 !== -1 ? lastAgentIndex1 : null;
       this.showUserMessage('Chat no encontrado.');
     } else {
       console.error('Error al obtener los mensajes del chat', error);
-      this.showUserMessage('Hubo un error al obtener los mensajes del chat.');
+      // this.showUserMessage('Hubo un error al obtener los mensajes del chat.');
     }
   });
 }
