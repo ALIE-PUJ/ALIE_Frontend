@@ -91,7 +91,7 @@
                 'user-message': message.sender === 'user',
                 'supervisor-message': message.sender === 'supervisor'
               }" id="message-{{i}}">
-              <span style="white-space: pre-wrap;">{{ message.content.trim() }}</span>
+              <span style="white-space: pre-wrap;" [innerHTML]="convertUrlsToLinks(message.content.trim())"></span>
             </p>
 
             <div *ngIf="message.sender === 'agent' && i === lastAgentMessageIndex" class="message-icons">
