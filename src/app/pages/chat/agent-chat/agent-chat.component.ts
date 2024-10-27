@@ -49,7 +49,7 @@ export class AgentChatComponent {
   user_id: string | null = null;
   isIntervened: boolean = false;
   isIntervenedFromDB: boolean = false;
-  
+
   constructor() {
     this.initializeAuth();
     this.listChats();
@@ -710,8 +710,8 @@ getMessagesByChatId(chatId: string) {
     this.lastAgentMessageIndex = null;
 
 
-    // this.isIntervened = chat.intervenido;
-    this.checkInterventionStatus(chatId);
+    this.isIntervened = chat.intervenido;
+
    
     const userMessages = chat.mensajes_usuario.map((msg: string) => {
       try {
@@ -858,12 +858,6 @@ toggleChatsView() {
 
   // Debe ser una solicitud asincrona
   getALIE_Response(input: string, priority: string): Promise<string> {
-
-    let user_data = "[USER ID = " + this.user_id + "]"; // Datos del usuario para el modelo
-    input = user_data + "\n" + input; // Agregar los datos del usuario al mensaje de entrada
-
-    console.log('getALIE_Response Input [Postprocess]:', input);
-
     return new Promise((resolve, reject) => {
       this.alieService.get_response_from_model(input, priority)
         .subscribe(
@@ -888,6 +882,5 @@ toggleChatsView() {
     const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,\.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     return text.replace(urlPattern, '<span style="color: white; font-weight: bold;"><a href="$1" target="_blank" rel="noopener noreferrer">$1</a></span>');
   }
-
 
 }
