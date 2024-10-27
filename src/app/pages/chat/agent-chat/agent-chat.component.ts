@@ -49,6 +49,7 @@ export class AgentChatComponent {
   user_id: string | null = null;
   isIntervened: boolean = false;
   isIntervenedFromDB: boolean = false;
+  isIntervened_ShowChat: boolean = false;
 
   constructor() {
     this.initializeAuth();
@@ -212,9 +213,12 @@ checkInterventionStatus(chatId: string) {
 
   this.chatService.getInterventionStatus(chatId).subscribe((response: any) => {
     if (response.success) {
+
+      console.log("Verificando estado de intervención del chat:", chatId);
       console.log("Estado de intervención recibido del backend:", response.intervenido);
       
       this.isIntervened = response.intervenido;
+      this.isIntervened_ShowChat = response.intervenido;
     } else {
       console.log('No se encontró el chat o hubo un error:', response.message);
     }
@@ -231,6 +235,9 @@ checkInterventionStatus(chatId: string) {
     this.activeChatId = chatId;
     this.getMessagesByChatId(chatId); 
     this.checkInterventionStatus(chatId);
+
+    console.log("Current selected chat:", this.getActiveChat());
+
   }
 
 
@@ -623,6 +630,10 @@ sendMessageToSupervisor() {
       // Desactivar la caja de confirmación y cualquier respuesta del bot
       this.hasBotResponded = false;
       this.showConfirmation = false;
+
+      // Marcar el chat como intervenido para la caja de chat
+      this.isIntervened_ShowChat = true;
+
     }, (error) => {
       console.error('Error al marcar el chat como intervenido', error);
     });
