@@ -626,6 +626,12 @@ sendMessageToSupervisor() {
         content: 'Un humano está en camino para ayudarte...',
         sender: 'system'
       });
+
+      // Sleep to show the message
+      this.sleep(5000).then(() => {
+        console.log('Slept for 5 seconds, now executing further code...');
+        // You can call other functions or execute code here after the sleep
+      });  
   
       // Desactivar la caja de confirmación y cualquier respuesta del bot
       this.hasBotResponded = false;
@@ -640,7 +646,10 @@ sendMessageToSupervisor() {
   }
   
   
-
+  // Sleep function that returns a Promise
+  sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   handleNo() {
     this.isIntervened = false;
