@@ -858,6 +858,12 @@ toggleChatsView() {
 
   // Debe ser una solicitud asincrona
   getALIE_Response(input: string, priority: string): Promise<string> {
+
+    let user_data = "[USER ID = " + this.user_id + "]"; // Datos del usuario para el modelo
+    input = user_data + "\n" + input; // Agregar los datos del usuario al mensaje de entrada
+
+    console.log('getALIE_Response Input [Postprocess]:', input);
+
     return new Promise((resolve, reject) => {
       this.alieService.get_response_from_model(input, priority)
         .subscribe(
