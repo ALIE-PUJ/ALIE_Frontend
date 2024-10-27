@@ -28,12 +28,33 @@ export class SupervisionComponent {
 
   auth_token: string | null = null;
   user_id: string | null = null;
-console: any;
+  console: any;
 
   constructor() {
     this.initializeAuth();
     this.loadInterventionChats();
     this.loadActiveChats();
+  }
+
+  ngOnInit() {
+    this.startPollingForMessages();
+  }
+  
+  ngOnDestroy() {
+    clearInterval(this.pollingInterval);
+  }
+    
+  pollingInterval: any;
+  
+  startPollingForMessages() {
+    if (this.selectedChat && this.auth_token) {
+      this.pollingInterval = setInterval(() => {
+        this.getMessagesByChatId(this.selectedChat.memory_key);
+        console.log('Polling for messages for chat:', this.selectedChat.memory_key);
+      }, 5000);
+    } else {
+      console.warn('No se pudo iniciar el polling porque faltan selectedChat.memory_key o auth_token');
+    }
   }
 
   initializeAuth() {
@@ -134,6 +155,9 @@ selectInterventionChat(chat: any) {
       this.selectedChat.mensajes_agente,
       this.selectedChat.mensajes_supervision
     );  // Intercalar mensajes
+
+    this.startPollingForMessages(); // Iniciar polling para mensajes
+
   }, (error) => {
     console.error('Error al obtener los mensajes del chat', error);
   });
@@ -154,6 +178,7 @@ selectActiveChat(chat: any) {
       this.selectedChat.mensajes_agente,
       this.selectedChat.mensajes_supervision
     );  // Intercalar mensajes
+
   }, (error) => {
     console.error('Error al obtener los mensajes del chat', error);
   });
