@@ -53,11 +53,10 @@
                  'user-message': message.sender === 'user',
                  'supervisor-message': message.sender === 'supervisor'
                }" class="message-item">
-            {{ message.content }}
-          </div>
+               <span style="white-space: pre-wrap;" [innerHTML]="convertUrlsToLinks(message.content.trim())"></span>
+              </div>
         </div>
       </div>
-      
       
       
       

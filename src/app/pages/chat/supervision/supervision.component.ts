@@ -277,6 +277,10 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
   return alternatedMessages;
 }
 
+convertUrlsToLinks(text: string): string {
+  const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,\.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  return text.replace(urlPattern, '<span style="color: white; font-weight: bold;"><a href="$1" target="_blank" rel="noopener noreferrer">$1</a></span>');
+}
 
 
 }
