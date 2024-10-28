@@ -931,8 +931,29 @@ toggleChatsView() {
   }
 
   convertUrlsToLinks(text: string): string {
+    // Patrón para detectar URLs
     const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,\.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    return text.replace(urlPattern, '<span style="color: white; font-weight: bold;"><a href="$1" target="_blank" rel="noopener noreferrer">$1</a></span>');
-  }
+
+    // Reemplaza los enlaces en texto con un formato HTML
+    const replacedText = text.replace(urlPattern, '<span style="color: white; font-weight: bold;"><a href="$1" target="_blank" rel="noopener noreferrer">$1</a></span>');
+
+    // Expresiones regulares para formatos de Markdown
+    const boldPattern = /(\*\*|__)(.*?)\1/g; // **texto** o __texto__
+    const italicPattern = /(\*|_)(.*?)\1/g; // *texto* o _texto_
+    const headerPattern = /(^|\n)(#{1,6})\s*(.*?)(\n|$)/g; // # Título, ## Subtítulo, etc.
+
+    // Reemplazar negritas
+    const formattedBoldText = replacedText.replace(boldPattern, '<strong>$2</strong>');
+    // Reemplazar cursivas
+    const formattedItalicText = formattedBoldText.replace(italicPattern, '<em>$2</em>');
+    // Reemplazar encabezados (hasta 6 niveles)
+    const formattedHeaders = formattedItalicText.replace(headerPattern, (_, lineBreak, hashes, title) => {
+        const level = hashes.length;
+        return `${lineBreak}<h${level}>${title}</h${level}>`;
+    });
+
+    return formattedHeaders;
+}
+
 
 }
