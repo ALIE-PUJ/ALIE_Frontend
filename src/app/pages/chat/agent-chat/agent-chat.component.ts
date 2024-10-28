@@ -679,6 +679,9 @@ sendMessageToSupervisor() {
 
       this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
       console.log('Chat archivado');
+      // Limpiar los mensajes
+      this.activeChatId = '';
+      this.messages = [];
 
     }, (error) => {
       console.error('Error al archivar el chat', error);
