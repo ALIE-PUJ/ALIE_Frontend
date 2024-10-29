@@ -669,7 +669,7 @@ sendMessageToSupervisor() {
 
         console.log("Getting chatData for retry (from this.chatService.getChat):", chatData);
     
-        // Insertar mensajes falsos de supervisión
+        // Insertar mensajes falsos de supervisión y cambiar el estado de supervisión
         this.insertSupervisionFakeMessages(this.activeChatId, chatData);
       },
       (error) => {
