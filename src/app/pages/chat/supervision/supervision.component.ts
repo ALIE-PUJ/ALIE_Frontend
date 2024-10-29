@@ -58,7 +58,7 @@ export class SupervisionComponent {
     if (this.selectedChat && this.auth_token) {
       this.pollingInterval = setInterval(() => {
         this.pollingFunction_Supervision(this.selectedChat.memory_key);
-      }, 10000);
+      }, 1000);
     } else {
       console.warn('No se pudo iniciar el polling porque faltan selectedChat.memory_key o auth_token');
     }

@@ -237,7 +237,7 @@ checkInterventionStatus(chatId: string) {
     this.checkInterventionStatus(chatId);
 
     console.log("Current selected chat:", this.getActiveChat());
-    // this.startPollingForMessages(); // Start polling for messages
+    this.startPollingForMessages(); // Start polling for messages
   }
 
 
@@ -565,6 +565,8 @@ sendMessageToSupervisor() {
 
       // Actualizar los mensajes del chat
       await this.getMessagesByChatId(this.activeChatId)
+
+      // No se actualiza el estado de intervencion, ya que no se ha intervenido en este caso. Si se interviene, no se puede hacer retry
   
     } catch (error) {
       console.error('Error en getAgentResponseRetry:', error);
@@ -654,66 +656,74 @@ sendMessageToSupervisor() {
   
 
 
-  handleYes() {
+  async handleYes() {
     const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
     if (!chat) {
       console.error('Chat no encontrado');
       return;
     }
   
-    // Crear el payload para cambiar solo el estado de intervenido, sin modificar los mensajes
-    const payload = {
-      memory_key: chat.memory_key,
-      intervenido: true  
-    };
-  
-    // Llamar al servicio para actualizar solo el estado de intervención del chat
-    this.chatService.actualizarEstadoIntervenido(payload).subscribe(() => {
+    // Obtener el chat desde la base de datos
+    this.chatService.getChat(this.activeChatId).subscribe(
+      (chatData: any) => {
 
-      chat.intervenido = true;
-
-      this.isIntervened = true;
-      // Añadir el mensaje de espera al array de mensajes del usuario
-      this.messages.push({
-        content: 'Un humano está en camino para ayudarte...',
-        sender: 'system'
-      });
-
-      console.log("Intervention enabled. Polling for messages...");
-      this.startPollingForMessages(); // Start polling for messages
-
-      // Sleep to show the message
-      this.sleep(5000).then(() => {
-        console.log('Slept for 5 seconds, now executing further code...');
-        // You can call other functions or execute code here after the sleep
-      });  
-  
-      // Desactivar la caja de confirmación y cualquier respuesta del bot
-      this.hasBotResponded = false;
-      this.showConfirmation = false;
-
-      // Marcar el chat como intervenido para la caja de chat
-      this.isIntervened_ShowChat = true;
-
-
-      // Obtener el chat desde la base de datos
-      this.chatService.getChat(this.activeChatId).subscribe(
-        (chatData: any) => {
-
-          console.log("Getting chatData for retry (from this.chatService.getChat):", chatData);
+        console.log("Getting chatData for retry (from this.chatService.getChat):", chatData);
     
-          // Insertar mensajes falsos de supervisión
-          this.insertSupervisionFakeMessages(this.activeChatId, chatData);
-        },
-        (error) => {
-          console.error('Error al obtener el chat desde la base de datos:', error);
-        }
-      );
+        // Insertar mensajes falsos de supervisión
+        this.insertSupervisionFakeMessages(this.activeChatId, chatData);
+      },
+      (error) => {
+        console.error('Error al obtener el chat desde la base de datos:', error);
+      }
+    );
 
+  }
 
-    }, (error) => {
-      console.error('Error al marcar el chat como intervenido', error);
-    });
+  updateInterventionStatus(){
+
+    const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
+    if (!chat) {
+      console.error('Chat no encontrado');
+      return;
+    }
+
+        // Crear el payload para cambiar solo el estado de intervenido, sin modificar los mensajes
+        const payload = {
+          memory_key: chat.memory_key,
+           intervenido: true  
+        };
+        
+        // Llamar al servicio para actualizar solo el estado de intervención del chat
+        this.chatService.actualizarEstadoIntervenido(payload).subscribe(() => {
+    
+          chat.intervenido = true;
+    
+          this.isIntervened = true;
+          // Añadir el mensaje de espera al array de mensajes del usuario
+          this.messages.push({
+            content: 'Un humano está en camino para ayudarte...',
+            sender: 'system'
+          });
+    
+          console.log("Intervention enabled. Polling for messages...");
+          this.startPollingForMessages(); // Start polling for messages
+    
+          // Sleep to show the message
+          this.sleep(5000).then(() => {
+            console.log('Slept for 5 seconds, now executing further code...');
+            // You can call other functions or execute code here after the sleep
+          });  
+      
+          // Desactivar la caja de confirmación y cualquier respuesta del bot
+          this.hasBotResponded = false;
+          this.showConfirmation = false;
+    
+          // Marcar el chat como intervenido para la caja de chat
+          this.isIntervened_ShowChat = true;
+    
+        }, (error) => {
+          console.error('Error al marcar el chat como intervenido', error);
+        });
   }
   
   // Sleep function that returns a Promise
@@ -785,6 +795,9 @@ sendMessageToSupervisor() {
 
         // Actualizar los mensajes del chat
         await this.getMessagesByChatId(this.activeChatId)
+
+        // Actualizar el estado de intervención
+        await this.updateInterventionStatus();
     
       } catch (error) {
         console.error('Error en getAgentResponseRetry:', error);
@@ -862,7 +875,7 @@ startPollingForMessages() {
   if (this.activeChatId && this.auth_token) {
     this.pollingInterval = setInterval(() => {
       this.pollingFunction_Chat(this.activeChatId);
-    }, 10000);
+    }, 1000);
   } else {
     console.warn('No se pudo iniciar el polling porque faltan chatId o auth_token');
   }
