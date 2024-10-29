@@ -296,7 +296,7 @@ formatMessages(messages: string[], senderType: string) {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   
   ngAfterViewChecked() {
-    this.scrollToBottom();
+    // this.scrollToBottom();
   }
   
   scrollToBottom(): void {

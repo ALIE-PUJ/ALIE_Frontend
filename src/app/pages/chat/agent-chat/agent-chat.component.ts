@@ -864,7 +864,7 @@ private clearPollingInterval() {
 }
 
 ngAfterViewChecked() {
-  this.scrollToBottom();
+  // this.scrollToBottom();
   const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
   this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
 }
