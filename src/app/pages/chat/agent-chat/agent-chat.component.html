@@ -86,7 +86,7 @@
 
         <div class="messages" id="messages-container" *ngIf="activeChatId">
           <div *ngFor="let message of messages; let i = index" class="message-container">
-            <p [ngClass]="{
+            <p *ngIf="message.content != 'Mensaje de supervisión artificial'" [ngClass]="{
                 'agent-message': message.sender === 'agent',
                 'user-message': message.sender === 'user',
                 'supervisor-message': message.sender === 'supervisor'

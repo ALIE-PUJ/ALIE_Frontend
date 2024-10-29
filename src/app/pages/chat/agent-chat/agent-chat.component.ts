@@ -695,16 +695,103 @@ sendMessageToSupervisor() {
       // Marcar el chat como intervenido para la caja de chat
       this.isIntervened_ShowChat = true;
 
+
+      // Obtener el chat desde la base de datos
+      this.chatService.getChat(this.activeChatId).subscribe(
+        (chatData: any) => {
+
+          console.log("Getting chatData for retry (from this.chatService.getChat):", chatData);
+    
+          // Insertar mensajes falsos de supervisión
+          this.insertSupervisionFakeMessages(this.activeChatId, chatData);
+        },
+        (error) => {
+          console.error('Error al obtener el chat desde la base de datos:', error);
+        }
+      );
+
+
     }, (error) => {
       console.error('Error al marcar el chat como intervenido', error);
     });
   }
   
-  
   // Sleep function that returns a Promise
   sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  async insertSupervisionFakeMessages(chatId: string, chatData: any) {
+
+      try {
+    
+        // Nuevo
+
+        // Datos generales
+        const agentMessages = chatData.mensajes_agente || [];
+        const userMessages = chatData.mensajes_usuario || [];
+        const supervisorMessages = chatData.mensajes_supervision || [];
+        
+        // Insertar un mensaje artificial a supervision, por cada mensaje del agente, menos 1. El ultimo, se espera que sea un mensaje real.
+        console.log("Insertando un mensaje artificial a supervision, por cada mensaje del agente, menos 1. El ultimo, se espera que sea un mensaje real.")
+        agentMessages.forEach((agentMessage: any, index: number) => {
+          if (index !== agentMessages.length - 1) {
+            supervisorMessages.push(JSON.stringify({ texto: 'Mensaje de supervisión artificial' }));
+          }
+        });
+
+        // Borrar el chat
+        console.log("Borrando mensajes del chat para re-guardarlo")
+        await this.chatService.deleteChat(this.activeChatId).toPromise();
+        
+        // Guardar la respuesta del agente en la base de datos
+        const agentPayload = {
+          auth_token: this.auth_token,
+          memory_key: this.activeChatId,
+          mensajes_agente: agentMessages,
+          mensajes_usuario: userMessages,
+          mensajes_supervision: [],  // No guardamos mensajes de supervisión en este payload
+          user_id: this.user_id
+        };
+
+        console.log("Supervisor Messages for retry:", supervisorMessages);
+        if (supervisorMessages.length != 0){
+
+          console.log("El supervisor ha intervenido en esta conversacion. Guardando mensajes.")
+
+          // Guardar la respuesta del agente en la base de datos CON LOS DATOS DEL SUPERVISOR
+          const agentPayload_withSupervision = {
+            auth_token: this.auth_token,
+            memory_key: this.activeChatId,
+            mensajes_agente: agentMessages,
+            mensajes_usuario: userMessages,
+            mensajes_supervision: supervisorMessages,
+            user_id: this.user_id
+          };
+          
+          console.log("Agent Payload to save:", agentPayload_withSupervision);
+          // Guardar la respuesta del agente en la base de datos
+          await this.chatService.guardarChat(agentPayload_withSupervision).toPromise();
+          console.log('Respuesta del agente guardada correctamente en la base de datos');
+
+        } else {
+          console.log("El supervisor NO ha intervenido en esta conversacion. Guardando mensajes.")
+
+          console.log("Agent Payload to save:", agentPayload);
+          // Guardar la respuesta del agente en la base de datos
+          await this.chatService.guardarChat(agentPayload).toPromise();
+          console.log('Respuesta del agente guardada correctamente en la base de datos');
+        }
+
+        // Actualizar los mensajes del chat
+        await this.getMessagesByChatId(this.activeChatId)
+    
+      } catch (error) {
+        console.error('Error en getAgentResponseRetry:', error);
+      }
+    
+  }
+
 
   handleNo() {
     this.isIntervened = false;
@@ -1012,3 +1099,4 @@ toggleChatsView() {
 
 
 }
+
