@@ -237,7 +237,7 @@ checkInterventionStatus(chatId: string) {
     this.checkInterventionStatus(chatId);
 
     console.log("Current selected chat:", this.getActiveChat());
-    this.startPollingForMessages(); // Start polling for messages
+    // this.startPollingForMessages(); // Start polling for messages
   }
 
 
@@ -450,6 +450,9 @@ sendMessageToSupervisor() {
     // Obtener el chat desde la base de datos para asegurar que obtenemos el último mensaje del usuario
     this.chatService.getChat(this.activeChatId).subscribe(
       (chatData: any) => {
+
+        console.log("Getting chatData for retry (from this.chatService.getChat):", chatData);
+
         const userMessages = chatData.mensajes_usuario;
   
         if (!userMessages || userMessages.length === 0) {
@@ -469,7 +472,7 @@ sendMessageToSupervisor() {
         }
   
         // Volver a enviar el último mensaje del usuario al agente
-        this.getAgentResponseRetry(parsedMessage.texto, chat);
+        this.getAgentResponseRetry(parsedMessage.texto, chat, chatData);
       },
       (error) => {
         console.error('Error al obtener el chat desde la base de datos:', error);
@@ -478,7 +481,8 @@ sendMessageToSupervisor() {
   }
   
 
-  async getAgentResponseRetry(userMessage: string, chat: any) {
+  async getAgentResponseRetry(userMessage: string, chat: any, chatData: any) {
+
     try {
       if (!userMessage) {
         throw new Error('El mensaje del usuario no contiene contenido válido.');
@@ -497,22 +501,70 @@ sendMessageToSupervisor() {
   
       // Añadir la nueva respuesta del agente a los mensajes del chat
       const agentMessage = { content: alie_answer || 'Lo siento, no tengo una respuesta en este momento.', sender: 'agent' };
+      console.log("ALIE Answer for retry:", alie_answer);
       chat.messages.push(agentMessage); // Añadimos el nuevo mensaje del agente a los mensajes locales
       this.messages.push(agentMessage); // Actualizamos los mensajes en la interfaz
   
+      console.log("Current chat for retry:", chat);
+      console.log("Current messages for retry:", this.messages);
+
+
+      // Nuevo
+
+      // Datos generales
+      const agentMessages = chatData.mensajes_agente || [];
+      const userMessages = chatData.mensajes_usuario || [];
+      const supervisorMessages = chatData.mensajes_supervision || [];
+      
+      // reemplazar el ultimo mensaje del agente con el nuevo mensaje.
+      console.log("Se reeemplaza el mensaje del agente con el nuevo mensaje.")
+      agentMessages[agentMessages.length - 1] = JSON.stringify({ texto: agentMessage.content });
+
+      // Borrar el chat
+      console.log("Borrando mensajes del chat para re-guardarlo")
+      await this.chatService.deleteChat(this.activeChatId).toPromise();
+      
       // Guardar la respuesta del agente en la base de datos
       const agentPayload = {
         auth_token: this.auth_token,
         memory_key: this.activeChatId,
-        mensajes_agente: [JSON.stringify({ texto: agentMessage.content })],
-        mensajes_usuario: [],  // No guardamos mensajes de usuario en este payload
+        mensajes_agente: agentMessages,
+        mensajes_usuario: userMessages,
         mensajes_supervision: [],  // No guardamos mensajes de supervisión en este payload
         user_id: this.user_id
       };
-  
-      // Guardar la respuesta del agente en la base de datos
-      await this.chatService.guardarChat(agentPayload).toPromise();
-      console.log('Respuesta del agente guardada correctamente en la base de datos');
+
+      console.log("Supervisor Messages for retry:", supervisorMessages);
+      if (supervisorMessages.length != 0){
+
+        console.log("El supervisor ha intervenido en esta conversacion. Guardando mensajes.")
+
+        // Guardar la respuesta del agente en la base de datos CON LOS DATOS DEL SUPERVISOR
+        const agentPayload_withSupervision = {
+          auth_token: this.auth_token,
+          memory_key: this.activeChatId,
+          mensajes_agente: agentMessages,
+          mensajes_usuario: userMessages,
+          mensajes_supervision: supervisorMessages,
+          user_id: this.user_id
+        };
+        
+        console.log("Agent Payload to save:", agentPayload_withSupervision);
+        // Guardar la respuesta del agente en la base de datos
+        await this.chatService.guardarChat(agentPayload_withSupervision).toPromise();
+        console.log('Respuesta del agente guardada correctamente en la base de datos');
+
+      } else {
+        console.log("El supervisor NO ha intervenido en esta conversacion. Guardando mensajes.")
+
+        console.log("Agent Payload to save:", agentPayload);
+        // Guardar la respuesta del agente en la base de datos
+        await this.chatService.guardarChat(agentPayload).toPromise();
+        console.log('Respuesta del agente guardada correctamente en la base de datos');
+      }
+
+      // Actualizar los mensajes del chat
+      await this.getMessagesByChatId(this.activeChatId)
   
     } catch (error) {
       console.error('Error en getAgentResponseRetry:', error);
@@ -626,6 +678,9 @@ sendMessageToSupervisor() {
         content: 'Un humano está en camino para ayudarte...',
         sender: 'system'
       });
+
+      console.log("Intervention enabled. Polling for messages...");
+      this.startPollingForMessages(); // Start polling for messages
 
       // Sleep to show the message
       this.sleep(5000).then(() => {

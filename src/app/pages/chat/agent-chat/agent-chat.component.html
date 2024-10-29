@@ -94,10 +94,13 @@
               <span style="white-space: pre-wrap;" [innerHTML]="convertUrlsToLinks(message.content.trim())"></span>
             </p>
 
-            <div *ngIf="message.sender === 'agent' && i === lastAgentMessageIndex" class="message-icons">
-              <i class="bi bi-hand-thumbs-up-fill" id="thumb-up-{{i}}" (click)="handleThumbUp(message)"></i>
-              <i class="bi bi-hand-thumbs-down-fill" id="thumb-down-{{i}}" (click)="handleThumbDown(message)"></i>
-              <i class="bi bi-arrow-repeat" id="retry-{{i}}" (click)="handleRetry()"></i>
+            <!-- Solo se puede regenerar si el chat NO ha sido intervenido -->
+            <div *ngIf="!isIntervened_ShowChat">
+              <div *ngIf="message.sender === 'agent' && i === lastAgentMessageIndex" class="message-icons">
+                <i class="bi bi-hand-thumbs-up-fill" id="thumb-up-{{i}}" (click)="handleThumbUp(message)"></i>
+                <i class="bi bi-hand-thumbs-down-fill" id="thumb-down-{{i}}" (click)="handleThumbDown(message)"></i>
+                <i class="bi bi-arrow-repeat" id="retry-{{i}}" (click)="handleRetry()"></i>
+              </div>
             </div>
 
             <div class="confirmation-box" *ngIf="showConfirmation">
