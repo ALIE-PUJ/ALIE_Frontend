@@ -29,6 +29,7 @@ export class SupervisionComponent {
   auth_token: string | null = null;
   user_id: string | null = null;
   console: any;
+  isMessageInputBlocked: boolean = false;
 
   constructor() {
     this.initializeAuth();
@@ -288,6 +289,14 @@ formatMessages(messages: string[], senderType: string) {
   
       // Intercalar y ordenar los mensajes
       this.messages = this.alternateMessages(userMessages, agentMessages, supervisorMessages);
+
+      const lastMessage = this.messages[this.messages.length - 1];
+      if (lastMessage?.sender === 'supervisor') {
+          this.isMessageInputBlocked = true; 
+      } else {
+          this.isMessageInputBlocked = false; 
+      }
+
     }, (error) => {
       console.error('Error al obtener los mensajes del chat', error);
     });

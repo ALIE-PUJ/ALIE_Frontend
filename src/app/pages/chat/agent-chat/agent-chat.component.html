@@ -123,15 +123,18 @@
 
         <div class="navegacion" *ngIf="activeChatId && !isChatArchived(activeChatId)">
           <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..."
-            [(ngModel)]="message" />
+            [(ngModel)]="message" [disabled]="isMessageInputBlocked"/>
 
           <button class="send-button" *ngIf="!isIntervened_ShowChat" id="send-message" (click)="sendMessageToAgent()">
             <i class="bi bi-send"></i>
           </button>
 
-          <button class="send-button" *ngIf="isIntervened_ShowChat" id="send-message1" (click)="sendMessageToSupervisor()">
+          <button class="send-button" *ngIf="isIntervened_ShowChat"  id="send-message1" (click)="sendMessageToSupervisor()">
             <i class="bi bi-send-check"></i>
           </button>
+
+
+
         </div>
       </div>
     </div>

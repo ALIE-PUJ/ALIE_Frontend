@@ -50,6 +50,11 @@ export class AgentChatComponent {
   isIntervened: boolean = false;
   isIntervenedFromDB: boolean = false;
   isIntervened_ShowChat: boolean = false;
+  isMessageInputBlocked: boolean = false;
+  supervisorRequests: { [key: string]: boolean } = {}; 
+
+
+
 
   constructor() {
     this.initializeAuth();
@@ -174,6 +179,8 @@ export class AgentChatComponent {
 
   // Método para agregar un nuevo chat y abrirlo automáticamente
 addNewChat() {
+
+  this.isMessageInputBlocked = false;
   const payload = {
     mensajes_agente: [],
     mensajes_usuario: [],
@@ -233,6 +240,7 @@ checkInterventionStatus(chatId: string) {
   // Cambiar el chat activo
   switchChat(chatId: string) {
     this.activeChatId = chatId;
+    this.isMessageInputBlocked = false;
     this.getMessagesByChatId(chatId); 
     this.checkInterventionStatus(chatId);
 
@@ -655,8 +663,11 @@ sendMessageToSupervisor() {
   }
   
 
-
   async handleYes() {
+
+    this.supervisorRequests[this.activeChatId] = true;
+    this.isMessageInputBlocked = true;
+
     const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
     if (!chat) {
       console.error('Chat no encontrado');
@@ -961,6 +972,15 @@ getMessagesByChatId(chatId: string) {
 // Recalcular el índice del último mensaje del agente
 const lastAgentIndex1 = this.messages.map(m => m.sender).lastIndexOf('agent');
 this.lastAgentMessageIndex = lastAgentIndex1 !== -1 ? lastAgentIndex1 : null;
+
+        const lastMessage = this.messages[this.messages.length - 1];
+        if (lastMessage?.sender === 'user' || this.supervisorRequests[chatId]) {
+            this.isMessageInputBlocked = true; 
+        } else {
+            this.isMessageInputBlocked = false; 
+        }
+
+        console.log("Estado del bloqueo de entrada:", this.isMessageInputBlocked);
 
   }, (error) => {
     // Manejo del error
