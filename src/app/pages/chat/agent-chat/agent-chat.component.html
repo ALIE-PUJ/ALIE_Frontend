@@ -46,8 +46,6 @@
           </ng-container>
         </div>
 
-
-
         <div *ngIf="!showArchivedChats" class="archived-chats">
           <ng-container *ngFor="let chat of chats">
             <div class="historial" *ngIf="chat.archivado" id="archived-chat-{{chat.memory_key}}"
@@ -121,20 +119,22 @@
           <p>{{ loadingMessage }}<span class="loading-dots">{{ loadingDots }}</span></p>
         </div>
 
-        <div class="navegacion" *ngIf="activeChatId && !isChatArchived(activeChatId)">
-          <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..."
-            [(ngModel)]="message" [disabled]="isMessageInputBlocked"/>
+        <div *ngIf="activeChatId && !isChatArchived(activeChatId)">
+          <p *ngIf="isMessageInputBlocked && isIntervened_ShowChat" class="espera-mensaje">
+            Debes esperar a la respuesta del supervisor para poder enviar otro mensaje.
+          </p>
+          <div class="navegacion" *ngIf="!isMessageInputBlocked">
+            <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..."
+              [(ngModel)]="message" />
 
-          <button class="send-button" *ngIf="!isIntervened_ShowChat" id="send-message" (click)="sendMessageToAgent()">
-            <i class="bi bi-send"></i>
-          </button>
+            <button class="send-button" *ngIf="!isIntervened_ShowChat" id="send-message" (click)="sendMessageToAgent()">
+              <i class="bi bi-send"></i>
+            </button>
 
-          <button class="send-button" *ngIf="isIntervened_ShowChat"  id="send-message1" (click)="sendMessageToSupervisor()">
-            <i class="bi bi-send-check"></i>
-          </button>
-
-
-
+            <button class="send-button" *ngIf="isIntervened_ShowChat" id="send-message1" (click)="sendMessageToSupervisor()">
+              <i class="bi bi-send-check"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>

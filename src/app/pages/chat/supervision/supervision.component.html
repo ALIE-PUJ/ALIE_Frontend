@@ -60,21 +60,21 @@
         </div>
       </div>
       
-      
-      
-      <!-- Campo de texto e input para intervención siempre visible en chats intervenidos -->
-      <div class="chat-input-container" *ngIf="selectedChat?.canInteract">
+      <div *ngIf="selectedChat?.canInteract">
+        
         <p *ngIf="isMessageInputBlocked" class="espera-mensaje">
           Debes esperar a la respuesta del estudiante para poder enviar otro mensaje.
         </p>
-        <input 
-          type="text" 
-          [(ngModel)]="newMessage" 
-          placeholder="Escribe un mensaje para intervenir en la conversación..." 
-          (keydown.enter)="sendMessage()"
-          [disabled]="isMessageInputBlocked" 
-        />
-        <button (click)="sendMessage()" [disabled]="isMessageInputBlocked">✈️</button>  
+
+        <div class="chat-input-container" *ngIf="!isMessageInputBlocked">
+          <input 
+            type="text" 
+            [(ngModel)]="newMessage" 
+            placeholder="Escribe un mensaje para intervenir en la conversación..." 
+            (keydown.enter)="sendMessage()"
+          />
+          <button (click)="sendMessage()">✈️</button>  
+        </div>
       </div>
     </div>
   </div>

@@ -283,6 +283,22 @@ i {
 
 }
 
+.espera-mensaje {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 15px;
+  padding: 15px;
+  border: none;
+  border-radius: 25px;
+  flex: 1;
+  margin-right: 10px;
+  font-size: 1rem;
+  color: white;
+  background-color: #2522e7;
+}
+
 .send-button:hover {
   background-color: #61609e;
 }
