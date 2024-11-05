@@ -121,6 +121,15 @@
           <p>{{ loadingMessage }}<span class="loading-dots">{{ loadingDots }}</span></p>
         </div>
 
+        <!-- Validar el turno -->
+        <div>
+          <ng-container *ngIf="determineTurn() as result">
+            <span *ngIf="result === 'user'">turn = user</span>
+            <span *ngIf="result === 'supervisor'">turn = supervisor</span>
+            <span *ngIf="result === 'equal'">turn = equal</span>
+          </ng-container>
+        </div>             
+
         <div class="navegacion" *ngIf="activeChatId && !isChatArchived(activeChatId)">
           <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..."
             [(ngModel)]="message" />

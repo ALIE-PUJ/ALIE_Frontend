@@ -61,6 +61,15 @@
       </div>
       
       
+
+      <!-- Validar el turno -->
+      <div>
+        <ng-container *ngIf="determineTurn() as result">
+          <span *ngIf="result === 'user'">turn = user</span>
+          <span *ngIf="result === 'supervisor'">turn = supervisor</span>
+          <span *ngIf="result === 'equal'">turn = equal</span>
+        </ng-container>
+      </div>     
       
       <!-- Campo de texto e input para intervención siempre visible en chats intervenidos -->
       <div class="chat-input-container" *ngIf="selectedChat?.canInteract">
