@@ -87,10 +87,11 @@
 
         <!-- Si es turno del usuario y se puede interactuar con el chat -->
         <div class="navegacion d-flex justify-content-center align-items-center" *ngIf="selectedChat?.canInteract && determineTurn() === 'user'">
-          <div>
+          <div class="d-flex align-items-center">
             <p class="mb-0" style="margin-right: 8px; font-size: 100%; color: black;">Espere a la respuesta del estudiante antes de enviar un mensaje...</p>
+            <div class="loading-spinner"></div>
           </div>
-        </div>
+        </div>   
 
 
     </div>

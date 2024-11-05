@@ -146,11 +146,13 @@
         </div>
 
         <!-- Si es turno del supervisor -->
-        <div class="navegacion d-flex justify-content-center align-items-center" style="margin-bottom: 10%;" *ngIf="determineTurn() === 'supervisor'">
-          <div>
+        <div class="navegacion d-flex justify-content-center align-items-center" style="margin-bottom: 5%;" *ngIf="determineTurn() === 'supervisor'">
+          <div class="d-flex align-items-center">
             <p class="mb-0" style="margin-right: 8px; font-size: 100%; color: black;">Espere a la respuesta del supervisor antes de enviar un mensaje...</p>
+            <div style="margin-top: 2%;" class="loading-spinner"></div>
           </div>
-        </div>
+        </div>        
+
         
       </div>
     </div>
