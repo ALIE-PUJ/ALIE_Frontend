@@ -1118,7 +1118,8 @@ determineTurn() {
 
   // Verificar que haya mensajes
   if (!this.messages || this.messages.length === 0) {
-    return "sender"; // Retornar 'sender' si no hay mensajes
+    console.log("No hay mensajes, retornando 'user'");
+    return "user"; // Retornar 'user' si no hay mensajes
   }
 
   // Obtener el último mensaje
@@ -1129,16 +1130,18 @@ determineTurn() {
 
   // Determinar el turno según las condiciones
   if (lastMessage.sender === 'user' && hasSupervisorMessage) { // SI el último mensaje es del usuario y hay mensajes del supervisor
-    console.log("determineTurn return supervisor");
+    console.log("determineTurn: lastMessage.sender === 'user' && hasSupervisorMessage. return supervisor");
     return "supervisor";
   } else if (lastMessage.sender === 'user' && !hasSupervisorMessage) { // SI el último mensaje es del usuario y NO hay mensajes del supervisor
-    console.log("determineTurn return user");
+    console.log("determineTurn: lastMessage.sender === 'user' && !hasSupervisorMessage. return user");
     return "user";
+  } else if (lastMessage.sender === 'agent' && this.isIntervened_ShowChat) { // SI el último mensaje es del agente y el chat está intervenido, quiere decir que se acaba de pedir ayuda. Esperar
+    console.log("determineTurn: lastMessage.sender === 'agent' && this.isIntervened_ShowChat. return supervisor");
+    return "supervisor";
   } else { // En cualquier otro caso
     return "user"; // Default
   }
 }
-
 
 }
 
