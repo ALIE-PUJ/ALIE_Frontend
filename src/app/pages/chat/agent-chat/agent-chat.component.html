@@ -17,7 +17,7 @@
                 <i class="bi bi-chat-left"></i>
               </div>
 
-              <p class="titulo" *ngIf="!chat.isEditing" id="chat-title-{{chat.memory_key}}"
+              <p style="font-size: 100%;" class="titulo" *ngIf="!chat.isEditing" id="chat-title-{{chat.memory_key}}"
                 (dblclick)="enableEditing(chat)">
                 {{ chat.title || 'Chat sin título' }}
               </p>
@@ -61,12 +61,12 @@
         </div>
         <div class="archived-section" id="archived-chats-toggle" (click)="list_Archive_Chats()">
           <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
-            <p style="margin: 0;">Ver chats <strong>archivados</strong></p>
+            <p style="margin: 0; font-size: 1.2vh;">Ver chats <strong>archivados</strong></p>
           </div>
         </div>
         <div class="archived-section" id="archived-chats-toggle" (click)="listChats()" style="margin-bottom: 10%;">
           <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
-            <p style="margin: 0;">Ver chats <strong>activos</strong></p>
+            <p style="margin: 0; font-size: 1.2vh;">Ver chats <strong>activos</strong></p>
           </div>
         </div>
 

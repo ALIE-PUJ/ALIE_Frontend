@@ -1,7 +1,7 @@
 <app-sidebar>
   <div class="main">
     <div class="sidebar">
-      <h2>Intervención</h2>
+      <h2 style="font-size: 100%;">Intervención</h2>
       <!-- Lista de chats de intervención -->
       <div class="chat-list">
         <div *ngFor="let chat of interventionChats" class="chat-item" (click)="selectInterventionChat(chat)">
@@ -9,7 +9,7 @@
             <div class="botones">
               <i class="bi bi-chat-left"></i>
             </div>
-            <p class="titulo">{{ chat.nombre }}</p>
+            <p style="font-size: 100%;" class="titulo">{{ chat.nombre }}</p>
             <div class="menu">
               <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat.memory_key)"></i>
               <div *ngIf="chat.showOptions" class="menu-options">
@@ -23,14 +23,14 @@
         </div>
       </div>
 
-      <h2>Chats Activos</h2>
+      <h2 style="font-size: 100%;">Chats Activos</h2>
       <!-- Lista de chats activos sin posibilidad de intervención -->
       <div class="chat-list">
         <div *ngFor="let chat of activeChats" class="historial" (click)="selectActiveChat(chat)">
           <div class="botones">
             <i class="bi bi-chat-left"></i>
           </div>
-          <p class="titulo">{{ chat.nombre }}</p>
+          <p style="font-size: 100%;" class="titulo">{{ chat.nombre }}</p>
         </div>
       </div>
     </div>
