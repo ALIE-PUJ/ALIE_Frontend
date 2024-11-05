@@ -122,15 +122,17 @@
         </div>
 
         <!-- Validar el turno -->
+        <!--
         <div>
           <ng-container *ngIf="determineTurn() as result">
             <span *ngIf="result === 'user'">turn = user</span>
             <span *ngIf="result === 'supervisor'">turn = supervisor</span>
-            <span *ngIf="result === 'equal'">turn = equal</span>
           </ng-container>
-        </div>             
+        </div>  
+        -->           
 
-        <div class="navegacion" *ngIf="activeChatId && !isChatArchived(activeChatId)">
+        <!-- Si es turno del usuario o no ha intervenido un supervisor -->
+        <div class="navegacion" *ngIf="activeChatId && !isChatArchived(activeChatId) && determineTurn() === 'user'">
           <input type="text" class="texto" id="message-input" placeholder="Escribe un mensaje..."
             [(ngModel)]="message" />
 
@@ -142,6 +144,14 @@
             <i class="bi bi-send-check"></i>
           </button>
         </div>
+
+        <!-- Si es turno del supervisor -->
+        <div class="navegacion d-flex justify-content-center align-items-center" style="margin-bottom: 10%;" *ngIf="determineTurn() === 'supervisor'">
+          <div>
+            <p class="mb-0" style="margin-right: 8px; font-size: 100%; color: black;">Espere a la respuesta del supervisor antes de enviar un mensaje...</p>
+          </div>
+        </div>
+        
       </div>
     </div>
   </div>

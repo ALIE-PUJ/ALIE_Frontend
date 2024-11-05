@@ -1113,6 +1113,9 @@ toggleChatsView() {
 
 // Determinar el turno actual
 determineTurn() {
+
+  console.log("determineTurn... Current messages:", this.messages);
+
   // Verificar que haya mensajes
   if (!this.messages || this.messages.length === 0) {
     return "sender"; // Retornar 'sender' si no hay mensajes

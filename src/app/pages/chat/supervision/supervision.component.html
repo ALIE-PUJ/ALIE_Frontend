@@ -63,16 +63,19 @@
       
 
       <!-- Validar el turno -->
+      <!--
       <div>
         <ng-container *ngIf="determineTurn() as result">
           <span *ngIf="result === 'user'">turn = user</span>
           <span *ngIf="result === 'supervisor'">turn = supervisor</span>
-          <span *ngIf="result === 'equal'">turn = equal</span>
         </ng-container>
-      </div>     
+      </div>  
+      -->     
       
       <!-- Campo de texto e input para intervención siempre visible en chats intervenidos -->
-      <div class="chat-input-container" *ngIf="selectedChat?.canInteract">
+
+      <!-- Si es turno del supervisor y se puede interactuar con el chat -->
+      <div class="chat-input-container" *ngIf="selectedChat?.canInteract && determineTurn() === 'supervisor'">
         <input 
           type="text" 
           [(ngModel)]="newMessage" 
@@ -81,6 +84,15 @@
         />
         <button (click)="sendMessage()">✈️</button>  
       </div>
+
+        <!-- Si es turno del usuario y se puede interactuar con el chat -->
+        <div class="navegacion d-flex justify-content-center align-items-center" *ngIf="selectedChat?.canInteract && determineTurn() === 'user'">
+          <div>
+            <p class="mb-0" style="margin-right: 8px; font-size: 100%; color: black;">Espere a la respuesta del estudiante antes de enviar un mensaje...</p>
+          </div>
+        </div>
+
+
     </div>
   </div>
 </app-sidebar>
