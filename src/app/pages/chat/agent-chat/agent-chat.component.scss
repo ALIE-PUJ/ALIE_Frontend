@@ -57,7 +57,7 @@ i {
   background-color: #4553af;
 }
 
-.historial_chat {
+.historial_chat  {
   margin: 0.5rem 0.2rem;
   display: flex;
   flex-direction: column;
@@ -66,6 +66,8 @@ i {
   height: calc(100% - 100px);
   padding: 0 10px;
 }
+
+
 
 .historial_chat .historial {
   display: flex;
@@ -140,6 +142,18 @@ i {
   border-radius: 4px;
 }
 
+.chat-title-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.chat-title-top-right {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
 
 
 .right h1 {
@@ -147,6 +161,7 @@ i {
   font-size: 2.5em;
   color: #16226d;
   text-align: center;
+  font-family: 'Roboto', sans-serif; 
 }
 
 .right .subtitulo {
@@ -180,6 +195,35 @@ i {
   align-self: flex-start;
 }
 
+
+ .archived-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 0, 255, 0.2);
+  margin: 15px 15px 5px 15px;
+  flex-shrink: 0;
+  height: 45px;
+  padding: 12px 24px;
+  background-color: #2e3775;         
+}
+
+.archived-section:hover {
+  background-color: #4553af;  
+}
+
+.archived-chats {
+  margin-top: 10px;
+  background-color: #d3d3d3;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
 .agent-message {
   background-color: #505991;
   border-radius: 25px 25px 25px 0;
@@ -197,7 +241,7 @@ i {
 .navegacion {
   display: flex;
   align-items: center;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
   padding: 10px;
   border-radius: 25px;
   gap: 10px;
@@ -234,7 +278,9 @@ i {
 }
 
 .send-button i {
-  font-size: 20px; /* Tamaño del ícono */
+  font-size: 20px; 
+  line-height: 50px;
+
 }
 
 .send-button:hover {
@@ -513,4 +559,19 @@ button:hover {
 .loading-dots:before {
   animation: loadingDots 2s infinite;
   font-size: 1.2em; /* Tamaño de los puntos */
+}
+
+
+.loading-spinner {
+  border: 3px solid #555991;
+  border-top: 3px solid black;
+  border-radius: 50%;
+  width: 1.2rem;
+  height: 1.2rem;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

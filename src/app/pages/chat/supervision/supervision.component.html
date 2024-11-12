@@ -1,7 +1,7 @@
 <app-sidebar>
   <div class="main">
     <div class="sidebar">
-      <h2>Intervención</h2>
+      <h2 style="font-size: 100%;">Intervención</h2>
       <!-- Lista de chats de intervención -->
       <div class="chat-list">
         <div *ngFor="let chat of interventionChats" class="chat-item" (click)="selectInterventionChat(chat)">
@@ -9,13 +9,13 @@
             <div class="botones">
               <i class="bi bi-chat-left"></i>
             </div>
-            <p class="titulo">{{ chat.nombre }}</p>
+            <p style="font-size: 80%;" class="titulo">{{ chat.nombre }}</p>
             <div class="menu">
               <i class="bi bi-three-dots-vertical menu-icon" (click)="toggleOptions(chat.memory_key)"></i>
-              <div *ngIf="chat.showOptions" class="menu-options" (click)="$event.stopPropagation()">
-                <div class="option" (click)="deleteChat(chat.memory_key)">
-                  <i class="bi bi-trash"></i>
-                  <span>Eliminar</span>
+              <div *ngIf="chat.showOptions" class="menu-options">
+                <div class="option" (click)="archiveChat(chat.memory_key)">
+                  <i class="bi bi-archive"></i>
+                  <span>Archivar</span>
                 </div>
               </div>
             </div>
@@ -23,14 +23,14 @@
         </div>
       </div>
 
-      <h2>Chats Activos</h2>
+      <h2 style="font-size: 100%;">Chats Activos</h2>
       <!-- Lista de chats activos sin posibilidad de intervención -->
       <div class="chat-list">
         <div *ngFor="let chat of activeChats" class="historial" (click)="selectActiveChat(chat)">
           <div class="botones">
             <i class="bi bi-chat-left"></i>
           </div>
-          <p class="titulo">{{ chat.nombre }}</p>
+          <p style="font-size: 80%;" class="titulo">{{ chat.nombre }}</p>
         </div>
       </div>
     </div>
@@ -46,21 +46,36 @@
         ALIE
       </div>
 
-      <div *ngFor="let message of messages">
-        <div [ngClass]="{
-                   'agent-message': message.sender === 'agent',
-                   'user-message': message.sender === 'user',
-                   'supervisor-message': message.sender === 'supervisor'
-             }" class="message-item">
-          {{ message.content }}
+      <div class="message-container" #messagesContainer>
+        <div *ngFor="let message of messages">
+          
+          <!-- No se muestran los mensajes artificiales de supervision -->
+          <div *ngIf="message.content != 'Mensaje de supervisión artificial'" [ngClass]="{
+                 'agent-message': message.sender === 'agent',
+                 'user-message': message.sender === 'user',
+                 'supervisor-message': message.sender === 'supervisor'
+               }" class="message-item">
+               <span style="white-space: pre-wrap;" [innerHTML]="convertUrlsToLinks(message.content.trim())"></span>
+              </div>
         </div>
       </div>
       
       
-      
+
+      <!-- Validar el turno -->
+      <!--
+      <div>
+        <ng-container *ngIf="determineTurn() as result">
+          <span *ngIf="result === 'user'">turn = user</span>
+          <span *ngIf="result === 'supervisor'">turn = supervisor</span>
+        </ng-container>
+      </div>  
+      -->     
       
       <!-- Campo de texto e input para intervención siempre visible en chats intervenidos -->
-      <div class="chat-input-container" *ngIf="selectedChat?.canInteract">
+
+      <!-- Si es turno del supervisor y se puede interactuar con el chat -->
+      <div class="chat-input-container" *ngIf="selectedChat?.canInteract && determineTurn() === 'supervisor'">
         <input 
           type="text" 
           [(ngModel)]="newMessage" 
@@ -69,6 +84,16 @@
         />
         <button (click)="sendMessage()">✈️</button>  
       </div>
+
+        <!-- Si es turno del usuario y se puede interactuar con el chat -->
+        <div class="navegacion d-flex justify-content-center align-items-center" *ngIf="selectedChat?.canInteract && determineTurn() === 'user'">
+          <div class="d-flex align-items-center">
+            <p class="mb-0" style="margin-right: 8px; font-size: 100%; color: black;">Espere a la respuesta del estudiante antes de enviar un mensaje...</p>
+            <div class="loading-spinner"></div>
+          </div>
+        </div>   
+
+
     </div>
   </div>
 </app-sidebar>

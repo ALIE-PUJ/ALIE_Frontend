@@ -6,6 +6,8 @@ import { AgentService } from '../../../services/chat/agent.service';
 import { Router } from '@angular/router';
 import { TaggingService } from '../../../services/tagging/tagging.service';
 import { AlieService } from '../../../services/alie/alie.service';
+import { AuthService } from '../../../services/authentication/auth.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-agent-chat',
@@ -13,24 +15,27 @@ import { AlieService } from '../../../services/alie/alie.service';
   imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './agent-chat.component.html',
   styleUrls: ['./agent-chat.component.scss'],
+  
 })
+
+
 export class AgentChatComponent {
 
   // Inject Services
   private chatService = inject(AgentService);
   private router = inject(Router);
   private taggingService = inject(TaggingService);
-  private alieService = inject(AlieService)
+  private alieService = inject(AlieService);
+  private authService = inject(AuthService); 
 
   // Loading variables
   isLoading: boolean = false;
   loadingMessage: string = 'ALIE está encontrando la información que necesitas';
   loadingDots: string = ''; // Para almacenar los puntos de carga
   loadingIndex: number = 0; // Para llevar la cuenta de la secuencia
-  
+
   // Referencia al DIV de mensajes para hacer scroll automatico
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
-
 
   // Variables
   activeChatId: string = '';
@@ -40,31 +45,132 @@ export class AgentChatComponent {
   showConfirmation: boolean = false;
   messageToThumbDown: any;
 
-  auth_token: string = 'your_token_here';
-  user_id: string = '1';
-  isIntervened: boolean | undefined;
+  auth_token: string | null = null;
+  user_id: string | null = null;
+  isIntervened: boolean = false;
+  isIntervenedFromDB: boolean = false;
+  isIntervened_ShowChat: boolean = false;
 
   constructor() {
+    this.initializeAuth();
     this.listChats();
   }
 
-  listChats() {
-    const auth_token = this.auth_token;
-    const user_id = this.user_id;
+  
+  initializeAuth() {
+    const userId = localStorage.getItem('ActiveUserId');
+    const token = localStorage.getItem('token');
 
-    this.chatService.listChatsByUser(user_id).subscribe((chats: any[]) => {
-      this.chats = chats.map(chat => ({
-        memory_key: chat.memory_key,
-        title: chat.nombre || 'Chat sin título',
-        messages: [],
-        showOptions: false
-      }));
-    }, (error) => {
-      console.error('Error al obtener los chats', error);
-    });
+    if (userId && token) {
+      this.user_id = userId;
+      this.auth_token = token;
+      console.log('User authenticated with ID:', this.user_id);
+    } else {
+      console.error('User is not authenticated, redirecting to login...');
+      this.router.navigate(['/login']); // Redirect to login if not authenticated
+    }
   }
 
+  listChats() {
 
+    // Limpiar los mensajes
+    this.activeChatId = '';
+    this.messages = [];
+
+
+    if (this.user_id && this.auth_token) {
+      this.chatService.listChatsByUser(this.user_id).subscribe((chats: any[]) => {
+        console.log('Chats básicos recibidos:', chats);
+  
+        if (chats.length === 0) {
+          this.chats = [];
+          return;
+        }
+        this.showArchivedChats = false;
+        // Obtener los detalles completos de cada chat
+        const detailedChatRequests = chats.map(chat => this.chatService.getChat(chat.memory_key));
+  
+        forkJoin(detailedChatRequests).subscribe((fullChats) => {
+          console.log('Detalles completos de los chats:', fullChats);
+  
+          // Aquí solo necesitamos invertir el orden de los chats
+          this.chats = fullChats
+            .filter(chat => chat.intervenido === false)  
+            .map(chat => ({
+              memory_key: chat.memory_key,
+              title: chat.nombre || 'Chat sin título',
+              messages: [],
+              intervenido: chat.intervenido || false,
+              showOptions: false
+            }))
+            .reverse(); // Invertir el orden para mostrar el último chat creado primero
+  
+          console.log('Chats en orden descendente (más reciente primero):', this.chats);
+        }, (error) => {
+          console.error('Error al obtener los detalles completos de los chats', error);
+        });
+      }, (error) => {
+        console.error('Error al obtener los chats básicos', error);
+      });
+    } else {
+      console.error('User ID or token is missing');
+    }
+  }
+  
+  
+  list_Archive_Chats() {
+
+    // Limpiar los mensajes
+    this.activeChatId = '';
+    this.messages = [];
+
+    if (this.user_id && this.auth_token) {
+      this.chatService.listChatsByUser(this.user_id).subscribe((chats: any[]) => {
+        console.log('Chats ARCHIVADOS básicos recibidos:', chats);
+  
+        if (chats.length === 0) {
+          this.chats = [];
+          return;
+        }
+        this.showArchivedChats = true;
+        // Obtener los detalles completos de cada chat
+        const detailedChatRequests = chats.map(chat => this.chatService.getChat(chat.memory_key));
+  
+        forkJoin(detailedChatRequests).subscribe((fullChats) => {
+          console.log('Detalles completos de los chats:', fullChats);
+  
+          this.chats = fullChats
+            .filter(chat => chat.intervenido === true)  
+            .map(chat => ({
+              memory_key: chat.memory_key,
+              title: chat.nombre || 'Chat sin título',
+              messages: [],
+              intervenido: chat.intervenido || false,
+              showOptions: false
+            }))
+            .reverse(); 
+
+          
+  
+          console.log('Chats en orden descendente (más reciente primero):', this.chats);
+        }, (error) => {
+          console.error('Error al obtener los detalles completos de los chats', error);
+        });
+      }, (error) => {
+        console.error('Error al obtener los chats básicos', error);
+      });
+    } else {
+      console.error('User ID or token is missing');
+    }
+  }
+
+  isChatArchived(memoryKey: string): boolean {
+    const chat = this.chats.find(c => c.memory_key === memoryKey);
+    return chat ? chat.intervenido : false;
+  }
+  
+  
+  
 
   // Método para agregar un nuevo chat y abrirlo automáticamente
 addNewChat() {
@@ -74,6 +180,8 @@ addNewChat() {
     mensajes_supervision: [],
     user_id: this.user_id
   };
+
+  console.log("Payload being sent:", payload);
 
   // Guardar el nuevo chat en el backend
   this.chatService.guardarChat(payload).subscribe((response) => {
@@ -98,10 +206,38 @@ addNewChat() {
 }
 
 
+checkInterventionStatus(chatId: string) {
+  if (!chatId) {
+    return;
+  }
+
+  this.chatService.getInterventionStatus(chatId).subscribe((response: any) => {
+    if (response.success) {
+
+      console.log("Verificando estado de intervención del chat:", chatId);
+      console.log("Estado de intervención recibido del backend:", response.intervenido);
+      
+      this.isIntervened = response.intervenido;
+      this.isIntervened_ShowChat = response.intervenido;
+    } else {
+      console.log('No se encontró el chat o hubo un error:', response.message);
+    }
+  }, (error) => {
+    console.error('Error al consultar el estado de intervención', error);
+  });
+}
+
+
+
+
   // Cambiar el chat activo
   switchChat(chatId: string) {
     this.activeChatId = chatId;
-    this.getMessagesByChatId(chatId);
+    this.getMessagesByChatId(chatId); 
+    this.checkInterventionStatus(chatId);
+
+    console.log("Current selected chat:", this.getActiveChat());
+    this.startPollingForMessages(); // Start polling for messages
   }
 
 
@@ -166,65 +302,19 @@ saveChatName(chat: any) {
     this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
     this.chatService.deleteChat(chatId).subscribe(() => {
       console.log('Chat eliminado');
+
+      // Limpiar los mensajes si el chat eliminado es el chat activo
+      if (this.activeChatId === chatId) {
+        this.activeChatId = '';
+        this.messages = [];
+      }
+
     }, (error) => {
       console.error('Error al eliminar el chat', error);
     });
   }
 
-  sendMessage() {
-    if (this.message.trim() !== '') {
-      const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
-      if (chat) {
-        const userMessage = { content: this.message, sender: 'user' };
-        const formattedUserMessage = JSON.stringify({ texto: this.message });
-  
-        chat.messages.push(userMessage);
-        this.messages.push(userMessage);
-  
-        const payload = {
-          memory_key: this.activeChatId,
-          nombre: chat.nombre,
-          mensajes_agente: [],
-          mensajes_usuario: [formattedUserMessage],
-          mensajes_supervision: [],
-          user_id: this.user_id
-        };
-  
-  
-        this.chatService.getChat(this.activeChatId).subscribe(
-          (response: any) => {
-
-            if (response.intervenido === true) {
  
-              this.chatService.guardarChat(payload).subscribe(
-                () => {
-                  this.message = ''; 
-                  console.log('El chat está intervenido, guardando el mensaje sin llamar al agente.');
-                },
-                (error) => {
-                  console.error('Error al guardar el mensaje en un chat intervenido', error);
-                }
-              );
-            } else {
-
-              this.chatService.guardarChat(payload).subscribe(
-                async () => {
-                  this.message = '';
-                  await this.getAgentResponse(chat); 
-                },
-                (error) => {
-                  console.error('Error al guardar el mensaje del usuario', error);
-                }
-              );
-            }
-          },
-          (error) => {
-            console.error('Error al consultar el estado del chat', error);
-          }
-        );
-      }
-    }
-  }
   
 
  // Obtener el chat activo por su memory_key
@@ -301,7 +391,7 @@ sendMessageToSupervisor() {
 
 
   // Obtener la respuesta del agente y guardarla en la base de datos
-  async getAgentResponse(chat: any) {
+  async getAgentResponse(chat: any): Promise <void> {
     try {
       console.log("Current chat: ", chat);
       let userMessage = chat.messages[chat.messages.length - 1].content;
@@ -360,6 +450,9 @@ sendMessageToSupervisor() {
     // Obtener el chat desde la base de datos para asegurar que obtenemos el último mensaje del usuario
     this.chatService.getChat(this.activeChatId).subscribe(
       (chatData: any) => {
+
+        console.log("Getting chatData for retry (from this.chatService.getChat):", chatData);
+
         const userMessages = chatData.mensajes_usuario;
   
         if (!userMessages || userMessages.length === 0) {
@@ -379,7 +472,7 @@ sendMessageToSupervisor() {
         }
   
         // Volver a enviar el último mensaje del usuario al agente
-        this.getAgentResponseRetry(parsedMessage.texto, chat);
+        this.getAgentResponseRetry(parsedMessage.texto, chat, chatData);
       },
       (error) => {
         console.error('Error al obtener el chat desde la base de datos:', error);
@@ -388,7 +481,8 @@ sendMessageToSupervisor() {
   }
   
 
-  async getAgentResponseRetry(userMessage: string, chat: any) {
+  async getAgentResponseRetry(userMessage: string, chat: any, chatData: any) {
+
     try {
       if (!userMessage) {
         throw new Error('El mensaje del usuario no contiene contenido válido.');
@@ -407,12 +501,78 @@ sendMessageToSupervisor() {
   
       // Añadir la nueva respuesta del agente a los mensajes del chat
       const agentMessage = { content: alie_answer || 'Lo siento, no tengo una respuesta en este momento.', sender: 'agent' };
+      console.log("ALIE Answer for retry:", alie_answer);
       chat.messages.push(agentMessage); // Añadimos el nuevo mensaje del agente a los mensajes locales
       this.messages.push(agentMessage); // Actualizamos los mensajes en la interfaz
+  
+      console.log("Current chat for retry:", chat);
+      console.log("Current messages for retry:", this.messages);
+
+
+      // Nuevo
+
+      // Datos generales
+      const agentMessages = chatData.mensajes_agente || [];
+      const userMessages = chatData.mensajes_usuario || [];
+      const supervisorMessages = chatData.mensajes_supervision || [];
+      
+      // reemplazar el ultimo mensaje del agente con el nuevo mensaje.
+      console.log("Se reeemplaza el mensaje del agente con el nuevo mensaje.")
+      agentMessages[agentMessages.length - 1] = JSON.stringify({ texto: agentMessage.content });
+
+      // Borrar el chat
+      console.log("Borrando mensajes del chat para re-guardarlo")
+      await this.chatService.deleteChat(this.activeChatId).toPromise();
+      
+      // Guardar la respuesta del agente en la base de datos
+      const agentPayload = {
+        auth_token: this.auth_token,
+        memory_key: this.activeChatId,
+        mensajes_agente: agentMessages,
+        mensajes_usuario: userMessages,
+        mensajes_supervision: [],  // No guardamos mensajes de supervisión en este payload
+        user_id: this.user_id
+      };
+
+      console.log("Supervisor Messages for retry:", supervisorMessages);
+      if (supervisorMessages.length != 0){
+
+        console.log("El supervisor ha intervenido en esta conversacion. Guardando mensajes.")
+
+        // Guardar la respuesta del agente en la base de datos CON LOS DATOS DEL SUPERVISOR
+        const agentPayload_withSupervision = {
+          auth_token: this.auth_token,
+          memory_key: this.activeChatId,
+          mensajes_agente: agentMessages,
+          mensajes_usuario: userMessages,
+          mensajes_supervision: supervisorMessages,
+          user_id: this.user_id
+        };
+        
+        console.log("Agent Payload to save:", agentPayload_withSupervision);
+        // Guardar la respuesta del agente en la base de datos
+        await this.chatService.guardarChat(agentPayload_withSupervision).toPromise();
+        console.log('Respuesta del agente guardada correctamente en la base de datos');
+
+      } else {
+        console.log("El supervisor NO ha intervenido en esta conversacion. Guardando mensajes.")
+
+        console.log("Agent Payload to save:", agentPayload);
+        // Guardar la respuesta del agente en la base de datos
+        await this.chatService.guardarChat(agentPayload).toPromise();
+        console.log('Respuesta del agente guardada correctamente en la base de datos');
+      }
+
+      // Actualizar los mensajes del chat
+      await this.getMessagesByChatId(this.activeChatId)
+
+      // No se actualiza el estado de intervencion, ya que no se ha intervenido en este caso. Si se interviene, no se puede hacer retry
+  
     } catch (error) {
-      console.error('Error en getAgentResponseRetry:');
+      console.error('Error en getAgentResponseRetry:', error);
     }
   }
+  
   
   
   
@@ -491,42 +651,159 @@ sendMessageToSupervisor() {
 
   isChatIntervened(chatId: string): boolean {
     const chat = this.chats.find((c) => c.memory_key === chatId);
-    return chat ? chat.intervenido : true;
+    return chat ? chat.intervenido : false;
   }
   
 
-  handleYes() {
+
+  async handleYes() {
     const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
     if (!chat) {
       console.error('Chat no encontrado');
       return;
     }
   
-    // Crear el payload para cambiar solo el estado de intervenido, sin modificar los mensajes
-    const payload = {
-      memory_key: chat.memory_key,
-      intervenido: true  // Marcar el chat como intervenido
-    };
-  
-    // Llamar al servicio para actualizar solo el estado de intervención del chat
-    this.chatService.actualizarEstadoIntervenido(payload).subscribe(() => {
+    // Obtener el chat desde la base de datos
+    this.chatService.getChat(this.activeChatId).subscribe(
+      (chatData: any) => {
 
-      chat.intervenido = true;
-      // Añadir el mensaje de espera al array de mensajes del usuario
-      this.messages.push({
-        content: 'Un humano está en camino para ayudarte...',
-        sender: 'system'
-      });
-  
-      // Desactivar la caja de confirmación y cualquier respuesta del bot
-      this.hasBotResponded = false;
-      this.showConfirmation = false;
-    }, (error) => {
-      console.error('Error al marcar el chat como intervenido', error);
-    });
+        console.log("Getting chatData for retry (from this.chatService.getChat):", chatData);
+    
+        // Insertar mensajes falsos de supervisión y cambiar el estado de supervisión
+        this.insertSupervisionFakeMessages(this.activeChatId, chatData);
+      },
+      (error) => {
+        console.error('Error al obtener el chat desde la base de datos:', error);
+      }
+    );
+
+  }
+
+  updateInterventionStatus(){
+
+    const chat = this.chats.find((c) => c.memory_key === this.activeChatId);
+    if (!chat) {
+      console.error('Chat no encontrado');
+      return;
+    }
+
+        // Crear el payload para cambiar solo el estado de intervenido, sin modificar los mensajes
+        const payload = {
+          memory_key: chat.memory_key,
+           intervenido: true  
+        };
+        
+        // Llamar al servicio para actualizar solo el estado de intervención del chat
+        this.chatService.actualizarEstadoIntervenido(payload).subscribe(() => {
+    
+          chat.intervenido = true;
+    
+          this.isIntervened = true;
+          // Añadir el mensaje de espera al array de mensajes del usuario
+          this.messages.push({
+            content: 'Un humano está en camino para ayudarte...',
+            sender: 'system'
+          });
+    
+          console.log("Intervention enabled. Polling for messages...");
+          this.startPollingForMessages(); // Start polling for messages
+    
+          // Sleep to show the message
+          this.sleep(5000).then(() => {
+            console.log('Slept for 5 seconds, now executing further code...');
+            // You can call other functions or execute code here after the sleep
+          });  
+      
+          // Desactivar la caja de confirmación y cualquier respuesta del bot
+          this.hasBotResponded = false;
+          this.showConfirmation = false;
+    
+          // Marcar el chat como intervenido para la caja de chat
+          this.isIntervened_ShowChat = true;
+    
+        }, (error) => {
+          console.error('Error al marcar el chat como intervenido', error);
+        });
   }
   
-  
+  // Sleep function that returns a Promise
+  sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async insertSupervisionFakeMessages(chatId: string, chatData: any) {
+
+      try {
+    
+        // Nuevo
+
+        // Datos generales
+        const agentMessages = chatData.mensajes_agente || [];
+        const userMessages = chatData.mensajes_usuario || [];
+        const supervisorMessages = chatData.mensajes_supervision || [];
+        
+        // Insertar un mensaje artificial a supervision, por cada mensaje del agente, menos 1. El ultimo, se espera que sea un mensaje real.
+        console.log("Insertando un mensaje artificial a supervision, por cada mensaje del agente, menos 1. El ultimo, se espera que sea un mensaje real.")
+        agentMessages.forEach((agentMessage: any, index: number) => {
+          if (index !== agentMessages.length - 1) {
+            supervisorMessages.push(JSON.stringify({ texto: 'Mensaje de supervisión artificial' }));
+          }
+        });
+
+        // Borrar el chat
+        console.log("Borrando mensajes del chat para re-guardarlo")
+        await this.chatService.deleteChat(this.activeChatId).toPromise();
+        
+        // Guardar la respuesta del agente en la base de datos
+        const agentPayload = {
+          auth_token: this.auth_token,
+          memory_key: this.activeChatId,
+          mensajes_agente: agentMessages,
+          mensajes_usuario: userMessages,
+          mensajes_supervision: [],  // No guardamos mensajes de supervisión en este payload
+          user_id: this.user_id
+        };
+
+        console.log("Supervisor Messages for retry:", supervisorMessages);
+        if (supervisorMessages.length != 0){
+
+          console.log("El supervisor ha intervenido en esta conversacion. Guardando mensajes.")
+
+          // Guardar la respuesta del agente en la base de datos CON LOS DATOS DEL SUPERVISOR
+          const agentPayload_withSupervision = {
+            auth_token: this.auth_token,
+            memory_key: this.activeChatId,
+            mensajes_agente: agentMessages,
+            mensajes_usuario: userMessages,
+            mensajes_supervision: supervisorMessages,
+            user_id: this.user_id
+          };
+          
+          console.log("Agent Payload to save:", agentPayload_withSupervision);
+          // Guardar la respuesta del agente en la base de datos
+          await this.chatService.guardarChat(agentPayload_withSupervision).toPromise();
+          console.log('Respuesta del agente guardada correctamente en la base de datos');
+
+        } else {
+          console.log("El supervisor NO ha intervenido en esta conversacion. Guardando mensajes.")
+
+          console.log("Agent Payload to save:", agentPayload);
+          // Guardar la respuesta del agente en la base de datos
+          await this.chatService.guardarChat(agentPayload).toPromise();
+          console.log('Respuesta del agente guardada correctamente en la base de datos');
+        }
+
+        // Actualizar los mensajes del chat
+        await this.getMessagesByChatId(this.activeChatId)
+
+        // Actualizar el estado de intervención
+        await this.updateInterventionStatus();
+    
+      } catch (error) {
+        console.error('Error en getAgentResponseRetry:', error);
+      }
+    
+  }
 
 
   handleNo() {
@@ -557,6 +834,10 @@ sendMessageToSupervisor() {
 
       this.chats = this.chats.filter(chat => chat.memory_key !== chatId);
       console.log('Chat archivado');
+      // Limpiar los mensajes
+      this.activeChatId = '';
+      this.messages = [];
+
     }, (error) => {
       console.error('Error al archivar el chat', error);
     });
@@ -571,11 +852,19 @@ ngOnInit() {
 }
 
 ngOnDestroy() {
-  clearInterval(this.pollingInterval);
+  console.log('AgentChatComponent destroyed. Clearing polling interval...');
+  this.clearPollingInterval();
+}
+
+private clearPollingInterval() {
+  if (this.pollingInterval) {
+    clearInterval(this.pollingInterval);
+    this.pollingInterval = null;
+  }
 }
 
 ngAfterViewChecked() {
-  this.scrollToBottom();
+  // this.scrollToBottom();
   const lastAgentIndex = this.messages.map(m => m.sender).lastIndexOf('agent');
   this.lastAgentMessageIndex = lastAgentIndex !== -1 ? lastAgentIndex : null;
 }
@@ -585,17 +874,32 @@ pollingInterval: any;
 startPollingForMessages() {
   if (this.activeChatId && this.auth_token) {
     this.pollingInterval = setInterval(() => {
-      this.getMessagesByChatId(this.activeChatId);
-    }, 10000);
+      this.pollingFunction_Chat(this.activeChatId);
+    }, 1000);
   } else {
     console.warn('No se pudo iniciar el polling porque faltan chatId o auth_token');
   }
 }
 
+pollingFunction_Chat(chatId: string){
+  if (this.router.url !== '/chat') { // Verifica si no estás en la ruta /chat
+    console.warn('No estás en la ruta /chat, deteniendo el polling de chats...');
+    return; // Si no estás en /chat, retorna y no inicia el polling
+  }
+
+  else {
+    console.log('Polling for messages for chat:', this.activeChatId);
+    this.getMessagesByChatId(this.activeChatId);
+  }
+}
 
 getMessagesByChatId(chatId: string) {
   const auth_token = this.auth_token;  
 
+  if (this.auth_token === null) {
+    console.error('Error: auth_token no encontrado.');
+    return;
+  }
   
   if (!chatId || !auth_token) {
     console.error('Error: Falta el chatId o auth_token');
@@ -607,7 +911,7 @@ getMessagesByChatId(chatId: string) {
     this.lastAgentMessageIndex = null;
 
 
-    const isIntervenido = chat.intervenido;
+    this.isIntervened = chat.intervenido;
 
    
     const userMessages = chat.mensajes_usuario.map((msg: string) => {
@@ -649,7 +953,7 @@ getMessagesByChatId(chatId: string) {
   
     const chatToUpdate = this.chats.find(c => c.memory_key === chatId);
     if (chatToUpdate) {
-      chatToUpdate.intervenido = isIntervenido;  
+      chatToUpdate.intervenido = this.isIntervened;  
     }
 
     this.messages = this.alternateMessages(userMessages, agentMessages, supervisorMessages);
@@ -665,7 +969,7 @@ this.lastAgentMessageIndex = lastAgentIndex1 !== -1 ? lastAgentIndex1 : null;
       this.showUserMessage('Chat no encontrado.');
     } else {
       console.error('Error al obtener los mensajes del chat', error);
-      this.showUserMessage('Hubo un error al obtener los mensajes del chat.');
+      // this.showUserMessage('Hubo un error al obtener los mensajes del chat.');
     }
   });
 }
@@ -692,6 +996,22 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
 
   return alternatedMessages;
 }
+
+public showArchivedChats: boolean = false;
+
+
+toggleChatsView() {
+  if (this.showArchivedChats) {
+    // Mostrar chats activos
+    this.showArchivedChats = false;
+    this.listChats();  // Aquí debes tener el método que lista los chats activos
+  } else {
+    // Mostrar chats archivados
+    this.showArchivedChats = true;
+    this.list_Archive_Chats();  // Aquí debe estar el método que lista los chats archivados
+  }
+}
+
 
 
 
@@ -739,6 +1059,12 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
 
   // Debe ser una solicitud asincrona
   getALIE_Response(input: string, priority: string): Promise<string> {
+
+    let user_data = "[USER ID = " + this.user_id + "]"; // Datos del usuario para el modelo
+    input = user_data + "\n" + input; // Agregar los datos del usuario al mensaje de entrada
+
+    console.log('getALIE_Response Input [Postprocess]:', input);
+
     return new Promise((resolve, reject) => {
       this.alieService.get_response_from_model(input, priority)
         .subscribe(
@@ -759,5 +1085,63 @@ alternateMessages(userMessages: any[], agentMessages: any[], supervisorMessages:
     });
   }
 
+  convertUrlsToLinks(text: string): string {
+    // Patrón para detectar URLs
+    const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,\.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
+    // Reemplaza los enlaces en texto con un formato HTML
+    const replacedText = text.replace(urlPattern, '<span style="color: white; font-weight: bold;"><a href="$1" target="_blank" rel="noopener noreferrer">$1</a></span>');
+
+    // Expresiones regulares para formatos de Markdown
+    const boldPattern = /(\*\*|__)(.*?)\1/g; // **texto** o __texto__
+    const italicPattern = /(\*|_)(.*?)\1/g; // *texto* o _texto_
+    const headerPattern = /(^|\n)(#{1,6})\s*(.*?)(\n|$)/g; // # Título, ## Subtítulo, etc.
+
+    // Reemplazar negritas
+    const formattedBoldText = replacedText.replace(boldPattern, '<strong>$2</strong>');
+    // Reemplazar cursivas
+    const formattedItalicText = formattedBoldText.replace(italicPattern, '<em>$2</em>');
+    // Reemplazar encabezados (hasta 6 niveles)
+    const formattedHeaders = formattedItalicText.replace(headerPattern, (_, lineBreak, hashes, title) => {
+        const level = hashes.length;
+        return `${lineBreak}<h${level}>${title}</h${level}>`;
+    });
+
+    return formattedHeaders;
+}
+
+
+// Determinar el turno actual
+determineTurn() {
+
+  console.log("determineTurn... Current messages:", this.messages);
+
+  // Verificar que haya mensajes
+  if (!this.messages || this.messages.length === 0) {
+    console.log("No hay mensajes, retornando 'user'");
+    return "user"; // Retornar 'user' si no hay mensajes
+  }
+
+  // Obtener el último mensaje
+  const lastMessage = this.messages[this.messages.length - 1];
+
+  // Revisar si existen mensajes del supervisor en la conversación
+  const hasSupervisorMessage = this.messages.some((message) => message.sender === 'supervisor');
+
+  // Determinar el turno según las condiciones
+  if (lastMessage.sender === 'user' && hasSupervisorMessage) { // SI el último mensaje es del usuario y hay mensajes del supervisor
+    console.log("determineTurn: lastMessage.sender === 'user' && hasSupervisorMessage. return supervisor");
+    return "supervisor";
+  } else if (lastMessage.sender === 'user' && !hasSupervisorMessage) { // SI el último mensaje es del usuario y NO hay mensajes del supervisor
+    console.log("determineTurn: lastMessage.sender === 'user' && !hasSupervisorMessage. return user");
+    return "user";
+  } else if (lastMessage.sender === 'agent' && this.isIntervened_ShowChat) { // SI el último mensaje es del agente y el chat está intervenido, quiere decir que se acaba de pedir ayuda. Esperar
+    console.log("determineTurn: lastMessage.sender === 'agent' && this.isIntervened_ShowChat. return supervisor");
+    return "supervisor";
+  } else { // En cualquier otro caso
+    return "user"; // Default
+  }
+}
 
 }
+

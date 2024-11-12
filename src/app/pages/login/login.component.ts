@@ -4,13 +4,13 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/authentication/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { error } from 'console';
 import { HttpErrorResponse } from '@angular/common/http';
+import { CommonModule } from '@angular/common'; // Import CommonModule
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [DefaultFooterComponent, RouterModule, ReactiveFormsModule],
+  imports: [DefaultFooterComponent, RouterModule, ReactiveFormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -19,11 +19,12 @@ export class LoginComponent {
 
   email = new FormControl('');
   password = new FormControl('');
+  showPassword: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
-    // this.setInitialRole();
+
   }
 
   handleLogin() {
@@ -89,14 +90,12 @@ export class LoginComponent {
     // alert('Logged in as Admin');
   }
 
-  /* setInitialRole() {
-    const roleButtons = document.querySelectorAll('.role-btn');
-    roleButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        roleButtons.forEach(button => button.classList.remove('active'));
-        (btn as HTMLElement).classList.add('active');
-        this.selectedRole = (btn as HTMLElement).id === 'studentBtn' ? 'Student' : 'Admin';
-      });
-    });
-  } */
+
+
+  // Show and hide password
+  // Toggle password visibility
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
 }

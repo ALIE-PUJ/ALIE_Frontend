@@ -59,5 +59,10 @@ export class AgentService {
     const payload = { };
     return this.http.post(`${this.apiUrl}/list_intervention`, payload);
   }
+
+  getInterventionStatus(memory_key: string): Observable<any> {
+    const payload = { memory_key };
+    return this.http.post(`${this.apiUrl}/intervention_status`, payload);
+  }
   
 }

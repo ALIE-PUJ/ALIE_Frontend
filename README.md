@@ -1,3 +1,3 @@
-# AlieFrontend
+# ALIE_Frontend
 
-Figma (Mockup): https://www.figma.com/design/blgmmIDA0kQKEoOWLA3Y13/ALIE_Frontend?node-id=0-1&t=eGScTkzM2cFcS5WW-1
+Módulo de presentación de ALIE. Desarrolla una interfaz de usuario interactiva para que los estudiantes puedan utilizar el agente conversacional ALIE de forma intuitiva.
